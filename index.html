@@ -10,16 +10,96 @@
       color-scheme: dark;
       font-family: system-ui, "Yu Gothic UI", sans-serif;
       background: #181a1d;
-      color: #f2f3f4;
+      color: var(--text);
       overflow-x: clip;
       -webkit-user-select: none;
       user-select: none;
       --accent: #ffaf62;
       --muted: #a8adb6;
       --line: #363a40;
+      --page: #181a1d;
+      --surface: #1f2125;
+      --panel: #202226;
+      --dialog: #24262b;
+      --card: #25282d;
+      --raised: #292c31;
+      --hover: #32363d;
+      --viewport: #27292d;
+      --grid-line: #373a3f;
+      --text: #f2f3f4;
+      --active: var(--accent);
+      --selection: #9bdcff;
+      --vertex-selected: #82e1ff;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; }
+    body {
+      margin: 0; background: var(--page); color: var(--text);
+      --active: var(--accent); --toolbar-selection: var(--accent);
+    }
+    body[data-theme="normal-blue"] {
+      --active: #72bdff; --selection: #72bdff; --vertex-selected: #72bdff; --toolbar-selection: var(--active);
+    }
+    body[data-theme="dark"] {
+      --page: #080809; --surface: #0d0d0f; --panel: #111114; --dialog: #171719; --card: #19191b;
+      --raised: #1f1f22; --hover: #2b2b30; --viewport: #101012; --grid-line: #242428;
+      --line: #343437; --accent: #fff; --selection: #fff; --vertex-selected: #fff;
+    }
+    body[data-theme="astral"] {
+      --page: #130b20; --surface: #1a1029; --panel: #211432; --dialog: #27183b; --card: #29193e;
+      --raised: #321f48; --hover: #3e2658; --viewport: #1a1029; --grid-line: #35234a;
+      --line: #513571; --accent: #ffe167; --selection: #ffe167; --vertex-selected: #ffe167; --muted: #c5b7d8;
+    }
+    body[data-theme="liminal"] {
+      --page: #303033; --surface: #414144; --panel: #4a4a4e; --dialog: #4c4c50; --card: #454548;
+      --raised: #515154; --hover: #606065; --viewport: #4b4b50; --grid-line: #6b6b70;
+      --line: #f4f4f4; --accent: #fff; --selection: #fff; --vertex-selected: #fff; --muted: #e1e1e3;
+    }
+    body[data-theme="liminal"] :is(.editor-root-button, .parts-choices button, .guide-pages button)[aria-pressed="true"] {
+      background: #111; color: #fff; border-color: #fff;
+    }
+    body[data-theme="liminal"] #editor-model-content > [data-selected] > .part-visual
+      > :is(.part-shape:not(.part-image-hit), .part-image-fill) {
+      fill: #000;
+      fill-opacity: 1;
+    }
+    body[data-theme="sky"] {
+      color-scheme: light;
+      --page: #d6eef9; --surface: #c5e7f6; --panel: #e0f3fb; --dialog: #edf9ff; --card: #cfeafa;
+      --raised: #d9f1fc; --hover: #b5deef; --viewport: #cee9f6; --grid-line: #a6cadc;
+      --line: #7fa8ba; --accent: #aff1b9; --active: #23603b; --selection: #a1e7ad;
+      --vertex-selected: #b8f6ba; --text: #182e3a; --muted: #405966;
+    }
+    body[data-theme="sky"] :is(.editor-root-button, .editor-subtab, .parts-choices button, .guide-pages button)[aria-pressed="true"] {
+      background: var(--selection); color: var(--active); border-color: var(--active);
+    }
+    @property --theme-hue { syntax: "<number>"; inherits: true; initial-value: 230; }
+    body[data-theme="rainbow"] {
+      --page: hsl(var(--theme-hue) 34% 9%); --surface: hsl(var(--theme-hue) 35% 13%);
+      --panel: hsl(var(--theme-hue) 33% 15%); --dialog: hsl(var(--theme-hue) 31% 20%);
+      --card: hsl(var(--theme-hue) 30% 20%); --raised: hsl(var(--theme-hue) 32% 24%);
+      --hover: hsl(var(--theme-hue) 37% 31%); --viewport: hsl(var(--theme-hue) 31% 17%);
+      --grid-line: hsl(var(--theme-hue) 31% 25%); --line: #000;
+      --accent: hsl(var(--theme-hue) 94% 77%); --selection: var(--accent); --vertex-selected: var(--accent);
+    }
+    body[data-theme="blood"] {
+      --page: #200709; --surface: #310c11; --panel: #3b1118; --dialog: #47171e; --card: #42141a;
+      --raised: #521c23; --hover: #66242b; --viewport: #321217; --grid-line: #54272d;
+      --line: #080203; --accent: #ff687b; --selection: #ff687b; --vertex-selected: #ff687b; --muted: #e3b8bc;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      body[data-theme="rainbow"] { animation: theme-rainbow 14s linear infinite; }
+      @keyframes theme-rainbow { from { --theme-hue: 230; } to { --theme-hue: 590; } }
+      body[data-theme="liminal"]::after {
+        content: ""; position: fixed; inset: 0; z-index: 6; pointer-events: none;
+        background: repeating-linear-gradient(0deg, transparent 0 4px, #fff3 4px 5px);
+        animation: theme-glitch 7s steps(1, end) infinite; opacity: 0.11;
+      }
+      @keyframes theme-glitch {
+        0%, 39%, 43%, 100% { clip-path: inset(0); translate: 0; }
+        40% { clip-path: inset(29% 0 64%); translate: 3px -2px; opacity: 0.55; }
+        42% { clip-path: inset(67% 0 27%); translate: -3px 1px; opacity: 0.4; }
+      }
+    }
     .title-screen:not([hidden]) {
       min-height: 100vh;
       min-height: 100svh;
@@ -34,7 +114,7 @@
         transform-box: fill-box;
         transform-origin: center;
       }
-      body:not(.no-title-motion) .preview-shape { animation: shape-deform 9s ease-in-out infinite; }
+      body:not(.no-title-motion) .preview-shape { animation: shape-deform 10s ease-in-out infinite; }
       @keyframes title-sway {
         0%, 50%, 100% { transform: translateX(0); }
         25% { transform: translateX(12px); }
@@ -42,8 +122,9 @@
       }
       @keyframes shape-deform {
         0%, 100% { transform: none; }
-        34% { transform: skewX(16deg) scale(0.88, 1.15); }
-        68% { transform: skewY(-12deg) scale(1.17, 0.86); }
+        25% { transform: translate(-24px, 10px) rotate(-19deg) skewY(8deg) scale(0.88, 1.12); }
+        50% { transform: translate(17px, -14px) rotate(9deg) skewX(-18deg) scale(1.15, 0.83); }
+        75% { transform: translate(23px, 9px) rotate(22deg) skewY(-8deg) scale(0.94, 1.08); }
       }
     }
     button { font: inherit; cursor: pointer; }
@@ -55,7 +136,7 @@
       justify-content: space-between;
       gap: 1rem;
       padding: 0.85rem clamp(1rem, 4vw, 3rem);
-      background: #1f2125;
+      background: var(--surface);
     }
     .top { border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 750; letter-spacing: 0.13em; }
@@ -89,25 +170,25 @@
       font-weight: 700;
       border: 1px solid var(--line);
       border-radius: 7px;
-      background: #25282d;
+      background: var(--card);
       color: inherit;
     }
-    .action:hover { background: #32363d; }
+    .action:hover { background: var(--hover); }
     .primary { color: #211a14; background: var(--accent); border-color: transparent; }
-    .primary:hover { background: #ffc18c; }
+    .primary:hover { background: color-mix(in srgb, var(--accent) 80%, white); }
     .arrow { opacity: 0.7; }
-    .preview { margin: 0; overflow: hidden; background: #202226; border: 1px solid var(--line); border-radius: 10px; }
+    .preview { margin: 0; overflow: hidden; background: #202226; border: 1px solid #363a40; border-radius: 10px; }
     .preview figcaption {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0.75rem 0.9rem;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid #363a40;
       font: 0.72rem ui-monospace, monospace;
       letter-spacing: 0.08em;
-      color: var(--muted);
+      color: #a8adb6;
     }
-    .preview figcaption span:last-child { color: var(--accent); }
+    .preview figcaption span:last-child { color: #ffaf62; }
     .preview > svg { width: 100%; height: auto; }
     footer { border-top: 1px solid var(--line); padding-bottom: max(0.85rem, env(safe-area-inset-bottom)); }
     .quiet {
@@ -118,17 +199,17 @@
       padding: 0.5rem 0.75rem;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: #25282d;
+      background: var(--card);
       color: inherit;
       font-size: 0.85rem;
     }
-    .quiet:hover { background: #32363d; }
+    .quiet:hover { background: var(--hover); }
     dialog {
       width: min(26rem, calc(100% - 2rem));
       padding: 1.4rem;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: #24262b;
+      background: var(--dialog);
       color: inherit;
     }
     dialog::backdrop { background: #090a0bbd; }
@@ -137,7 +218,7 @@
     dialog form { display: flex; justify-content: flex-end; }
     #settings { width: min(31rem, calc(100% - 2rem)); }
     .settings-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: 1rem; }
-    .settings-nav [aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+    .settings-nav [aria-pressed="true"] { color: var(--active); border-color: var(--active); }
     .settings-section {
       min-height: 8rem;
       margin-bottom: 1rem;
@@ -172,7 +253,7 @@
       padding: 0.35rem;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: #25282d;
+      background: var(--card);
       color: inherit;
       font: inherit;
     }
@@ -187,14 +268,14 @@
       align-content: start;
       gap: 0.45rem;
       padding: 1rem;
-      background: #1f2125;
+      background: var(--surface);
       border-right: 1px solid var(--line);
     }
     .create-nav .quiet { text-align: left; }
     .create-nav .quiet:first-child { margin-bottom: 0.65rem; }
     .create-nav [aria-pressed="true"], .selection-card[aria-pressed="true"] {
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: var(--active);
+      color: var(--active);
     }
     .create-content { padding: clamp(1rem, 5vw, 3.5rem); }
     .create-content h2 { margin: 0 0 1.35rem; font-size: clamp(1.5rem, 4vw, 2.2rem); }
@@ -204,7 +285,7 @@
       padding: clamp(0.65rem, 2vw, 1rem);
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #1d1f22;
+      background: var(--page);
     }
     .selection-grid {
       display: grid;
@@ -221,12 +302,12 @@
       padding: 0.75rem;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: #24262b;
+      background: var(--dialog);
       color: inherit;
       text-align: left;
       font-weight: 700;
     }
-    .selection-card:hover { background: #2c2f35; }
+    .selection-card:hover { background: var(--hover); }
     .selection-item { position: relative; min-width: 0; }
     .load-selection {
       margin-top: 0.45rem;
@@ -234,7 +315,7 @@
       color: #211a14;
       font-weight: 700;
     }
-    .load-selection:hover { background: #ffc18c; }
+    .load-selection:hover { background: color-mix(in srgb, var(--accent) 80%, white); }
     @media (hover: hover) and (pointer: fine) {
       .load-selection {
         position: absolute;
@@ -265,9 +346,10 @@
       display: grid;
       place-items: center;
       height: clamp(4rem, 16vw, 7rem);
-      border: 1px solid var(--line);
+      border: 1px solid #363a40;
       border-radius: 5px;
       background: #1a1c1f;
+      color: #f2f3f4;
     }
     #draft-empty { color: var(--muted); }
     #draft-empty { margin: 0; }
@@ -285,7 +367,7 @@
       gap: 0.65rem 1rem;
       padding: 0.65rem 0.9rem;
       border-bottom: 1px solid var(--line);
-      background: #202226;
+      background: var(--panel);
     }
     .editor-menubar { position: relative; z-index: 3; padding-block: 0.45rem; }
     .editor-modebar {
@@ -295,7 +377,7 @@
       min-height: 2.4rem;
       padding: 0.25rem 0.9rem;
       border-bottom: 1px solid var(--line);
-      background: #232529;
+      background: var(--panel);
       font-size: 0.85rem;
       position: relative;
       z-index: 2;
@@ -307,8 +389,7 @@
       background: transparent;
       color: inherit;
     }
-    .editor-subtab:hover { background: #32363d; }
-    .editor-subtab[aria-pressed="true"] { background: #292c31; border-color: var(--line); color: var(--accent); }
+    .editor-subtab:hover { background: var(--hover); }
     .editor-menus { display: flex; flex-wrap: wrap; gap: 0.2rem; }
     .editor-menu { position: relative; }
     .editor-menu summary {
@@ -319,7 +400,7 @@
       font-size: 0.85rem;
     }
     .editor-menu summary::-webkit-details-marker { display: none; }
-    .editor-menu[open] summary, .editor-menu summary:hover { background: #32363d; }
+    .editor-menu[open] summary, .editor-menu summary:hover { background: var(--hover); }
     .editor-menu-items {
       position: absolute;
       inset-block-start: calc(100% + 0.25rem);
@@ -331,20 +412,38 @@
       padding: 0.35rem;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: #25282d;
+      background: var(--card);
       box-shadow: 0 0.5rem 1rem #0005;
     }
     .editor-menu:not(:first-child) .editor-menu-items { inset-inline: auto 0; }
     .editor-tools:not([hidden]) { display: flex; flex-wrap: wrap; gap: 0.35rem; }
     [data-editor-tool][aria-pressed="true"],
-    [data-deform-toggle][aria-pressed="true"],
-    #add-vertex[aria-pressed="true"],
-    [data-editor-display][aria-pressed="true"],
-    .editor-tools [data-editor-selection][aria-pressed="true"],
-    #toggle-pivot-edit[aria-pressed="true"],
-    #toggle-world-gizmos[aria-pressed="true"],
-    #toggle-gizmos[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+    [data-editor-display][aria-pressed="true"] { color: var(--active); border-color: var(--active); }
     .editor-tools svg { flex: none; }
+    .editor-modebar .editor-subtab[aria-pressed="true"]:not(:disabled),
+    .editor-toolbar .editor-tools button[aria-pressed="true"]:not(:disabled) {
+      background: var(--toolbar-selection);
+      border-color: var(--toolbar-selection);
+      color: #080808;
+    }
+    body[data-theme="liminal"] .editor-modebar {
+      background: #272729;
+      border-bottom-color: #aaa;
+      gap: 0.35rem;
+    }
+    body[data-theme="liminal"] .editor-toolbar { background: #343437; }
+    body[data-theme="liminal"] :is(.editor-subtab, .editor-tools button) {
+      background: #454548;
+      border-color: #929296;
+      color: #f5f5f5;
+    }
+    body[data-theme="liminal"] :is(.editor-subtab, .editor-tools button):hover:not(:disabled, [aria-pressed="true"]) {
+      background: #58585c;
+      border-color: #fff;
+    }
+    body[data-theme="liminal"] :is(.editor-subtab, .editor-tools button)[aria-pressed="true"]:not(:disabled) {
+      box-shadow: inset 0 -3px #a3a3a3;
+    }
     .editor-workspace {
       display: grid;
       grid-template-columns: minmax(0, 1fr) clamp(14rem, 27vw, 20rem);
@@ -362,23 +461,14 @@
       overflow: clip;
       touch-action: none;
       cursor: grab;
-      background-color: #27292d;
-      background-image: linear-gradient(#373a3f 1px, transparent 1px), linear-gradient(90deg, #373a3f 1px, transparent 1px);
-      background-size: calc(24px * var(--view-zoom)) calc(24px * var(--view-zoom));
-      background-position: calc(50% + 12px * var(--view-zoom) + var(--pan-x)) calc(50% + 12px * var(--view-zoom) + var(--pan-y));
+      background-color: var(--viewport);
     }
-    .editor-viewport::before, .editor-viewport::after {
-      position: absolute;
-      z-index: -1;
-      content: "";
-    }
-    .editor-viewport::before { inset: calc(50% + var(--pan-y)) 0 auto; height: 1px; background: #8d5456; }
-    .editor-viewport::after { inset: 0 auto 0 calc(50% + var(--pan-x)); width: 1px; background: #607952; }
+    .viewport-grid { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
     .editor-viewport.is-panning { cursor: grabbing; }
     .editor-marquee {
       position: absolute;
       z-index: 3;
-      border: 1px solid #9bdcff;
+      border: 1px solid var(--selection);
       background: #71caff33;
       pointer-events: none;
     }
@@ -388,7 +478,7 @@
       margin: 0;
       padding: 0.3rem 0.55rem;
       border-radius: 4px;
-      background: #1a1c20;
+      background: var(--surface);
       color: var(--muted);
       font-size: 0.8rem;
       pointer-events: none;
@@ -407,7 +497,7 @@
       padding: 0.45rem 0.3rem;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: #202226;
+      background: var(--panel);
       color: var(--muted);
       cursor: default;
       font-size: 0.75rem;
@@ -430,22 +520,45 @@
       color: var(--accent);
       pointer-events: none;
     }
-    .editor-model .part-shape { pointer-events: auto; cursor: default; }
+    .editor-model .part-shape { cursor: default; }
+    .editor-model .part-glow, .editor-model .model-vertices { pointer-events: none; }
     .part-glow path { stroke-width: calc(2px + var(--glow-width) * var(--view-zoom)); }
     .editor-model [data-zero-scale] { display: none; }
-    .editor-model .model-vertices { visibility: hidden; }
-    .model-vertices circle { r: calc(4px / var(--view-zoom)); }
-    .model-vertices[data-dense] circle { r: calc(1.5px / var(--view-zoom)); }
-    .editor-model [data-selected] .model-vertices { visibility: visible; }
-    .editor-screen[data-deform-mode] .editor-model .model-vertices { visibility: hidden; }
-    .editor-screen[data-deform-mode] .editor-model [data-vertex-target] .model-vertices { visibility: visible; }
-    .editor-screen[data-deform-mode] [data-vertex-target] [data-vertex-index] {
-      pointer-events: all;
-      cursor: crosshair;
-      stroke: transparent;
-      stroke-width: calc(12px / var(--view-zoom));
+    #mirror-handle {
+      position: absolute;
+      left: calc(50% + var(--pan-x) + var(--mirror-x, 0px) * var(--view-zoom));
+      top: calc(50% + var(--pan-y) - var(--mirror-y, 0px) * var(--view-zoom));
+      translate: -50% -50%; width: 24px; height: 24px; padding: 0;
+      border: 2px solid #25282d; border-radius: 50%; background: #a8e1ff;
+      cursor: grab; touch-action: none; z-index: 2;
     }
-    .editor-screen[data-deform-mode] [data-vertex-selected] { fill: #9bdcff; }
+    #mirror-handle:active { cursor: grabbing; }
+    .editor-screen[data-mirror-selected][data-active-tool="move"]:not([data-hide-gizmos], [data-deform-mode]) #mirror-handle { display: none; }
+    .editor-model .model-vertices { visibility: hidden; }
+    .vertex-glyph { pointer-events: none; }
+    .vertex-marker-hit { fill: transparent; stroke: none; }
+    .vertex-image-border { fill: #101217; fill-opacity: 0.65; }
+    .editor-model .model-vertices[data-selected] { visibility: visible; }
+    .editor-screen[data-deform-mode] .editor-model .model-vertices { visibility: hidden; }
+    .editor-screen[data-deform-mode] .editor-model .model-vertices[data-vertex-target] { visibility: visible; }
+    .editor-screen[data-deform-mode] [data-vertex-target] [data-vertex-index] {
+      cursor: crosshair;
+      fill: #fff0c4;
+      stroke: #101217;
+      stroke-width: 2.5px;
+    }
+    .editor-screen[data-deform-mode] [data-vertex-target] .vertex-marker-hit { pointer-events: all; }
+    .editor-screen[data-deform-mode] [data-vertex-target] [data-vertex-selected] {
+      fill: var(--vertex-selected);
+    }
+    .editor-screen[data-deform-mode] [data-vertex-selected] .vertex-image-border { stroke: var(--vertex-selected); }
+    .editor-screen[data-deform-mode] [data-vertex-target] [data-vertex-index]:hover { stroke: #487ca3; }
+    #vertex-position-guides { pointer-events: none; }
+    #vertex-insert-guides { pointer-events: none; }
+    #vertex-snap-count { width: 7rem; max-width: 45%; font: inherit; }
+    .appearance-settings select { min-width: 0; max-width: 100%; min-height: 2rem; font: inherit; }
+    #vertex-marker-image-preview { width: 2rem; height: 2rem; object-fit: contain; background: #101217; border: 1px solid var(--line); }
+    #viewport-grid-lines { stroke: var(--grid-line); }
     .vertex-insert-marker {
       position: absolute;
       left: calc(50% + var(--pan-x) + var(--insert-x) * var(--view-zoom));
@@ -455,7 +568,7 @@
       height: 12px;
       border: 2px solid #202226;
       border-radius: 50%;
-      background: #9bdcff;
+      background: var(--selection);
       pointer-events: none;
       z-index: 1;
     }
@@ -484,16 +597,22 @@
       height: 30px;
       border: 2px solid #e2a9ff;
       border-radius: 50%;
-      background: #24262b;
+      background: var(--dialog);
       color: #e2a9ff;
       cursor: move;
     }
     .editor-screen[data-pivot-edit]:is([data-model-selected], [data-frame-selected]) .pivot-handle { display: grid; }
+    .pivot-handle[data-snapped] { background: #543866; }
     .model-gizmo [data-gizmo-tool] { display: none; }
     .editor-screen[data-active-tool="move"] [data-gizmo-tool="move"],
     .editor-screen[data-active-tool="scale"] [data-gizmo-tool="scale"],
     .editor-screen[data-active-tool="rotate"] [data-gizmo-tool="rotate"] { display: inline; }
     .model-gizmo [data-model-handle] { pointer-events: auto; cursor: grab; }
+    .editor-screen[data-deform-mode] .model-gizmo [data-model-handle="move-xy"] {
+      fill: none;
+      stroke: #f2f3f4;
+      pointer-events: stroke;
+    }
     .export-frame {
       position: absolute;
       left: calc(50% + var(--pan-x) + var(--frame-x) * var(--view-zoom));
@@ -504,7 +623,7 @@
       border: 1px dashed #91c7df;
       pointer-events: none;
     }
-    .editor-screen[data-frame-selected] .export-frame { border: 2px solid #9bdcff; }
+    .editor-screen[data-frame-selected] .export-frame { border: 2px solid var(--selection); }
     .export-edge { position: absolute; pointer-events: auto; cursor: move; }
     .export-edge[data-edge="top"], .export-edge[data-edge="bottom"] { inset-inline: 0; height: 14px; }
     .export-edge[data-edge="top"] { top: -7px; }
@@ -522,7 +641,7 @@
       height: 20px;
       border: 2px solid #202226;
       border-radius: 3px;
-      background: #9bdcff;
+      background: var(--selection);
       pointer-events: auto;
       cursor: nwse-resize;
     }
@@ -535,10 +654,10 @@
       place-items: center;
       width: 26px;
       height: 26px;
-      border: 1px solid #9bdcff;
+      border: 1px solid var(--selection);
       border-radius: 4px;
-      background: #202226;
-      color: #9bdcff;
+      background: var(--panel);
+      color: var(--selection);
       pointer-events: auto;
       cursor: move;
     }
@@ -548,13 +667,13 @@
       min-height: 0;
       grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
       border-inline-start: 1px solid var(--line);
-      background: #202226;
+      background: var(--panel);
     }
     .editor-sidebar:not([hidden]):has(> .editor-panel[hidden]) { grid-template-rows: minmax(0, 1fr); }
     .editor-workspace:has(> .editor-sidebar[hidden]) { grid-template-columns: minmax(0, 1fr); }
     .editor-panel:not([hidden]) { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
     .editor-panel:not([hidden]) + .editor-panel { border-top: 1px solid var(--line); }
-    .editor-panel h2 { flex: none; margin: 0; padding: 0.7rem 0.85rem; background: #26292e; font-size: 0.9rem; }
+    .editor-panel h2 { flex: none; margin: 0; padding: 0.7rem 0.85rem; background: var(--raised); font-size: 0.9rem; }
     .editor-panel-content {
       flex: 1;
       min-height: 0;
@@ -576,17 +695,17 @@
       padding: 0.5rem;
       border: 1px solid var(--line);
       border-radius: 4px;
-      background: #292c31;
-      color: #f2f3f4;
+      background: var(--raised);
+      color: var(--text);
     }
     .editor-root-badge { margin-inline-start: auto; color: var(--muted); font-size: 0.7rem; }
     .editor-tree > li + li { margin-top: 0.5rem; }
     .editor-root-button { width: 100%; text-align: start; overflow-wrap: anywhere; }
-    .editor-root-button[aria-pressed="true"] { color: #9bdcff; border-color: #9bdcff; }
-    .editor-root-button:hover { background: #32363d; }
+    .editor-root-button[aria-pressed="true"] { color: var(--selection); border-color: var(--selection); }
+    .editor-root-button:hover { background: var(--hover); }
     .explorer-row { display: grid; grid-template-columns: 1.65rem minmax(0, 1fr); align-items: stretch; gap: 0.25rem; }
     .explorer-toggle { border: 0; border-radius: 4px; padding: 0; background: transparent; color: var(--muted); }
-    .explorer-toggle:hover { color: #fff; background: #32363d; }
+    .explorer-toggle:hover { color: #fff; background: var(--hover); }
     .explorer-toggle::before { content: "▸"; }
     .explorer-toggle[aria-expanded="true"]::before { content: "▾"; }
     .explorer-row .editor-root-button { grid-column: 2; }
@@ -601,7 +720,7 @@
     .editor-properties { margin: 0; }
     .editor-properties div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.35rem; padding-block: 0.45rem; }
     .editor-properties div[hidden] { display: none; }
-    .editor-properties dd { margin: 0; color: #f2f3f4; font-variant-numeric: tabular-nums; }
+    .editor-properties dd { margin: 0; color: var(--text); font-variant-numeric: tabular-nums; }
     .model-property-fields { display: flex; min-width: 0; flex-wrap: wrap; gap: 0.4rem; }
     .model-property-fields label { display: flex; align-items: center; gap: 0.25rem; max-width: 100%; }
     .model-property-fields input { width: 4.5rem; min-width: 0; min-height: 2rem; padding: 0.2rem; font: inherit; }
@@ -613,6 +732,8 @@
     #model-name { width: 100%; }
     #model-parent { width: 100%; min-width: 0; min-height: 2rem; font: inherit; }
     .editor-root-button.is-drop-target { border-color: var(--accent); background: #392e24; }
+    .editor-root-button.is-drop-before { box-shadow: 0 -2px 0 var(--accent); }
+    .editor-root-button.is-drop-after { box-shadow: 0 2px 0 var(--accent); }
     .frame-fields { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.5rem; }
     .frame-fields label { display: flex; align-items: center; gap: 0.3rem; }
     .frame-fields input { width: 5rem; min-height: 2.25rem; padding: 0.25rem; font: inherit; }
@@ -628,23 +749,24 @@
       width: min(38rem, calc(100% - 1rem));
       max-height: calc(100dvh - 1rem);
     }
-    .parts-window-header { padding: 0.8rem 1rem; background: #30333a; cursor: grab; touch-action: none; }
+    .parts-window-header { padding: 0.8rem 1rem; background: var(--raised); cursor: grab; touch-action: none; }
     .parts-window-header:active { cursor: grabbing; }
     .parts-window-header h2 { margin: 0; }
     .parts-window-body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(5.5rem, 1fr); gap: 0.75rem; padding: 0.75rem; }
-    .parts-preview { display: grid; place-items: center; height: clamp(7.5rem, 25vh, 12rem); border: 1px solid var(--line); border-radius: 5px; background: #191b1e; color: var(--accent); }
+    .parts-preview { display: grid; place-items: center; height: clamp(7.5rem, 25vh, 12rem); border: 1px solid #363a40; border-radius: 5px; background: #191b1e; color: #ffaf62; }
     .parts-preview[hidden] { display: none; }
     .parts-preview svg { width: min(70%, 8rem); height: 90%; }
     @media (prefers-reduced-motion: no-preference) {
-      .parts-preview svg { animation: parts-preview-spin 10s linear infinite; }
+      body:not(.no-preview-motion) .parts-preview svg { animation: parts-preview-spin 10s linear infinite; }
       @keyframes parts-preview-spin { to { rotate: 1turn; } }
     }
     .parts-fixed { min-width: 0; margin: 0.75rem 0; padding: 0.55rem; border: 1px solid var(--line); border-radius: 5px; }
     .parts-fixed label:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
     .parts-fixed input { width: 4.5rem; min-height: 2rem; font: inherit; }
+    #mirror-initial-alignment input { width: 1.2rem; min-height: 1.2rem; accent-color: var(--accent); }
     .parts-fixed p { margin: 0; font-size: 0.8rem; }
     .parts-choices { display: grid; align-content: start; gap: 0.4rem; }
-    .parts-choices [aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+    .parts-choices [aria-pressed="true"] { color: var(--active); border-color: var(--active); }
     .parts-choices button[hidden] { display: none; }
     .parts-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
     #operation-guide { width: min(44rem, calc(100% - 1rem)); padding: 0; }
@@ -654,14 +776,19 @@
       padding: 0.7rem 1rem; border-bottom: 1px solid var(--line);
     }
     .guide-header h2 { margin: 0; }
+    .guide-pages { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
+    .guide-pages [aria-pressed="true"] { color: var(--active); border-color: var(--active); }
     .guide-body { overflow: auto; overscroll-behavior: contain; padding: 0.8rem 1rem 1rem; }
     .guide-body details { border: 1px solid var(--line); border-radius: 6px; margin-top: 0.45rem; }
     .guide-body summary { padding: 0.65rem 0.75rem; cursor: pointer; font-weight: 650; }
     .guide-body details[open] summary { color: var(--accent); }
     .guide-body ul { margin: 0; padding: 0 0.85rem 0.8rem 1.9rem; color: var(--muted); line-height: 1.65; }
     .guide-body li + li { margin-top: 0.4rem; }
-    .guide-body strong { color: #f2f3f4; }
+    .guide-body strong { color: var(--text); }
     #export-dialog { width: min(45rem, calc(100% - 1rem)); max-height: calc(100dvh - 1rem); }
+    #insert-library-dialog { width: min(42rem, calc(100% - 1rem)); max-height: calc(85dvh); }
+    #insert-library-dialog form { margin-top: 1rem; }
+    .image-library-thumbnail { display: block; max-width: 100%; max-height: 5.5rem; object-fit: contain; }
     .export-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1rem; }
     .export-preview-pane h3 { margin: 0 0 0.55rem; font-size: 0.9rem; }
     .export-preview-stage {
@@ -669,17 +796,18 @@
       place-items: center;
       min-height: 13rem;
       padding: 0.55rem;
-      border: 1px solid var(--line);
+      border: 1px solid #363a40;
       border-radius: 6px;
       background: #191b1e;
     }
-    #export-preview, #library-data-preview {
+    #export-preview, #library-data-preview, #library-image-preview {
       display: block;
       max-width: 100%;
       max-height: 15rem;
       object-fit: contain;
       background: repeating-conic-gradient(#464a51 0 25%, #30333a 0 50%) 0 0 / 16px 16px;
     }
+    #library-data-preview[hidden], #library-image-preview[hidden] { display: none; }
     #export-dimensions { display: block; margin-top: 0.5rem; color: var(--muted); font-size: 0.85rem; }
     .export-field:not([hidden]) { display: grid; gap: 0.3rem; margin-bottom: 0.6rem; font-size: 0.85rem; }
     .export-field input, .export-field select { min-width: 0; min-height: 2.15rem; font: inherit; }
@@ -708,14 +836,14 @@
       height: 2.5rem;
       border: 1px solid var(--line);
       border-radius: 5px;
-      background: #25282d;
+      background: var(--card);
       color: inherit;
       cursor: pointer;
       list-style: none;
       font-size: 1.35rem;
     }
     .library-card-menu summary::-webkit-details-marker { display: none; }
-    .library-card-menu summary:hover, .library-card-menu[open] summary { background: #32363d; }
+    .library-card-menu summary:hover, .library-card-menu[open] summary { background: var(--hover); }
     .library-card-menu .editor-menu-items { inset-block-start: calc(100% + 0.25rem); z-index: 4; }
     .selection-item:nth-child(2n) .library-card-menu .editor-menu-items { inset-inline: auto 0; }
     #library-project-dialog { width: min(41rem, calc(100% - 1rem)); max-height: calc(100dvh - 1rem); }
@@ -729,13 +857,13 @@
     #library-delete-warning { padding: 0.8rem; border: 1px solid #a96842; border-radius: 6px; background: #382a25; }
     #library-delete-warning p { color: #ffd5b9; }
     #library-project-error { margin: 0.5rem 0 0; color: #ff9c8c; }
-    #library-notice { color: var(--muted); }
+    #library-notice, #image-library-notice { color: var(--muted); }
     @media (max-width: 580px) {
       .export-layout { grid-template-columns: minmax(0, 1fr); }
       .export-preview-stage { min-height: 8rem; }
       #export-preview { max-height: 10rem; }
       #library-project-info:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
-      #library-data-preview { max-height: 10rem; }
+      #library-data-preview, #library-image-preview { max-height: 10rem; }
     }
     @media (max-width: 680px) {
       .editor-screen:not([hidden]) { height: auto; min-height: 100svh; }
@@ -825,6 +953,7 @@
       <button class="quiet" type="button" id="return-title">タイトルに戻る</button>
       <button class="quiet" type="button" data-create-view="foundation" aria-controls="foundation-view" aria-pressed="true">土台</button>
       <button class="quiet" type="button" data-create-view="library" aria-controls="library-view" aria-pressed="false">ライブラリー</button>
+      <button class="quiet" type="button" data-create-view="images" aria-controls="images-view" aria-pressed="false">画像</button>
       <button class="quiet" type="button" data-create-view="templates" aria-controls="templates-view" aria-pressed="false">テンプレート</button>
     </nav>
     <div class="create-content">
@@ -859,6 +988,11 @@
       <section class="selection-panel" id="templates-view" aria-label="テンプレート" hidden>
         <ul id="template-list" class="selection-grid" aria-label="テンプレートの選択"></ul>
       </section>
+      <section class="selection-panel" id="images-view" aria-label="画像" hidden>
+        <p id="image-library-empty">保存された画像はありません。</p>
+        <p id="image-library-notice" role="status" hidden></p>
+        <ul id="image-library-list" class="selection-grid" aria-label="保存した画像"></ul>
+      </section>
     </div>
   </main>
   <main id="editor-screen" class="editor-screen" aria-labelledby="editor-heading" hidden>
@@ -870,6 +1004,9 @@
             <summary>ファイル</summary>
             <div class="editor-menu-items">
               <button class="quiet" id="export-image" type="button" disabled>画像を保存…</button>
+              <button class="quiet" id="save-plane-image" type="button" disabled>PLANEに画像として保存</button>
+              <button class="quiet" id="add-library-image" type="button" disabled>画像を追加</button>
+              <button class="quiet" id="add-library-model" type="button" disabled>モデルを追加</button>
               <button class="quiet" type="button" data-project-save="new" disabled>新規保存…</button>
               <button class="quiet" type="button" data-project-save="overwrite" disabled>上書き保存…</button>
               <button class="quiet" type="button" data-return-editor-title>タイトルに戻る</button>
@@ -959,6 +1096,7 @@
           </button>
         </div>
         <div class="editor-tools" id="toolbar-deform" role="group" aria-label="変形のツール" hidden>
+          <button class="quiet" type="button" data-deform-toggle aria-pressed="false">変形モード</button>
           <button class="quiet" id="add-vertex" type="button" disabled aria-pressed="false">頂点を追加</button>
           <button class="quiet" id="split-vertices" type="button" disabled>分割</button>
           <span id="deform-hint" role="status"></span>
@@ -967,6 +1105,11 @@
     </header>
     <div class="editor-workspace">
       <section class="editor-viewport" aria-label="2Dビュー">
+        <svg class="viewport-grid" aria-hidden="true">
+          <path id="viewport-grid-lines" fill="none" stroke="#373a3f"/>
+          <line id="viewport-axis-x" x2="100%" stroke="#8d5456"/>
+          <line id="viewport-axis-y" y2="100%" stroke="#607952"/>
+        </svg>
         <p class="viewport-label" aria-hidden="true">2Dビュー · XY</p>
         <svg class="editor-model" id="editor-model" aria-label="配置したパーツ">
           <defs>
@@ -975,8 +1118,14 @@
               <path d="M0 0V9" stroke="#ff7777" stroke-width="3" stroke-opacity="0.72"/>
             </pattern>
           </defs>
-          <g id="editor-outlines"></g>
+          <defs id="editor-outlines"></defs>
+          <defs id="editor-mirrors"></defs>
           <g id="editor-model-content"></g>
+          <g id="vertex-position-guides" aria-hidden="true"></g>
+          <g id="editor-vertices"></g>
+          <g id="mirror-guides" aria-hidden="true"></g>
+          <g id="vertex-insert-guides" aria-hidden="true"></g>
+          <g id="pivot-snap-guides" aria-hidden="true"></g>
         </svg>
         <div class="export-frame" id="export-frame" aria-hidden="true" hidden>
           <span class="export-edge" data-edge="top"></span>
@@ -1012,6 +1161,7 @@
           </g>
         </svg>
         <div class="pivot-handle" id="pivot-handle" aria-hidden="true">＋</div>
+        <button id="mirror-handle" type="button" aria-label="ミラーの中心を移動" hidden></button>
         <span class="vertex-insert-marker" id="vertex-insert-marker" aria-hidden="true" hidden></span>
         <div class="editor-marquee" id="editor-marquee" aria-hidden="true" hidden></div>
         <label class="viewport-zoom">
@@ -1067,11 +1217,20 @@
               <div data-object-transform><dt>回転</dt><dd class="model-property-fields">
                 <label><input id="model-angle" type="number" step="any" aria-label="回転角度">°</label>
               </dd></div>
-              <div data-object-transform><dt>スケール</dt><dd class="model-property-fields">
+              <div data-object-transform data-shape-transform><dt>スケール</dt><dd class="model-property-fields">
                 <label>X <input id="model-sx" type="number" min="-30" max="30" step="0.01" aria-label="スケール X"></label>
                 <label>Y <input id="model-sy" type="number" min="-30" max="30" step="0.01" aria-label="スケール Y"></label>
               </dd></div>
-              <div data-object-transform><dt>頂点 / 辺 / 面</dt><dd id="model-geometry"></dd></div>
+              <div data-object-transform data-shape-transform><dt>頂点 / 辺 / 面</dt><dd id="model-geometry"></dd></div>
+              <div id="mirror-properties" hidden><dt><label for="mirror-lines">線の本数</label></dt>
+                <dd class="model-property-fields"><input id="mirror-lines" type="number" min="1" max="18" step="1"></dd>
+              </div>
+              <div id="mirror-follow-row" hidden><dt><label for="mirror-follow">親に追従</label></dt>
+                <dd class="model-property-fields"><input id="mirror-follow" type="checkbox"></dd>
+              </div>
+              <div id="mirror-bake-row" hidden><dt>モデル化</dt>
+                <dd class="model-property-fields"><button class="quiet" id="bake-mirror" type="button">複製をモデル化</button></dd>
+              </div>
               <div class="model-appearance-heading" data-part-appearance><dt>外観</dt><dd></dd></div>
               <div data-part-appearance><dt><label for="model-color">全体のカラー</label></dt><dd class="model-property-fields"><input id="model-color" type="color"></dd></div>
               <div data-part-appearance><dt><label for="model-face-transparency">面の透明度</label></dt><dd class="model-property-fields">
@@ -1114,80 +1273,96 @@
         <form method="dialog"><button class="quiet" autofocus>閉じる</button></form>
       </header>
       <div class="guide-body" tabindex="0" role="region" aria-label="操作ガイドの本文">
-        <p>見たい項目を開いて、PLANEの操作を確認できます。</p>
-        <details open>
+        <nav class="guide-pages" aria-label="操作ガイドのページ">
+          <button class="quiet" type="button" data-guide-page="basic" aria-pressed="true">基本</button>
+          <button class="quiet" type="button" data-guide-page="shortcuts" aria-pressed="false">ショートカット</button>
+          <button class="quiet" type="button" data-guide-page="tips" aria-pressed="false">応用（コツ）</button>
+        </nav>
+        <details data-guide-content="basic" open>
           <summary>ビューと選択</summary>
           <ul>
             <li><strong>ビューを移動</strong>　何もない場所をドラッグします。</li>
             <li><strong>ズーム</strong>　マウスホイールでカーソルを基準に拡大・縮小します。左の縦スライダーでも25〜1000％に調整できます。</li>
             <li><strong>選択・解除</strong>　図形またはエクスプローラーの行をクリックします。ビューの何もないところをクリックすると選択が外れます。タッチ画面ではタップで選べます。</li>
-            <li><strong>複数選択</strong>　<kbd>Ctrl</kbd>（Macは <kbd>⌘</kbd>）を押しながらクリックすると、選択に追加・解除できます。「選択」ツールで右ボタンを押したままドラッグすると、囲みに触れた図形を選択します。<kbd>Ctrl</kbd>／<kbd>⌘</kbd> を併用すると今の選択に追加できます。</li>
+            <li><strong>囲み選択</strong>　「選択」ツールで右ボタンを押したままドラッグすると、囲みに触れた図形を選択できます。</li>
             <li><strong>画面の表示</strong>　「表示」メニューからツールバー・エクスプローラー・プロパティを表示・非表示にできます。「モード → ギズモを表示」で操作ハンドルを切り替えます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="basic">
           <summary>パーツ・オブジェクトの追加と整理</summary>
           <ul>
             <li><strong>パーツを追加</strong>　「モデル → パーツを追加」で正方形・円・多角形を選んで「挿入」を押します。多角形は挿入前に頂点数を指定できます。ウィンドウは見出しをドラッグして移動できます。</li>
-            <li><strong>オブジェクトを追加</strong>　「ホーム → オブジェクトを追加」でフォルダーや枠線を挿入できます。枠線は親パーツやフォルダーの中身をまとめて囲みます。枠線の子に枠線を追加すると、その外側にもう一段重なります。</li>
+            <li><strong>オブジェクトを追加</strong>　「ホーム → オブジェクトを追加」でフォルダー・枠線・ミラーを挿入できます。枠線は親パーツやフォルダーの中身をまとめて囲みます。枠線の子に枠線を追加すると、その外側にもう一段重なります。</li>
+            <li><strong>ミラー</strong>　対称にしたいパーツやフォルダーを親にします。挿入時は位置・角度を個別に親へ合わせられます。「親に追従」をオンにすると親の移動と回転に合わせて動きます。水色の中心点や移動・回転ツールで位置と角度を調整できます。プロパティでは位置・角度・線の本数（1〜18本）を指定できます。「複製をモデル化」を押すと、対称表示が編集できるモデルに変わります。</li>
             <li><strong>親子関係</strong>　挿入時に選んでいた項目が親になります。選択がなければシーンの下に追加されます。親を変更するには、エクスプローラーで項目を新しい親の行へドラッグするか、プロパティの「親」を変更します。親を移動・回転・拡大すると子も一緒に変わります。</li>
-            <li><strong>展開・折りたたみ</strong>　エクスプローラーの行の左にある三角を押すと、子項目の一覧を開閉できます。</li>
+            <li><strong>展開・並べ替え</strong>　行の左にある三角で子項目を開閉できます。行の上端・下端にドラッグすると、その前後に移動できます。同じ階層では一覧の上にあるパーツが手前で、子は自分の親より手前に表示されます。</li>
             <li><strong>名前を変更</strong>　エクスプローラーで項目を選び、プロパティの「名前」を編集します。「シーン」と「書き出し枠」は固定の項目です。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="basic">
           <summary>移動・回転・拡大縮小・中心</summary>
           <ul>
-            <li><strong>移動・回転</strong>　ツールを選び、ビューに表示される矢印や回転リングをドラッグします。プロパティの位置X・Yと回転角度からも変更できます。</li>
-            <li><strong>拡大・縮小</strong>　色付きの四角いハンドルで軸ごとに、白いハンドルで全体の大きさを変えます。白いハンドルを <kbd>Shift</kbd> を押しながら動かすと縦横比を保てます。スケールX・Yはプロパティでも変更できます。</li>
+            <li><strong>移動・回転</strong>　ツールを選び、ビューに表示される矢印や回転リングをドラッグします。プロパティの位置X・Yは中心点の座標で、数値からも移動できます。</li>
+            <li><strong>拡大・縮小</strong>　色付きの四角いハンドルで軸ごとに、白いハンドルで全体の大きさを変えます。スケールX・Yはプロパティでも変更できます。</li>
             <li><strong>反転</strong>　拡大・縮小で軸のハンドルを反対側へ送るか、スケールに負の数を入力すると反転します。「モデル」の「左右反転」「上下反転」でも反転できます。スケールが0のパーツはビューで非表示になります。</li>
             <li><strong>操作軸</strong>　「モデル → 操作軸を水平・垂直にする」で、移動と拡大・縮小の軸を画面の水平・垂直にそろえます。</li>
-            <li><strong>中心を変更</strong>　「モード → 中心を変更」をオンにして「＋」をドラッグします。<kbd>Shift</kbd> を押すと近くの頂点に吸い付きます。書き出し枠では四隅に吸い付きます。</li>
-            <li><strong>まとめて変形</strong>　複数選択すると、共通の中心を基準に移動・回転・拡大縮小できます。2つだけ選んで <kbd>Shift</kbd> を押しながら移動ハンドルをドラッグすると、2つの間隔を広げたり狭めたりできます。</li>
+            <li><strong>中心を変更</strong>　「モード → 中心を変更」をオンにして「＋」をドラッグします。複数選択では共通の中心を基準に変形できます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="basic">
           <summary>色・透明度・枠線</summary>
           <ul>
             <li><strong>面と枠線</strong>　プロパティの「外観」で全体の色と面の透明度を調整できます。「枠線を表示」で線の有無を、「個別の枠線色」で全体の色とは別の線色を指定します。</li>
             <li><strong>枠線の発光</strong>　枠線の透明度・明るさ・発光の範囲を調整できます。複数選択時は、使える項目をまとめて変更できます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="tips" hidden open>
           <summary>頂点の編集・分割・切り取り</summary>
           <ul>
-            <li><strong>変形モード</strong>　「ホーム」または「モデル」の「変形モード」をオンにし、エクスプローラーで対象を選びます。頂点はクリックで選び、<kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋クリックや、「選択」ツールでの右ドラッグで複数選択できます。</li>
-            <li><strong>頂点を動かす</strong>　「選択」または「移動」で頂点をドラッグします。移動ハンドルも使えます。2頂点以上なら回転・拡大縮小のハンドルも使えます。</li>
-            <li><strong>頂点を追加</strong>　辺でつながる2頂点を選び、「変形 → 頂点を追加」を押します。辺の上でクリックすると確定し、<kbd>Shift</kbd> で中点に合わせられます。<kbd>Esc</kbd> で中止できます。</li>
+            <li><strong>変形モード</strong>　「ホーム」または「モデル」の「変形モード」をオンにし、エクスプローラーで対象を選びます。「変形」タブからもオフにできます。複数パーツを選ぶと、すべての頂点が見えます。<kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋クリックや、「選択」ツールでの右ドラッグで頂点を複数選択できます。</li>
+            <li><strong>頂点を動かす</strong>　「選択」または「移動」で頂点をドラッグします。「移動」で1頂点を <kbd>Shift</kbd> と一緒に動かすと、選択中のパーツの近くの頂点に吸着します。2頂点以上なら回転・拡大縮小のハンドルも使えます。</li>
+            <li><strong>頂点を追加</strong>　辺でつながる2頂点を選び、「変形 → 頂点を追加」を押します。辺の上でクリックすると確定します。<kbd>Shift</kbd> で薄い点に吸着し、点の数は「設定 → 編集」で変更できます。<kbd>Esc</kbd> で中止できます。</li>
             <li><strong>分割</strong>　切り口にしたい頂点を2つ以上選んで「変形 → 分割」を押します。面のつながりが完全に切れたところで、別々のパーツになります。</li>
             <li><strong>切り取り</strong>　対象のパーツを選んで「モデル → 切り取りパーツを追加」を使い、赤い斜線の図形を切り取りたい位置に合わせます。親を選んで「パーツの切り取り」を押すと、子の切り取りパーツが適用されます。親と一部の切り取りパーツを複数選択すると、選んだ切り取りパーツだけを適用できます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="basic">
           <summary>保存・読み込み・画像書き出し</summary>
           <ul>
             <li><strong>作品を保存</strong>　「ファイル → 新規保存…」で名前を付けます。「上書き保存…」ではライブラリーから対象を選び、確認して保存します。</li>
             <li><strong>作品を開く・管理する</strong>　タイトルの「ライブラリー」で「読み込む」を押します。「⋯」から名前変更、モデル情報とプレビューの確認、消去ができます。新しく始める場合は「作成する」から土台やテンプレートを選べます。</li>
-            <li><strong>書き出す範囲</strong>　エクスプローラーで「書き出し枠」を選び、ドラッグや移動・拡大縮小ツール、またはプロパティで枠の位置とサイズを調整します。<kbd>Shift</kbd> を押しながら枠を拡大・縮小すると縦横比を保てます。</li>
-            <li><strong>画像を保存</strong>　「ファイル → 画像を保存…」でファイル名、PNG／JPEG、倍率、背景、JPEG画質を設定し、プレビューを確認して保存します。</li>
+            <li><strong>書き出す範囲</strong>　エクスプローラーで「書き出し枠」を選び、ドラッグや移動・拡大縮小ツール、またはプロパティで枠の位置とサイズを調整します。</li>
+            <li><strong>画像を保存</strong>　「ファイル → 画像を保存…」でファイル名、PNG／JPEG、倍率、背景、JPEG画質を設定します。出力倍率の「高画質（自動）」は最大200％で、書き出し枠のサイズに応じて手動で最大400％まで選べます。</li>
+            <li><strong>PLANEに画像として保存</strong>　書き出し枠と同じ形の透明PNGを、白一色でPLANEに保存します。「作成する → 画像」から開けます。画像の「⋯」から名前変更、情報の確認、消去ができます。</li>
+            <li><strong>編集中の作品に追加</strong>　「ファイル → 画像を追加」や「モデルを追加」で、保存した素材を選べます。追加した画像はプロパティで色を変更でき、頂点編集や切り取りも使えます。</li>
             <li><strong>タイトルに戻る</strong>　「タイトルに戻る」を押します。未保存のときは確認が開き、その場で保存方法を選べます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="shortcuts" hidden open>
           <summary>キーボード操作</summary>
           <ul>
             <li><kbd>Ctrl</kbd>＋<kbd>Z</kbd> で元に戻す。<kbd>Ctrl</kbd>＋<kbd>Shift</kbd>＋<kbd>Z</kbd> でやり直す。</li>
             <li><kbd>Ctrl</kbd>＋<kbd>D</kbd> で複製、<kbd>Ctrl</kbd>＋<kbd>C</kbd> でコピー、<kbd>Ctrl</kbd>＋<kbd>V</kbd> で貼り付け。貼り付け先は選択中の項目の下で、選択がなければシーンの下になります。</li>
-            <li><kbd>Delete</kbd> または <kbd>Backspace</kbd> で選択中のパーツやオブジェクトを削除します。複製・コピー・貼り付け・削除は通常の編集時に使えます。</li>
+            <li><kbd>Delete</kbd> または <kbd>Backspace</kbd> で、通常時は選択中のパーツやオブジェクトを子孫ごと削除します。変形モードでは選択中の頂点を削除し、残った頂点をつなぎ直します。</li>
             <li><kbd>Enter</kbd> でパーツのプロパティ入力を確定します。<kbd>Esc</kbd> で頂点追加・囲み選択を中止したり、メニューやウィンドウを閉じたりできます。</li>
+            <li><kbd>Ctrl</kbd>＋クリックでパーツや頂点の選択を追加・解除します。右ドラッグの囲み選択に <kbd>Ctrl</kbd> を併用すると現在の選択に追加します。</li>
+            <li><kbd>Shift</kbd>＋移動で単一パーツを方眼に合わせ、複数パーツでは白い丸をドラッグして中心から離せます。2つだけ選んだときは色付きの矢印で間隔も調整できます。</li>
+            <li><kbd>Shift</kbd>＋白い拡大ハンドルや書き出し枠の拡大で縦横比を固定します。中心を変更するときは頂点・中央・辺の中点・四隅に、頂点追加中は設定した目印に吸着します。</li>
             <li>Macでは上記の <kbd>Ctrl</kbd> の代わりに <kbd>⌘</kbd> を使えます。</li>
           </ul>
         </details>
-        <details>
+        <details data-guide-content="basic">
           <summary>設定</summary>
           <ul>
             <li>メニューバーの「設定」から、タイトルBGMとクリック音のオン・オフ、音量（1〜200％）、クリック音の種類を調整できます。</li>
-            <li>「その他」でタイトルのアニメーションを停止できます。設定とライブラリーの作品は、使用中のブラウザに保存されます。</li>
+            <li>「その他」でテーマ、頂点の形、タイトルやプレビューのアニメーションを変更できます。頂点に使う画像はPLANEの画像一覧から選べます。設定と作品は使用中のブラウザに保存されます。</li>
+          </ul>
+        </details>
+        <details data-guide-content="tips" hidden>
+          <summary>素材を繰り返し使う</summary>
+          <ul>
+            <li>同じ図柄を何色かで使うときは、一度「PLANEに画像として保存」し、必要な回数だけ追加して、プロパティで色を付けます。</li>
+            <li>子の階層や個々のパーツを再編集したいときは、モデルとして新規保存して「モデルを追加」から読み込みます。</li>
           </ul>
         </details>
       </div>
@@ -1206,6 +1381,10 @@
         <fieldset class="parts-fixed">
           <legend>変更不可のプロパティ</legend>
           <label id="part-sides-label" hidden>頂点の数 <input id="part-sides" type="number" min="3" max="64" step="1" value="5"></label>
+          <div id="mirror-initial-alignment" hidden>
+            <label><input id="mirror-align-position" type="checkbox"> 挿入時に位置を親に合わせる</label>
+            <label><input id="mirror-align-angle" type="checkbox"> 挿入時に角度を親に合わせる</label>
+          </div>
           <p id="part-fixed-note">挿入時に図形の種類が確定します。</p>
         </fieldset>
         <div class="parts-actions">
@@ -1219,6 +1398,7 @@
         <button class="quiet" type="button" data-part-kind="polygon" aria-pressed="false">多角形</button>
         <button class="quiet" type="button" data-part-kind="folder" aria-pressed="false" hidden>フォルダー</button>
         <button class="quiet" type="button" data-part-kind="outline" aria-pressed="false" hidden>枠線</button>
+        <button class="quiet" type="button" data-part-kind="mirror" aria-pressed="false" hidden>ミラー</button>
       </div>
     </div>
   </dialog>
@@ -1236,7 +1416,7 @@
         <label class="export-field">ファイル名
           <input id="export-filename" type="text" value="PLANE" maxlength="100" autofocus>
         </label>
-        <label class="export-field">形式
+        <label class="export-field" id="export-format-field">形式
           <select id="export-format">
             <option value="png">PNG</option>
             <option value="jpeg">JPEG</option>
@@ -1244,13 +1424,16 @@
         </label>
         <label class="export-field">出力倍率
           <select id="export-scale">
+            <option value="auto" selected>高画質（自動・最大200%）</option>
             <option value="0.5">50%</option>
-            <option value="1" selected>100%（枠と同じ）</option>
+            <option value="1">100%（枠と同じ）</option>
             <option value="1.5">150%</option>
             <option value="2">200%</option>
+            <option value="3">300%</option>
+            <option value="4">400%</option>
           </select>
         </label>
-        <label class="export-field">背景
+        <label class="export-field" id="export-background-field">背景
           <select id="export-background">
             <option value="transparent">透過</option>
             <option value="solid">単色</option>
@@ -1259,9 +1442,10 @@
         <label class="export-field" id="export-color-field" hidden>背景色
           <input id="export-color" type="color" value="#ffffff">
         </label>
-        <label class="export-field" id="export-quality-field" hidden>JPEG画質 <output id="export-quality-value">90%</output>
-          <input id="export-quality" type="range" min="10" max="100" value="90">
+        <label class="export-field" id="export-quality-field" hidden>JPEG画質 <output id="export-quality-value">97%</output>
+          <input id="export-quality" type="range" min="10" max="100" value="97">
         </label>
+        <p id="plane-image-note" hidden>書き出し枠の範囲を、透明度を保った白い画像としてPLANE内に保存します。</p>
         <p id="export-error" role="status"></p>
         <div class="export-actions">
           <button class="quiet primary" id="save-export" type="submit">保存</button>
@@ -1269,6 +1453,12 @@
         </div>
       </div>
     </form>
+  </dialog>
+  <dialog id="insert-library-dialog" aria-labelledby="insert-library-title">
+    <h2 id="insert-library-title"></h2>
+    <p id="insert-library-empty" hidden></p>
+    <ul id="insert-library-list" class="selection-grid"></ul>
+    <form method="dialog"><button class="quiet" autofocus>閉じる</button></form>
   </dialog>
   <dialog id="project-dialog" aria-labelledby="project-dialog-title">
     <h2 id="project-dialog-title"></h2>
@@ -1315,9 +1505,10 @@
       </label>
       <div class="export-actions"><button class="quiet primary" type="submit">変更する</button></div>
     </form>
-    <section id="library-project-info" aria-label="モデルの情報" hidden>
+    <section id="library-project-info" aria-label="ライブラリーの情報" hidden>
       <div class="export-preview-stage">
         <canvas id="library-data-preview" aria-label="モデルのプレビュー"></canvas>
+        <img id="library-image-preview" alt="画像のプレビュー" hidden>
       </div>
       <dl class="library-data-values" id="library-data-values"></dl>
     </section>
@@ -1336,7 +1527,12 @@
       <button class="quiet" type="button" data-settings="volume-settings" aria-controls="volume-settings" aria-pressed="false">音量</button>
       <button class="quiet" type="button" data-settings="other-settings" aria-controls="other-settings" aria-pressed="false">その他</button>
     </div>
-    <section class="settings-section" id="edit-settings" aria-label="編集"></section>
+    <section class="settings-section" id="edit-settings" aria-label="編集">
+      <label class="volume-row">頂点追加の吸着点の数
+        <input id="vertex-snap-count" type="number" min="1" step="1" value="1">
+      </label>
+      <p>選んだ辺の内側に吸着点を等間隔に置きます。頂点の追加中に Shift を押すと、最も近い点に吸着します。</p>
+    </section>
     <section class="settings-section" id="keybind-settings" aria-label="キーバウンド" hidden></section>
     <section class="settings-section" id="volume-settings" aria-label="音量" hidden>
       <fieldset class="audio-group">
@@ -1377,8 +1573,34 @@
       </fieldset>
     </section>
     <section class="settings-section" id="other-settings" aria-label="その他" hidden>
+      <div class="appearance-settings">
+        <label class="volume-row">テーマ
+          <select id="site-theme">
+            <option value="normal">通常</option><option value="normal-blue">通常２</option>
+            <option value="dark">ダーク</option><option value="astral">アストラル</option>
+            <option value="liminal">リミナル</option><option value="sky">スカイ</option>
+            <option value="rainbow">レインボー</option><option value="blood">ブラッド</option>
+          </select>
+        </label>
+        <label class="volume-row">頂点の形
+          <select id="vertex-marker-style">
+            <option value="circle">丸</option><option value="square">四角</option>
+            <option value="diamond">ダイヤ</option><option value="image">画像を選択</option>
+          </select>
+        </label>
+        <div id="vertex-marker-image-row" hidden>
+          <label class="volume-row">頂点に使う画像
+            <select id="vertex-marker-image"></select>
+          </label>
+          <img id="vertex-marker-image-preview" alt="頂点に使う画像のプレビュー" hidden>
+          <p id="vertex-marker-image-hint" hidden>「PLANEに画像として保存」で画像を保存すると選べます。</p>
+        </div>
+      </div>
       <label class="volume-row">タイトルのアニメーションをなくす
         <input type="checkbox" id="disable-title-motion">
+      </label>
+      <label class="volume-row">プレビューのアニメーション
+        <input type="checkbox" id="preview-motion" checked>
       </label>
     </section>
     <form method="dialog"><button class="quiet">閉じる</button></form>
@@ -1389,13 +1611,37 @@
     const createHeading = document.querySelector('#create-heading');
     const editorScreen = document.querySelector('#editor-screen');
     const editorViewport = editorScreen.querySelector('.editor-viewport');
+    const gridStep = 24;
+    const gridLines = document.querySelector('#viewport-grid-lines');
+    const gridAxisX = document.querySelector('#viewport-axis-x');
+    const gridAxisY = document.querySelector('#viewport-axis-y');
     const editorHeading = document.querySelector('#editor-heading');
     const editorStatus = document.querySelector('#editor-status');
     const operationGuide = document.querySelector('#operation-guide');
-    document.querySelector('#open-operation-guide').addEventListener('click', () => operationGuide.showModal());
+    const guidePages = operationGuide.querySelectorAll('[data-guide-page]');
+    const guideContent = operationGuide.querySelectorAll('[data-guide-content]');
+    function showGuidePage(page) {
+      for (const button of guidePages) button.setAttribute('aria-pressed', String(button.dataset.guidePage === page));
+      for (const section of guideContent) section.hidden = section.dataset.guideContent !== page;
+      operationGuide.querySelector('.guide-body').scrollTop = 0;
+    }
+    for (const button of guidePages) button.addEventListener('click', () => showGuidePage(button.dataset.guidePage));
+    document.querySelector('#open-operation-guide').addEventListener('click', () => {
+      showGuidePage('basic');
+      operationGuide.showModal();
+    });
     const editorModel = document.querySelector('#editor-model');
     const editorModelContent = document.querySelector('#editor-model-content');
     const editorOutlines = document.querySelector('#editor-outlines');
+    const editorMirrors = document.querySelector('#editor-mirrors');
+    const mirrorGuides = document.querySelector('#mirror-guides');
+    const mirrorHandle = document.querySelector('#mirror-handle');
+    const mirrorProperties = document.querySelector('#mirror-properties');
+    const mirrorLines = document.querySelector('#mirror-lines');
+    const mirrorFollowRow = document.querySelector('#mirror-follow-row');
+    const mirrorFollow = document.querySelector('#mirror-follow');
+    const mirrorBakeRow = document.querySelector('#mirror-bake-row');
+    const bakeMirrorButton = document.querySelector('#bake-mirror');
     const viewZoomInput = document.querySelector('#view-zoom');
     const viewZoomValue = document.querySelector('#view-zoom-value');
     const editorObjectEmpty = document.querySelector('#editor-object-empty');
@@ -1415,6 +1661,10 @@
       height: document.querySelector('#frame-height')
     };
     const exportImageButton = document.querySelector('#export-image');
+    const savePlaneImageButton = document.querySelector('#save-plane-image');
+    const addLibraryImageButton = document.querySelector('#add-library-image');
+    const addLibraryModelButton = document.querySelector('#add-library-model');
+    const insertLibraryDialog = document.querySelector('#insert-library-dialog');
     const exportDialog = document.querySelector('#export-dialog');
     const projectDialog = document.querySelector('#project-dialog');
     const leaveEditorDialog = document.querySelector('#leave-editor-dialog');
@@ -1431,14 +1681,25 @@
       quality: document.querySelector('#export-quality')
     };
     let exportRevision = 0;
+    let exportToPlane = false;
+    const maxExportEdge = 8192;
+    const maxExportPixels = 4096 ** 2;
     const modelGizmo = editorViewport.querySelector('.model-gizmo');
     const gizmoAxes = modelGizmo.querySelectorAll('[data-gizmo-tool="move"], [data-gizmo-tool="scale"]');
     const pivotHandle = document.querySelector('#pivot-handle');
+    const pivotSnapGuides = document.querySelector('#pivot-snap-guides');
     const deformTab = document.querySelector('#deform-tab');
     const addVertexButton = document.querySelector('#add-vertex');
     const splitVerticesButton = document.querySelector('#split-vertices');
     const deformHint = document.querySelector('#deform-hint');
     const vertexInsertMarker = document.querySelector('#vertex-insert-marker');
+    const vertexInsertGuides = document.querySelector('#vertex-insert-guides');
+    const vertexSnapCount = document.querySelector('#vertex-snap-count');
+    const editorVertices = document.querySelector('#editor-vertices');
+    const vertexPositionGuides = document.querySelector('#vertex-position-guides');
+    let vertexMarkerStyle = 'circle';
+    let vertexMarkerImageId = '';
+    let vertexMarkerImageData = '';
     const editorMarquee = document.querySelector('#editor-marquee');
     const modelName = document.querySelector('#model-name');
     const modelParent = document.querySelector('#model-parent');
@@ -1463,7 +1724,7 @@
       glowBrightness: document.querySelector('#model-glow-brightness'),
       glowRange: document.querySelector('#model-glow-range')
     };
-    const partPropertyInputs = [modelName, ...Object.values(modelInputs), ...Object.values(appearanceInputs)];
+    const partPropertyInputs = [modelName, mirrorLines, ...Object.values(modelInputs), ...Object.values(appearanceInputs)];
     const modelGeometry = document.querySelector('#model-geometry');
     const partsDialog = document.querySelector('#parts-dialog');
     const openPartsButton = document.querySelector('#open-parts');
@@ -1472,11 +1733,12 @@
     const applyPartCutButton = document.querySelector('#apply-part-cut');
     const appearanceRows = editorProperties.querySelectorAll('[data-part-appearance]');
     const objectTransformRows = editorProperties.querySelectorAll('[data-object-transform]');
+    const shapeTransformRows = editorProperties.querySelectorAll('[data-shape-transform]');
     const defaultFrame = { x: 0, y: 0, width: 300, height: 220, px: 0, py: 0 };
     const defaultModel = { x: 0, y: 0, angle: 0, sx: 1, sy: 1, px: 0, py: 0 };
     let frameBounds = { ...defaultFrame };
-    const objectNames = { folder: 'フォルダー', outline: '枠線' };
-    const partNames = { square: '正方形', circle: '円', polygon: '多角形', ...objectNames };
+    const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー' };
+    const partNames = { square: '正方形', circle: '円', polygon: '多角形', image: '画像', ...objectNames };
     const partOutlineWidth = 2;
     const defaultPartAppearance = {
       color: '#ffaf62',
@@ -1498,8 +1760,7 @@
     const selectedPartIds = new Set();
     let groupTransform = null;
     let deformMode = false;
-    let vertexPartId = null;
-    const selectedVertices = new Set();
+    const vertexSelections = new Map();
     let vertexPivot = null;
     let vertexInsertArmed = false;
     let vertexInsertPointer = null;
@@ -1517,6 +1778,7 @@
     const foundationNames = { blank: '空白', rectangle: '四角形' };
     const draftStorageKey = 'plane.drafts.v1';
     const projectStorageKey = 'plane.projects.v1';
+    const imageStorageKey = 'plane.images.v1';
     const draftDateFormat = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'short', timeStyle: 'short' });
     let titleLauncher = openCreate;
     let editorLoadFrame;
@@ -1563,7 +1825,7 @@
     }
 
     function makeGeometry(kind, sides) {
-      if (kind === 'folder' || kind === 'outline') return { vertices: [], edges: [] };
+      if (Object.hasOwn(objectNames, kind)) return { vertices: [], edges: [] };
       const count = kind === 'circle' ? 64 : sides;
       const vertices = kind === 'square'
         ? [[-70, -70], [70, -70], [70, 70], [-70, 70]]
@@ -2085,7 +2347,12 @@
     }
 
     function makePart(kind, sides, parent = 'scene', name = partNames[kind]) {
-      return { id: allocatePartId(), parent, kind, geometry: makeGeometry(kind, sides), name, transform: { ...defaultModel } };
+      const part = { id: allocatePartId(), parent, kind, geometry: makeGeometry(kind, sides), name, transform: { ...defaultModel } };
+      if (kind === 'mirror') {
+        part.lines = 2;
+        part.followParent = false;
+      }
+      return part;
     }
 
     function partAppearance(part) {
@@ -2095,7 +2362,7 @@
     }
 
     function hasPartAppearance(part) {
-      return !part.cutter && part.kind !== 'folder';
+      return !part.cutter && part.kind !== 'folder' && part.kind !== 'mirror';
     }
 
     function outlineColor(appearance) {
@@ -2119,7 +2386,7 @@
     }
 
     function renderPartAppearance(part) {
-      const { shape, glow } = partNodes.get(part.id);
+      const { shape, glow, imageFill } = partNodes.get(part.id);
       if (part.kind === 'outline') return;
       if (part.cutter) {
         shape.setAttribute('fill', 'url(#cutter-hatch)');
@@ -2133,6 +2400,11 @@
       const edgeColor = outlineColor(appearance);
       shape.setAttribute('fill', appearance.color);
       shape.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
+      if (imageFill) {
+        shape.setAttribute('fill-opacity', '0');
+        imageFill.setAttribute('fill', appearance.color);
+        imageFill.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
+      }
       shape.setAttribute('stroke', appearance.outlineEnabled ? edgeColor : 'none');
       shape.setAttribute('stroke-opacity', transparencyToOpacity(appearance.outlineTransparency));
       glow.replaceChildren();
@@ -2146,6 +2418,72 @@
         path.style.setProperty('--glow-width', 2 * layer.spread + 'px');
         glow.append(path);
       }
+    }
+
+    function imageRectangle(width, height) {
+      return [[-width / 2, -height / 2], [width / 2, -height / 2], [width / 2, height / 2], [-width / 2, height / 2]];
+    }
+
+    function imageTiles({ width, height, corners }) {
+      const source = imageRectangle(width, height);
+      const basis = ([a, b, c]) => new DOMMatrix([
+        b[0] - a[0], b[1] - a[1], c[0] - a[0], c[1] - a[1], a[0], a[1]
+      ]);
+      const affine = corners[0].every((value, axis) =>
+        Math.abs(value + corners[2][axis] - corners[1][axis] - corners[3][axis]) < 1e-8);
+      return (affine ? [[0, 1, 2]] : [[0, 1, 2], [0, 2, 3]]).map(indices => {
+        const points = indices.map(index => corners[index]);
+        return {
+          matrix: basis(points).multiply(basis(indices.map(index => source[index])).inverse()),
+          clip: affine ? null : geometryPath(geometryFromRings([points]))
+        };
+      });
+    }
+
+    function renderImageFill(part) {
+      if (part.kind !== 'image') return;
+      const { imageFill, imageDefs, visualId } = partNodes.get(part.id);
+      const { width, height, corners, data } = part.image;
+      imageFill.setAttribute('d', geometryPath(part.geometry));
+      imageDefs.replaceChildren();
+      const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
+      const mask = svg('mask');
+      const maskId = visualId + '-image-mask';
+      mask.setAttribute('id', maskId);
+      mask.setAttribute('maskUnits', 'userSpaceOnUse');
+      mask.style.setProperty('mask-type', 'alpha');
+      const xs = corners.map(point => point[0]), ys = corners.map(point => point[1]);
+      mask.setAttribute('x', Math.min(...xs) - 1);
+      mask.setAttribute('y', Math.min(...ys) - 1);
+      mask.setAttribute('width', Math.max(...xs) - Math.min(...xs) + 2);
+      mask.setAttribute('height', Math.max(...ys) - Math.min(...ys) + 2);
+      for (const [index, tile] of imageTiles(part.image).entries()) {
+        const image = svg('image');
+        image.setAttribute('href', data);
+        image.setAttribute('x', -width / 2);
+        image.setAttribute('y', -height / 2);
+        image.setAttribute('width', width);
+        image.setAttribute('height', height);
+        image.setAttribute('preserveAspectRatio', 'none');
+        image.setAttribute('transform', svgMatrix(tile.matrix));
+        if (!tile.clip) {
+          mask.append(image);
+          continue;
+        }
+        const clip = svg('clipPath');
+        const clipId = maskId + '-' + index;
+        clip.setAttribute('id', clipId);
+        const path = svg('path');
+        path.setAttribute('d', tile.clip);
+        clip.append(path);
+        const group = svg('g');
+        group.setAttribute('clip-path', 'url(#' + clipId + ')');
+        group.append(image);
+        imageDefs.append(clip);
+        mask.append(group);
+      }
+      imageDefs.append(mask);
+      imageFill.setAttribute('mask', 'url(#' + maskId + ')');
     }
 
     function appearanceEditable(key, appearance, part) {
@@ -2176,12 +2514,24 @@
     }
 
     function partParentMatrix(part, scene = parts, frame = frameBounds) {
+      if (part.kind === 'mirror' && typeof part.followParent === 'boolean') {
+        return part.followParent ? mirrorParentPose(part, scene, frame) : new DOMMatrix();
+      }
       if (part.parent === 'frame') {
         return new DOMMatrix().translate(frame.x, -frame.y)
           .scale(frame.width / defaultFrame.width, frame.height / defaultFrame.height);
       }
       const parent = getPart(part.parent, scene);
       return parent ? partMatrix(parent, scene, frame) : new DOMMatrix();
+    }
+
+    function poseAngle(pose) {
+      return Math.atan2(pose.b, pose.a) * 180 / Math.PI;
+    }
+
+    function mirrorParentPose({ parent }, scene = parts, frame = frameBounds) {
+      const pose = partParentMatrix({ parent }, scene, frame);
+      return new DOMMatrix().translate(pose.e, pose.f).rotate(poseAngle(pose));
     }
 
     function nonzeroScale(value) {
@@ -2212,7 +2562,97 @@
       return partParentMatrix(part, scene, frame).multiply(partLocalMatrix(part.transform));
     }
 
-    function sceneOutlineBands(scene, frame, nativeRadius = partOutlineWidth / 2) {
+    function mirrorLineCount(part) {
+      return Math.max(1, Math.min(18, Math.round(part.lines ?? 2)));
+    }
+
+    function mirrorCopies(mirror, scene, frame) {
+      if (mirror.kind !== 'mirror' || mirror.baked || !isPartVisible(mirror, scene)) return null;
+      const target = getPart(mirror.parent, scene);
+      if (!target || target.cutter) return null;
+      const ids = new Set([target.id]);
+      for (const part of scene) {
+        if (ids.has(part.parent)) ids.add(part.id);
+      }
+      const pose = partMatrix(mirror, scene, frame);
+      const angle = poseAngle(pose);
+      const count = mirrorLineCount(mirror);
+      const center = new DOMMatrix().translate(pose.e, pose.f);
+      const origin = center.inverse();
+      const matrices = [];
+      for (let i = 0; i < count; i++) {
+        const axis = angle + i * 180 / count;
+        matrices.push(center.rotate(axis).scale(1, -1).rotate(-axis).multiply(origin));
+        if (i) matrices.push(center.rotate(i * 360 / count).multiply(origin));
+      }
+      return { mirrorId: mirror.id, target, ids, matrices };
+    }
+
+    function sceneMirrors(scene, frame) {
+      return scene.map(part => mirrorCopies(part, scene, frame)).filter(Boolean);
+    }
+
+    function svgMatrix({ a, b, c, d, e, f }) {
+      return 'matrix(' + [a, b, c, d, e, f].join(' ') + ')';
+    }
+
+    function svgUse(id) {
+      const element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + id);
+      return element;
+    }
+
+    function renderMirrorCopies(mirrors) {
+      editorMirrors.replaceChildren();
+      for (const { mirrorEffects } of partNodes.values()) mirrorEffects.replaceChildren();
+      const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
+      const paintOrder = partPaintOrder(parts);
+      for (const [index, { mirrorId, ids, matrices }] of mirrors.entries()) {
+        const sources = paintOrder.filter(part => ids.has(part.id) && !part.cutter
+          && part.kind !== 'outline' && part.geometry.edges.length && isPartVisible(part));
+        if (!sources.length) continue;
+        const sourceGroup = svg('g');
+        const sourceId = 'mirror-source-' + index;
+        sourceGroup.setAttribute('id', sourceId);
+        for (const part of sources) {
+          sourceGroup.append(svgUse(partNodes.get(part.id).visualId));
+        }
+        editorMirrors.append(sourceGroup);
+        const { mirrorEffects } = partNodes.get(mirrorId);
+        for (const matrix of matrices) {
+          const copy = svgUse(sourceId);
+          copy.setAttribute('transform', svgMatrix(matrix));
+          mirrorEffects.append(copy);
+        }
+      }
+    }
+
+    function renderMirrorGuide() {
+      mirrorGuides.replaceChildren();
+      const mirror = getPart(editorSelection);
+      mirrorHandle.hidden = mirror?.kind !== 'mirror' || mirror.baked || selectedPartIds.size !== 1;
+      if (mirrorHandle.hidden) return;
+      const pose = partMatrix(mirror);
+      editorViewport.style.setProperty('--mirror-x', pose.e + 'px');
+      editorViewport.style.setProperty('--mirror-y', -pose.f + 'px');
+      const bounds = editorViewport.getBoundingClientRect();
+      const x = pose.e * viewZoom, y = pose.f * viewZoom;
+      const reach = Math.hypot(bounds.width, bounds.height) + Math.hypot(x + viewX, y + viewY);
+      const angle = Math.atan2(pose.b, pose.a);
+      const count = mirrorLineCount(mirror);
+      for (let i = 0; i < count; i++) {
+        const direction = angle + i * Math.PI / count;
+        const dx = Math.cos(direction) * reach, dy = Math.sin(direction) * reach;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        for (const [key, value] of Object.entries({
+          x1: x - dx, y1: y - dy, x2: x + dx, y2: y + dy,
+          stroke: '#a8e1ff', 'stroke-width': 1, 'stroke-opacity': 0.68, 'stroke-dasharray': '5 5'
+        })) line.setAttribute(key, value);
+        mirrorGuides.append(line);
+      }
+    }
+
+    function sceneOutlineBands(scene, frame, nativeRadius = partOutlineWidth / 2, mirrors = sceneMirrors(scene, frame)) {
       const outlines = scene.filter(part => part.kind === 'outline');
       if (!outlines.length) return [];
       const byId = new Map(scene.map(part => [part.id, part]));
@@ -2229,9 +2669,9 @@
         for (let parent = byId.get(target.parent); parent; parent = byId.get(parent.parent)) {
           ancestors.push(parent.id);
         }
-        return [{ target, ancestors, appearance }];
+        return [{ outline, target, ancestors, appearance }];
       }).sort((a, b) => b.ancestors.length - a.ancestors.length);
-      for (const { target, ancestors, appearance } of targets) {
+      for (const { outline, target, ancestors, appearance } of targets) {
         let silhouette = silhouettes.get(target.id);
         if (!silhouettes.has(target.id)) {
           const members = [];
@@ -2258,14 +2698,17 @@
         const blockedPaths = radius ? [] : [...nativePaths, ...(descendantStrokes.get(target.id)?.values() ?? [])];
         const innerExtent = blockedPaths.reduce((extent, stroke) => Math.max(extent, stroke.width / 2), radius);
         const outerRadius = innerExtent + partOutlineWidth;
-        bands.push({ path, bounds, blockedPaths, innerRadius: radius, outerRadius, appearance });
+        bands.push({ sourceId: outline.id, targetId: target.id, path, bounds, blockedPaths, innerRadius: radius, outerRadius, appearance });
         silhouette.radius = outerRadius;
         for (const id of ancestors) {
           if (!descendantStrokes.has(id)) descendantStrokes.set(id, new Map());
           descendantStrokes.get(id).set(target.id, { path, width: 2 * outerRadius });
         }
       }
-      return bands;
+      const copies = mirrors.flatMap(({ mirrorId, ids, matrices }) =>
+        bands.filter(band => ids.has(band.sourceId) || ids.has(band.targetId))
+          .flatMap(band => matrices.map(matrix => ({ ...band, matrix, ownerId: mirrorId }))));
+      return copies.concat(bands);
     }
 
     function outlineSilhouette(members, nativeRadius) {
@@ -2303,9 +2746,9 @@
       return { path, bounds, nativePaths, radius: 0 };
     }
 
-    function renderSceneOutlines() {
+    function renderSceneOutlines(mirrors) {
       editorOutlines.replaceChildren();
-      editorOutlines.setAttribute('transform', 'scale(' + viewZoom + ')');
+      for (const { outlineEffects } of partNodes.values()) outlineEffects.replaceChildren();
       const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
       function pathElement(path, fill, stroke, width, opacity = 1) {
         const element = svg('path');
@@ -2314,8 +2757,8 @@
         })) element.setAttribute(key, value);
         return element;
       }
-      for (const [index, band] of sceneOutlineBands(parts, frameBounds, partOutlineWidth / 2 / viewZoom).entries()) {
-        const { path, innerRadius, outerRadius, blockedPaths, appearance, bounds } = band;
+      for (const [index, band] of sceneOutlineBands(parts, frameBounds, partOutlineWidth / 2 / viewZoom, mirrors).entries()) {
+        const { path, innerRadius, outerRadius, blockedPaths, appearance, bounds, matrix, sourceId, ownerId } = band;
         const mask = svg('mask');
         const id = 'scene-outline-mask-' + index;
         mask.setAttribute('id', id);
@@ -2331,11 +2774,15 @@
         mask.append(pathElement(path, 'black', 'black', 2 * innerRadius));
         for (const blocked of blockedPaths) mask.append(pathElement(blocked.path, 'none', 'black', blocked.width));
         const group = svg('g');
+        const groupId = 'scene-outline-band-' + index;
+        group.setAttribute('id', groupId);
+        if (matrix) group.setAttribute('transform', svgMatrix(matrix));
         group.setAttribute('mask', 'url(#' + id + ')');
         const color = outlineColor(appearance);
         for (const layer of glow) group.append(pathElement(path, 'none', color, 2 * (outerRadius + layer.spread), layer.opacity));
         group.append(pathElement(path, 'none', color, 2 * outerRadius, transparencyToOpacity(appearance.outlineTransparency)));
         editorOutlines.append(mask, group);
+        partNodes.get(ownerId ?? sourceId)?.outlineEffects.append(svgUse(groupId));
       }
     }
 
@@ -2365,8 +2812,29 @@
       for (let branch = id; branch; branch = getPart(branch)?.parent) collapsedBranches.delete(branch);
     }
 
+    function partPaintOrder(scene) {
+      const children = new Map();
+      for (const part of scene) {
+        if (!children.has(part.parent)) children.set(part.parent, []);
+        children.get(part.parent).push(part);
+      }
+      const ordered = [];
+      function visit(parent) {
+        const siblings = children.get(parent) ?? [];
+        for (let index = siblings.length - 1; index >= 0; index--) {
+          const part = siblings[index];
+          ordered.push(part);
+          visit(part.id);
+        }
+      }
+      visit('frame');
+      visit('scene');
+      return ordered;
+    }
+
     function renderParts() {
       editorModelContent.replaceChildren();
+      editorVertices.replaceChildren();
       sceneParts.replaceChildren();
       frameParts.replaceChildren();
       partNodes.clear();
@@ -2376,7 +2844,7 @@
       for (const part of parts) {
         const group = makeSvg('g');
         group.dataset.partId = part.id;
-        if (part.kind === 'outline') group.setAttribute('display', 'none');
+        group.style.pointerEvents = 'auto';
         const shape = makeSvg('path');
         shape.classList.add('part-shape');
         shape.setAttribute('d', geometryPath(part.geometry));
@@ -2386,18 +2854,38 @@
         glow.classList.add('part-glow');
         const vertices = makeSvg('g');
         vertices.classList.add('model-vertices');
+        vertices.dataset.partId = part.id;
         vertices.toggleAttribute('data-dense', part.geometry.vertices.length > 16);
         vertices.setAttribute('fill', 'currentColor');
         for (const [index, [x, y]] of part.geometry.vertices.entries()) {
-          const point = makeSvg('circle');
+          const point = makeSvg('g');
           point.dataset.vertexIndex = index;
           point.setAttribute('cx', x);
           point.setAttribute('cy', y);
-          point.setAttribute('r', part.geometry.vertices.length > 16 ? '1.5' : '4');
+          buildVertexMarker(point);
           vertices.append(point);
         }
-        group.append(glow, shape, vertices);
-        editorModelContent.append(group);
+        const visual = makeSvg('g');
+        visual.classList.add('part-visual');
+        if (part.kind === 'outline') visual.setAttribute('display', 'none');
+        const visualId = 'part-visual-' + partNodes.size;
+        visual.setAttribute('id', visualId);
+        let imageFill, imageDefs;
+        visual.append(glow);
+        if (part.kind === 'image') {
+          imageDefs = makeSvg('defs');
+          imageFill = makeSvg('path');
+          imageFill.classList.add('part-image-fill');
+          shape.classList.add('part-image-hit');
+          imageFill.setAttribute('pointer-events', 'none');
+          visual.append(imageDefs, imageFill);
+        }
+        visual.append(shape);
+        const outlineEffects = makeSvg('g');
+        const mirrorEffects = makeSvg('g');
+        for (const effects of [outlineEffects, mirrorEffects]) effects.setAttribute('pointer-events', 'none');
+        group.append(outlineEffects, mirrorEffects, visual);
+        editorVertices.append(vertices);
 
         const item = document.createElement('li');
         const button = document.createElement('button');
@@ -2429,9 +2917,11 @@
         childLists.get(part.parent).append(item);
         childLists.set(part.id, children);
         branchToggles.set(part.id, toggle);
-        partNodes.set(part.id, { group, shape, glow, vertices, button });
+        partNodes.set(part.id, { group, shape, glow, vertices, button, visualId, outlineEffects, mirrorEffects, imageFill, imageDefs });
+        renderImageFill(part);
         renderPartAppearance(part);
       }
+      for (const part of partPaintOrder(parts)) editorModelContent.append(partNodes.get(part.id).group);
       for (const [id, children] of childLists) updateExplorerBranch(id, branchToggles.get(id), children);
       editorObjectEmpty.textContent = modelLoaded && parts.length === 0 ? 'モデルなし' : '';
       renderModelTransform();
@@ -2442,6 +2932,9 @@
     const partSides = document.querySelector('#part-sides');
     const partSidesLabel = document.querySelector('#part-sides-label');
     const partFixedNote = document.querySelector('#part-fixed-note');
+    const mirrorInitialAlignment = document.querySelector('#mirror-initial-alignment');
+    const mirrorAlignPosition = document.querySelector('#mirror-align-position');
+    const mirrorAlignAngle = document.querySelector('#mirror-align-angle');
     const previewPane = document.querySelector('#parts-preview');
     const partPreview = document.querySelector('#parts-preview-shape');
     const partPreviewMarker = document.querySelector('#parts-preview-marker');
@@ -2464,9 +2957,14 @@
       const polygon = partKind === 'polygon';
       previewPane.hidden = objects;
       partSidesLabel.hidden = !polygon;
+      mirrorInitialAlignment.hidden = partKind !== 'mirror';
       if (objects) {
-        partFixedNote.textContent = partKind === 'folder' ? '子項目をまとめるフォルダーです。'
-          : '親パーツやフォルダー全体の外側に枠線を付けます。枠線の下に挿入すると、さらに外側に重なります。';
+        const notes = {
+          folder: '子項目をまとめるフォルダーです。',
+          outline: '親パーツやフォルダー全体の外側に枠線を付けます。枠線の下に挿入すると、さらに外側に重なります。',
+          mirror: '親とその子孫を、中心を通る線に対して対称に表示します。'
+        };
+        partFixedNote.textContent = notes[partKind];
       } else {
         partFixedNote.textContent = polygon ? '挿入後に頂点の数が固定されます。' : '挿入時に図形の種類が確定します。';
         partPreview.setAttribute('d', geometryPath(makeGeometry(partKind, chosenSides())));
@@ -2497,6 +2995,8 @@
       document.querySelector('#parts-title').textContent = titles[mode];
       partKind = mode === 'object' ? 'folder' : 'square';
       partSides.value = '5';
+      mirrorAlignPosition.checked = false;
+      mirrorAlignAngle.checked = false;
       updatePartPreview();
       placePartsDialog(0, 0);
       partsDialog.showModal();
@@ -2527,15 +3027,25 @@
         part.cutter = true;
         part.name = '切り取り・' + part.name;
       }
-      const offset = part.kind === 'folder' ? 0 : parentPart ? 28 : parts.filter(item => item.parent === parent).length % 5 * 24;
+      const offset = part.kind === 'folder' || part.kind === 'mirror' ? 0
+        : parentPart ? 28 : parts.filter(item => item.parent === parent).length % 5 * 24;
       part.transform.x = offset;
       part.transform.y = -offset;
+      if (part.kind === 'mirror') {
+        const pose = mirrorParentPose(part);
+        if (mirrorAlignPosition.checked) {
+          part.transform.x = pose.e;
+          part.transform.y = -pose.f;
+        }
+        if (mirrorAlignAngle.checked) part.transform.angle = poseAngle(pose);
+      }
       parts.push(part);
       revealExplorerBranch(parent);
       renderParts();
       setEditorSelection(part.id);
       recordEditorEdit(before);
       if (part.kind === 'outline' && !parentPart) editorStatus.textContent = '枠線の親にパーツやフォルダーを指定してください。';
+      if (part.kind === 'mirror' && !parentPart) editorStatus.textContent = 'ミラーの親に対称表示するパーツやフォルダーを指定してください。';
       partsDialog.close();
     });
     partsHeader.addEventListener('pointerdown', event => {
@@ -2557,16 +3067,41 @@
       viewY = y;
       editorViewport.style.setProperty('--pan-x', x + 'px');
       editorViewport.style.setProperty('--pan-y', y + 'px');
+      renderViewportGrid();
+      renderMirrorGuide();
     }
+
+    function renderViewportGrid() {
+      const { width, height } = editorViewport.getBoundingClientRect();
+      const x = width / 2 + viewX, y = height / 2 + viewY;
+      const step = gridStep * viewZoom;
+      const first = value => (value % step + step) % step;
+      const lines = [];
+      for (let line = first(x); line <= width; line += step) lines.push('M' + line + ' 0V' + height);
+      for (let line = first(y); line <= height; line += step) lines.push('M0 ' + line + 'H' + width);
+      gridLines.setAttribute('d', lines.join(' '));
+      gridAxisX.setAttribute('y1', y);
+      gridAxisX.setAttribute('y2', y);
+      gridAxisY.setAttribute('x1', x);
+      gridAxisY.setAttribute('x2', x);
+    }
+    if (typeof ResizeObserver === 'function') new ResizeObserver(renderViewportGrid).observe(editorViewport);
 
     function setViewZoom(value, anchorX = 0, anchorY = 0) {
       const next = Math.min(Number(viewZoomInput.max) / 100, Math.max(Number(viewZoomInput.min) / 100, value));
       const ratio = next / viewZoom;
-      setViewOffset(anchorX - (anchorX - viewX) * ratio, anchorY - (anchorY - viewY) * ratio);
       viewZoom = next;
+      setViewOffset(anchorX - (anchorX - viewX) * ratio, anchorY - (anchorY - viewY) * ratio);
       editorViewport.style.setProperty('--view-zoom', next);
       editorModelContent.setAttribute('transform', 'scale(' + next + ')');
+      editorVertices.setAttribute('transform', 'scale(' + next + ')');
+      vertexPositionGuides.setAttribute('transform', 'scale(' + next + ')');
+      vertexInsertGuides.setAttribute('transform', 'scale(' + next + ')');
+      pivotSnapGuides.setAttribute('transform', 'scale(' + next + ')');
       renderSceneOutlines();
+      renderMirrorGuide();
+      renderVertexPositions();
+      renderVertexInsertGuides();
       viewZoomInput.value = Math.round(next * 100);
       const label = viewZoomInput.value + '%';
       viewZoomInput.setAttribute('aria-valuetext', label);
@@ -2586,9 +3121,11 @@
     viewZoomInput.addEventListener('input', () => setViewZoom(viewZoomInput.valueAsNumber / 100));
 
     function renderExportFrame() {
+      const position = positionAtPivot(frameBounds, framePivotOffset);
       for (const [key, input] of Object.entries(frameInputs)) {
         exportFrame.style.setProperty('--frame-' + key, frameBounds[key] + 'px');
-        input.value = frameBounds[key];
+        input.value = Number((position[key] ?? frameBounds[key]).toFixed(6));
+        input.dataset.committed = input.value;
       }
       exportFrame.style.setProperty('--frame-pivot-x', (50 + frameBounds.px * 100) + '%');
       exportFrame.style.setProperty('--frame-pivot-y', (50 + frameBounds.py * 100) + '%');
@@ -2610,6 +3147,11 @@
       return modelLinearMatrix(model).transformPoint(new DOMPoint(model.px, model.py));
     }
 
+    function positionAtPivot(transform, getOffset) {
+      const offset = getOffset(transform);
+      return { x: transform.x + offset.x, y: transform.y - offset.y };
+    }
+
     function renderPivot() {
       const part = getPart(editorSelection);
       let x = 0;
@@ -2625,7 +3167,8 @@
         x = groupTransform.x;
         y = groupTransform.y;
       } else if (part) {
-        const point = partMatrix(part).transformPoint(new DOMPoint(part.transform.px, part.transform.py));
+        const pivot = part.kind === 'mirror' ? new DOMPoint() : new DOMPoint(part.transform.px, part.transform.py);
+        const point = partMatrix(part).transformPoint(pivot);
         x = point.x;
         y = -point.y;
       }
@@ -2683,7 +3226,67 @@
     function setPartLocalPose(part, matrix) {
       part.transform.x = matrix.e;
       part.transform.y = -matrix.f;
+      if (part.kind === 'mirror') part.transform.angle = poseAngle(matrix);
       setModelStretch(part.transform, matrix);
+    }
+
+    function bakeSelectedMirror() {
+      const mirror = getPart(editorSelection);
+      if (!mirror || selectedPartIds.size !== 1) return;
+      const copies = mirrorCopies(mirror, parts, frameBounds);
+      if (!copies) return;
+      const { target, ids, matrices } = copies;
+      const source = parts.filter(part => ids.has(part.id) && (part === target || part.kind !== 'mirror'));
+      if (!source.some(part => !part.cutter && part.kind !== 'outline' && part.geometry.edges.length && isPartVisible(part))) {
+        editorStatus.textContent = 'モデル化できる図形がありません。';
+        return;
+      }
+      const before = editorSnapshot();
+      const byId = new Map(parts.map(part => [part.id, part]));
+      const poses = new Map(source.map(part => [part.id, partMatrix(part)]));
+      const rootIds = [];
+      const created = [];
+      const determinant = ({ a, b, c, d }) => a * d - b * c;
+      for (const [index, matrix] of matrices.entries()) {
+        const clonedIds = new Map();
+        for (const original of source) {
+          const clone = structuredClone(original);
+          clone.id = allocatePartId();
+          clonedIds.set(original.id, clone.id);
+          let parentId = original.parent;
+          if (original === target) {
+            clone.name += '（ミラー ' + (index + 1) + '）';
+            rootIds.push(clone.id);
+            if (clone.kind === 'mirror') {
+              clone.kind = 'folder';
+              delete clone.followParent;
+              delete clone.lines;
+              delete clone.baked;
+            }
+          } else {
+            while (!clonedIds.has(parentId)) parentId = byId.get(parentId).parent;
+            clone.parent = clonedIds.get(parentId);
+          }
+          if (original === target || parentId !== original.parent) {
+            const basis = original === target ? partParentMatrix(clone) : matrix.multiply(poses.get(parentId));
+            const local = basis.inverse().multiply(matrix).multiply(poses.get(original.id));
+            if (determinant(local) * determinant(partLocalMatrix(original.transform)) < 0) {
+              clone.transform.sy = -clone.transform.sy;
+            }
+            const sign = Math.sign(nonzeroScale(clone.transform.sx));
+            clone.transform.angle = poseAngle({ a: local.a * sign, b: local.b * sign });
+            setPartLocalPose(clone, local);
+          }
+          created.push(clone);
+        }
+      }
+      mirror.baked = true;
+      parts.splice(parts.indexOf(target), 0, ...created);
+      revealExplorerBranch(target.parent);
+      renderParts();
+      selectPartsTogether(rootIds);
+      recordEditorEdit(before);
+      editorStatus.textContent = rootIds.length + '個のミラー複製をモデル化しました。';
     }
 
     function copySelectedParts() {
@@ -2720,6 +3323,10 @@
           rootIds.push(part.id);
         } else {
           part.parent = ids.get(source.parent);
+          if (part.kind === 'mirror' && part.followParent === false) {
+            part.transform.x += offset;
+            part.transform.y -= offset;
+          }
         }
         return part;
       });
@@ -2751,17 +3358,24 @@
       parts = ordered;
     }
 
-    function reparentParts(ids, parentId) {
+    function reparentParts(ids, parentId, anchor, after = false) {
       const selection = new Set(ids);
       if (!canSetParent(selection, parentId)) return;
-      const moving = selectedRoots(selection).filter(part => part.parent !== parentId);
+      if (anchor && (selection.has(anchor.id) || hasSelectedAncestor(anchor, selection))) return;
+      const moving = selectedRoots(selection).filter(part => anchor || part.parent !== parentId);
       if (moving.length === 0) return;
       const before = editorSnapshot();
-      const inverse = partParentMatrix({ parent: parentId }).inverse();
       for (const part of moving) {
+        if (part.parent === parentId) continue;
         const pose = partMatrix(part);
         part.parent = parentId;
-        setPartLocalPose(part, inverse.multiply(pose));
+        setPartLocalPose(part, partParentMatrix(part).inverse().multiply(pose));
+      }
+      if (anchor) {
+        const roots = new Set(moving.map(part => part.id));
+        const block = new Set(parts.filter(part => roots.has(part.id) || hasSelectedAncestor(part, roots)));
+        parts = parts.filter(part => !block.has(part));
+        parts.splice(parts.indexOf(anchor) + Number(after), 0, ...block);
       }
       orderPartsByParent();
       revealExplorerBranch(parentId);
@@ -2770,21 +3384,38 @@
       recordEditorEdit(before);
     }
 
-    function registerPartDropTarget(button, parentId) {
+    const dropClasses = ['is-drop-target', 'is-drop-before', 'is-drop-after'];
+
+    function registerPartDropTarget(button, id) {
+      function destination(event) {
+        const selection = new Set(draggedPartIds);
+        const part = getPart(id);
+        const { top, height } = button.getBoundingClientRect();
+        const position = (event.clientY - top) / height;
+        if (part && (position < 0.25 || position > 0.75)) {
+          if (selection.has(id) || hasSelectedAncestor(part, selection) || !canSetParent(selection, part.parent)) return null;
+          const after = position > 0.75;
+          return { parent: part.parent, anchor: part, after, className: after ? 'is-drop-after' : 'is-drop-before' };
+        }
+        return canSetParent(selection, id) ? { parent: id, className: 'is-drop-target' } : null;
+      }
       button.addEventListener('dragover', event => {
-        if (!canSetParent(new Set(draggedPartIds), parentId)) return;
+        const drop = destination(event);
+        button.classList.remove(...dropClasses);
+        if (!drop) return;
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
-        button.classList.add('is-drop-target');
+        button.classList.add(drop.className);
       });
-      button.addEventListener('dragleave', () => button.classList.remove('is-drop-target'));
+      button.addEventListener('dragleave', () => button.classList.remove(...dropClasses));
       button.addEventListener('drop', event => {
-        button.classList.remove('is-drop-target');
-        if (!canSetParent(new Set(draggedPartIds), parentId)) return;
+        const drop = destination(event);
+        button.classList.remove(...dropClasses);
+        if (!drop) return;
         event.preventDefault();
         const ids = draggedPartIds;
         draggedPartIds = [];
-        reparentParts(ids, parentId);
+        reparentParts(ids, drop.parent, drop.anchor, drop.after);
       });
     }
 
@@ -2807,20 +3438,19 @@
     function renderModelTransform() {
       for (const part of parts) {
         const matrix = partMatrix(part);
-        const { a, b, c, d, e, f } = matrix;
-        const { group, shape, glow, vertices, button } = partNodes.get(part.id);
+        const { group, shape, glow, button, imageFill } = partNodes.get(part.id);
         group.toggleAttribute('data-zero-scale', !isPartVisible(part));
-        const transform = 'matrix(' + [a, b, c, d, e, f].join(' ') + ')';
+        const transform = svgMatrix(matrix);
         shape.setAttribute('transform', transform);
         glow.setAttribute('transform', transform);
-        part.geometry.vertices.forEach(([x, y], index) => {
-          const point = matrix.transformPoint(new DOMPoint(x, y));
-          vertices.children[index].setAttribute('cx', point.x);
-          vertices.children[index].setAttribute('cy', point.y);
-        });
+        if (imageFill) imageFill.setAttribute('transform', transform);
         if (button.textContent !== part.name) button.textContent = part.name;
       }
-      renderSceneOutlines();
+      renderVertexPositions();
+      const mirrors = sceneMirrors(parts, frameBounds);
+      renderMirrorCopies(mirrors);
+      renderSceneOutlines(mirrors);
+      renderMirrorGuide();
       const selected = getPart(editorSelection);
       if (selected) {
         renderGizmoAxes(selected);
@@ -2831,10 +3461,16 @@
         modelName.value = mixedNames ? '' : selected.name;
         modelName.placeholder = mixedNames ? '混在' : '';
         const transform = groupTransform ?? selected.transform;
+        const position = groupTransform || selected.kind === 'mirror'
+          ? transform : positionAtPivot(transform, modelPivotOffset);
         for (const [key, input] of Object.entries(modelInputs)) {
-          input.value = Number(transform[key].toFixed(6));
+          input.value = Number((position[key] ?? transform[key]).toFixed(6));
         }
         if (styledPart) showPartAppearance(styledPart);
+        if (selected.kind === 'mirror') {
+          mirrorLines.value = mirrorLineCount(selected);
+          mirrorFollow.checked = selected.followParent === true;
+        }
         for (const input of partPropertyInputs) input.dataset.committed = input.value;
         const vertices = selection.reduce((sum, part) => sum + part.geometry.vertices.length, 0);
         const edges = selection.reduce((sum, part) => sum + part.geometry.edges.length, 0);
@@ -2843,6 +3479,100 @@
       }
       applyPartCutButton.disabled = !cutTargets();
       renderPivot();
+    }
+
+    function buildVertexMarker(dot) {
+      const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
+      const glyph = svg('g');
+      glyph.classList.add('vertex-glyph');
+      const style = vertexMarkerStyle === 'image' && !vertexMarkerImageData ? 'circle' : vertexMarkerStyle;
+      const shape = svg(style === 'diamond' ? 'polygon' : style === 'circle' ? 'circle' : 'rect');
+      if (style === 'diamond') {
+        shape.setAttribute('points', '0,-1.15 1.15,0 0,1.15 -1.15,0');
+      } else if (style === 'circle') {
+        shape.setAttribute('r', '1');
+      } else {
+        for (const [key, value] of Object.entries({ x: -1, y: -1, width: 2, height: 2 })) shape.setAttribute(key, value);
+      }
+      shape.setAttribute('vector-effect', 'non-scaling-stroke');
+      glyph.append(shape);
+      if (style === 'image') {
+        shape.classList.add('vertex-image-border');
+        shape.setAttribute('rx', '0.2');
+        const image = svg('image');
+        image.setAttribute('href', vertexMarkerImageData);
+        for (const [key, value] of Object.entries({ x: -0.87, y: -0.87, width: 1.74, height: 1.74 })) image.setAttribute(key, value);
+        glyph.append(image);
+      }
+      const hit = svg('circle');
+      hit.setAttribute('r', '1.3');
+      hit.classList.add('vertex-marker-hit');
+      glyph.append(hit);
+      dot.replaceChildren(glyph);
+    }
+
+    function vertexMarkerRadius(vertices, dot) {
+      const dense = vertices.hasAttribute('data-dense');
+      if (!deformMode) return dense ? 1.5 : 4;
+      return dot.hasAttribute('data-vertex-selected') ? 6.5 : dense ? 4 : 5.5;
+    }
+
+    function resizeVertexMarker(vertices, dot) {
+      dot.children[0].setAttribute('transform', 'scale(' + vertexMarkerRadius(vertices, dot) / viewZoom + ')');
+    }
+
+    function renderVertexPositions() {
+      vertexPositionGuides.replaceChildren();
+      const coincident = new Map();
+      for (const part of parts) {
+        const vertices = partNodes.get(part.id)?.vertices;
+        if (!vertices) continue;
+        const pose = partMatrix(part);
+        const visible = isPartVisible(part);
+        vertices.toggleAttribute('data-zero-scale', !visible);
+        part.geometry.vertices.forEach(([x, y], index) => {
+          const dot = vertices.children[index];
+          const position = pose.transformPoint(new DOMPoint(x, y));
+          dot.setAttribute('cx', position.x);
+          dot.setAttribute('cy', position.y);
+          dot.setAttribute('transform', 'translate(' + position.x + ' ' + position.y + ')');
+          resizeVertexMarker(vertices, dot);
+          dot.dataset.displayX = position.x;
+          dot.dataset.displayY = position.y;
+          if (!deformMode || !visible || !selectedPartIds.has(part.id)) return;
+          const key = Math.round(position.x * viewZoom) + ',' + Math.round(position.y * viewZoom);
+          if (!coincident.has(key)) coincident.set(key, []);
+          coincident.get(key).push(dot);
+        });
+      }
+      const guides = [];
+      for (const dots of coincident.values()) {
+        if (dots.length < 2) continue;
+        const radius = Math.max(12, dots.length * 16 / (2 * Math.PI)) / viewZoom;
+        const anchorX = Number(dots[0].dataset.displayX), anchorY = Number(dots[0].dataset.displayY);
+        const cross = 3 / viewZoom;
+        guides.push('M' + (anchorX - cross) + ' ' + anchorY + 'h' + 2 * cross,
+          'M' + anchorX + ' ' + (anchorY - cross) + 'v' + 2 * cross);
+        dots.forEach((dot, index) => {
+          const angle = index * 2 * Math.PI / dots.length;
+          const x = radius * Math.cos(angle), y = radius * Math.sin(angle);
+          const fromX = Number(dot.dataset.displayX), fromY = Number(dot.dataset.displayY);
+          dot.dataset.displayX = fromX + x;
+          dot.dataset.displayY = fromY + y;
+          dot.setAttribute('transform', 'translate(' + dot.dataset.displayX + ' ' + dot.dataset.displayY + ')');
+          guides.push('M' + fromX + ' ' + fromY + 'L' + dot.dataset.displayX + ' ' + dot.dataset.displayY);
+        });
+      }
+      if (guides.length) {
+        for (const [color, width] of [['#101217', 3], ['#fff0c4', 1.25]]) {
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', guides.join(' '));
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', color);
+          path.setAttribute('stroke-width', width / viewZoom);
+          vertexPositionGuides.append(path);
+        }
+      }
     }
 
     function cutTargets() {
@@ -2893,7 +3623,8 @@
       return {
         frame: { ...frameBounds }, parts: structuredClone(parts), selection: editorSelection,
         selectedIds: [...selectedPartIds], group: groupTransform ? { ...groupTransform } : null,
-        vertices: [...selectedVertices], vertexPivot: vertexPivot ? { ...vertexPivot } : null
+        vertices: [...vertexSelections].map(([id, indices]) => [id, [...indices]]),
+        vertexPivot: vertexPivot ? { ...vertexPivot } : null
       };
     }
 
@@ -2904,10 +3635,9 @@
       renderExportFrame();
       editorSelection = snapshot.selection;
       groupTransform = snapshot.group;
-      vertexPartId = editorSelection;
-      selectedVertices.clear();
+      vertexSelections.clear();
       if (deformMode) {
-        for (const index of snapshot.vertices) selectedVertices.add(index);
+        for (const [id, indices] of snapshot.vertices) vertexSelections.set(id, new Set(indices));
       }
       vertexPivot = deformMode ? snapshot.vertexPivot : null;
       cancelVertexInsertion();
@@ -2927,24 +3657,63 @@
     function deleteSelectedParts() {
       if (selectedPartIds.size === 0) return;
       const before = editorSnapshot();
-      for (const child of parts) {
-        if (selectedPartIds.has(child.id) || !selectedPartIds.has(child.parent)) continue;
-        let matrix = partLocalMatrix(child.transform);
-        while (selectedPartIds.has(child.parent)) {
-          const parent = getPart(child.parent);
-          matrix = partLocalMatrix(parent.transform).multiply(matrix);
-          child.parent = parent.parent;
-        }
-        setPartLocalPose(child, matrix);
-      }
-      parts = parts.filter(part => !selectedPartIds.has(part.id));
+      const removed = new Set(selectedPartIds);
+      parts = parts.filter(part => {
+        if (removed.has(part.parent)) removed.add(part.id);
+        return !removed.has(part.id);
+      });
       renderParts();
       setEditorSelection(null);
       recordEditorEdit(before);
     }
 
+    function deleteSelectedVertices() {
+      if (!selectedVertexCount()) return;
+      const before = editorSnapshot();
+      for (const [id, indices] of vertexSelections) {
+        const part = getPart(id);
+        part.geometry = geometryWithoutVertices(part.geometry, indices);
+      }
+      selectVertex(null);
+      renderParts();
+      renderEditorSelection();
+      recordEditorEdit(before);
+    }
+
+    function geometryWithoutVertices(geometry, removed) {
+      const originalSign = Math.sign(geometryArea(geometry));
+      const rings = geometryRings(geometry).flatMap(ring => {
+        const keep = ring.filter(index => !removed.has(index));
+        if (new Set(keep).size < 3) return [];
+        const outline = geometryFromRings([keep.map(index => geometry.vertices[index])]);
+        if (!geometryArea(outline)) return [];
+        const sign = Math.sign(geometryArea(geometryFromRings([ring.map(index => geometry.vertices[index])])));
+        return [{ keep, outline, sign }];
+      });
+      const exteriors = rings.filter(ring => ring.sign === originalSign);
+      const vertices = [];
+      const edges = [];
+      const remap = new Map();
+      for (const { keep, sign } of rings) {
+        if (originalSign && sign !== originalSign
+          && !exteriors.some(({ outline }) => keep.some(index => geometryContains(outline, ...geometry.vertices[index])))) continue;
+        const ring = keep.map(index => {
+          if (!remap.has(index)) {
+            remap.set(index, vertices.length);
+            vertices.push(geometry.vertices[index]);
+          }
+          return remap.get(index);
+        });
+        ring.forEach((index, i) => edges.push([index, ring[(i + 1) % ring.length]]));
+      }
+      const result = { vertices, edges };
+      const cutAnchors = geometry.cutAnchors?.filter(index => remap.has(index)).map(index => remap.get(index));
+      if (cutAnchors?.length) result.cutAnchors = cutAnchors;
+      return result;
+    }
+
     document.addEventListener('keydown', event => {
-      if (editorScreen.hidden || partsDialog.open || exportDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open
+      if (editorScreen.hidden || partsDialog.open || exportDialog.open || insertLibraryDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open
         || panStart || event.isComposing || event.altKey) return;
       if (marqueeDrag) {
         if (event.key === 'Escape') clearMarquee();
@@ -2959,7 +3728,8 @@
       if (event.key === 'Backspace' || event.key === 'Delete') {
         if (event.ctrlKey || event.metaKey || event.shiftKey || editingField) return;
         event.preventDefault();
-        if (!deformMode) deleteSelectedParts();
+        if (deformMode) deleteSelectedVertices();
+        else deleteSelectedParts();
         return;
       }
       if (!(event.ctrlKey || event.metaKey)) return;
@@ -2980,7 +3750,7 @@
       if (key !== 'z') return;
 
       const field = Object.keys(frameInputs).find(key => frameInputs[key] === event.target);
-      if (field && event.target.value !== String(frameBounds[field])) return;
+      if (field && String(event.target.value) !== String(event.target.dataset.committed)) return;
       if (partPropertyInputs.includes(event.target) && event.target.value !== event.target.dataset.committed) return;
 
       event.preventDefault();
@@ -2992,6 +3762,7 @@
     });
 
     function setEditorSelection(selection, extend = false) {
+      cancelVertexInsertion();
       if (extend && getPart(selection)) {
         if (selectedPartIds.delete(selection)) {
           if (editorSelection === selection) editorSelection = [...selectedPartIds].at(-1) ?? null;
@@ -3009,6 +3780,7 @@
     }
 
     function selectPartsTogether(ids) {
+      cancelVertexInsertion();
       selectedPartIds.clear();
       for (const id of ids) {
         if (getPart(id)) selectedPartIds.add(id);
@@ -3045,66 +3817,85 @@
       renderParentOptions();
     });
 
-    function selectedVertexEdge(part = getPart(editorSelection)) {
-      if (!part || selectedVertices.size !== 2) return -1;
-      return part.geometry.edges.findIndex(([a, b]) => selectedVertices.has(a) && selectedVertices.has(b));
+    function selectedVertexIndices(id = editorSelection) {
+      return vertexSelections.get(id) ?? new Set();
+    }
+
+    function selectedVertexCount() {
+      return [...vertexSelections.values()].reduce((count, indices) => count + indices.size, 0);
+    }
+
+    function activeVertexPart() {
+      return vertexSelections.size === 1 ? getPart(vertexSelections.keys().next().value) : null;
+    }
+
+    function selectedVertexEdge(part = activeVertexPart()) {
+      const indices = selectedVertexIndices(part?.id);
+      if (!part || indices.size !== 2) return -1;
+      return part.geometry.edges.findIndex(([a, b]) => indices.has(a) && indices.has(b));
     }
 
     function cancelVertexInsertion() {
       vertexInsertArmed = false;
       vertexInsertPointer = null;
       vertexInsertMarker.hidden = true;
+      vertexInsertGuides.replaceChildren();
     }
 
     function renderVertexSelection() {
-      const selected = deformMode ? getPart(editorSelection) : null;
-      const part = selected?.kind === 'outline' ? null : selected;
-      for (const [id, { group, vertices }] of partNodes) {
-        const target = part?.id === id;
-        group.toggleAttribute('data-vertex-target', target);
+      const part = deformMode ? activeVertexPart() : null;
+      for (const [id, { vertices }] of partNodes) {
+        const target = deformMode && selectedPartIds.has(id);
+        const indices = selectedVertexIndices(id);
+        vertices.toggleAttribute('data-vertex-target', target);
         for (const point of vertices.children) {
-          point.toggleAttribute('data-vertex-selected', target && selectedVertices.has(Number(point.dataset.vertexIndex)));
+          point.toggleAttribute('data-vertex-selected', target && indices.has(Number(point.dataset.vertexIndex)));
+          resizeVertexMarker(vertices, point);
         }
       }
-      const count = part ? selectedVertices.size : 0;
+      const count = deformMode ? selectedVertexCount() : 0;
       const canTransform = count > 0 && (activeTool === 'move' || (count > 1 && (activeTool === 'rotate' || activeTool === 'scale')));
       editorScreen.toggleAttribute('data-vertex-gizmo', canTransform);
       addVertexButton.disabled = !part || selectedVertexEdge(part) < 0;
-      splitVerticesButton.disabled = !part || part.kind === 'outline' || selectedVertices.size < 2;
+      splitVerticesButton.disabled = !part || part.kind === 'outline' || count < 2;
       addVertexButton.setAttribute('aria-pressed', String(vertexInsertArmed));
       if (!vertexInsertArmed) vertexInsertMarker.hidden = true;
-      deformHint.textContent = vertexInsertArmed ? 'クリックで追加 · Shiftで中点 · Escで中止'
-        : !part ? 'エクスプローラーでパーツを選択'
+      deformHint.textContent = vertexInsertArmed ? 'クリックで追加 · Shiftで吸着 · Escで中止'
+        : !selectedParts().some(item => item.geometry.vertices.length) ? 'エクスプローラーでパーツを選択'
         : count + '頂点を選択 · Ctrl＋クリックで複数選択';
+      renderVertexInsertGuides();
       renderPivot();
     }
 
-    function selectVertex(index, extend = false) {
+    function selectVertex(index, extend = false, id = editorSelection) {
       cancelVertexInsertion();
-      if (extend && index !== null) {
-        if (!selectedVertices.delete(index)) selectedVertices.add(index);
-      } else {
-        selectedVertices.clear();
-        if (index !== null) selectedVertices.add(index);
+      if (!extend || index === null) vertexSelections.clear();
+      if (index !== null && selectedPartIds.has(id)) {
+        const indices = selectedVertexIndices(id);
+        if (!extend || !indices.delete(index)) indices.add(index);
+        if (indices.size) vertexSelections.set(id, indices);
+        else vertexSelections.delete(id);
       }
       recenterVertexSelection();
     }
 
     function recenterVertexSelection() {
-      const part = getPart(editorSelection);
       vertexPivot = null;
-      if (part && selectedVertices.size) {
+      const points = [...vertexSelections].flatMap(([id, indices]) => {
+        const part = getPart(id);
         const matrix = partMatrix(part);
-        const points = [...selectedVertices].map(i => matrix.transformPoint(new DOMPoint(...part.geometry.vertices[i])));
-        const xs = points.map(point => point.x);
-        const ys = points.map(point => point.y);
-        vertexPivot = { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
-      }
+        return [...indices].map(index => {
+          const point = matrix.transformPoint(new DOMPoint(...part.geometry.vertices[index]));
+          return [point.x, point.y];
+        });
+      });
+      const center = boundsAnchors(points)[4];
+      if (center) vertexPivot = { x: center[0], y: center[1] };
       renderVertexSelection();
     }
 
     function vertexInsertionPoint(event) {
-      const part = getPart(editorSelection);
+      const part = activeVertexPart();
       const index = selectedVertexEdge(part);
       if (index < 0) return null;
       const [a, b] = part.geometry.edges[index];
@@ -3123,11 +3914,67 @@
       const projection = ((x - start.x) * dx + (y - start.y) * dy) / length;
       if (projection < 0 || projection > 1 || (!event.shiftKey && (projection === 0 || projection === 1))) return null;
       if (Math.hypot(x - start.x - dx * projection, y - start.y - dy * projection) * viewZoom > 18) return null;
-      const t = event.shiftKey ? 0.5 : projection;
+      const count = vertexInsertionSnapCount();
+      const t = event.shiftKey
+        ? Math.min(count, Math.max(1, Math.round(projection * (count + 1)))) / (count + 1) : projection;
       const worldX = start.x + dx * t;
       const worldY = start.y + dy * t;
       const local = [first[0] + (second[0] - first[0]) * t, first[1] + (second[1] - first[1]) * t];
       return { part, index, local, worldX, worldY };
+    }
+
+    function vertexInsertionSnapCount() {
+      const value = vertexSnapCount.valueAsNumber;
+      return Number.isInteger(value) && value >= 1 ? value : 1;
+    }
+
+    function renderVertexInsertGuides() {
+      vertexInsertGuides.replaceChildren();
+      if (!vertexInsertArmed) return;
+      const part = activeVertexPart();
+      const edge = selectedVertexEdge(part);
+      if (edge < 0) return;
+      const pose = partMatrix(part);
+      const [a, b] = part.geometry.edges[edge].map(index =>
+        pose.transformPoint(new DOMPoint(...part.geometry.vertices[index])));
+      const count = vertexInsertionSnapCount();
+      const dx = (b.x - a.x) / (count + 1), dy = (b.y - a.y) / (count + 1);
+      const spacing = Math.hypot(dx, dy);
+      if (a.x === b.x && a.y === b.y) return;
+      const makeSvg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
+      const dotColor = '#a8e1ff';
+      if (count > 1 && spacing * viewZoom < 4) {
+        const line = makeSvg('line');
+        for (const [key, value] of Object.entries({
+          x1: a.x + dx, y1: a.y + dy, x2: b.x - dx, y2: b.y - dy,
+          stroke: dotColor, 'stroke-width': 1.5 / viewZoom, 'stroke-opacity': 0.3
+        })) line.setAttribute(key, value);
+        vertexInsertGuides.append(line);
+        return;
+      }
+      // Only create dots within the viewport, even for a very long edge.
+      const { width, height } = editorViewport.getBoundingClientRect();
+      let first = 1, last = count;
+      for (const [start, step, halfSize, pan] of [[a.x, dx, width / 2, viewX], [a.y, dy, height / 2, viewY]]) {
+        const min = (-halfSize - pan - 3) / viewZoom;
+        const max = (halfSize - pan + 3) / viewZoom;
+        if (!step) {
+          if (start < min || start > max) return;
+          continue;
+        }
+        const enter = (min - start) / step, exit = (max - start) / step;
+        first = Math.max(first, Math.ceil(Math.min(enter, exit)));
+        last = Math.min(last, Math.floor(Math.max(enter, exit)));
+      }
+      const visibleLimit = Math.ceil(Math.hypot(width, height) / 4) + 4;
+      for (let offset = 0; offset < visibleLimit && first + offset <= last; offset++) {
+        const index = first + offset;
+        const dot = makeSvg('circle');
+        for (const [key, value] of Object.entries({
+          cx: a.x + dx * index, cy: a.y + dy * index, r: 2 / viewZoom, fill: dotColor, opacity: 0.5
+        })) dot.setAttribute(key, value);
+        vertexInsertGuides.append(dot);
+      }
     }
 
     function insertVertex(point) {
@@ -3138,7 +3985,7 @@
       vertices.push(point.local);
       edges.splice(point.index, 1, [a, index], [index, b]);
       renderParts();
-      selectVertex(index);
+      selectVertex(index, false, point.part.id);
       recordEditorEdit(before);
     }
 
@@ -3167,11 +4014,12 @@
     });
 
     splitVerticesButton.addEventListener('click', () => {
-      const part = deformMode ? getPart(editorSelection) : null;
-      if (!part || part.kind === 'outline' || selectedVertices.size < 2) return;
+      const part = deformMode ? activeVertexPart() : null;
+      const indices = selectedVertexIndices(part?.id);
+      if (!part || part.kind === 'outline' || indices.size < 2) return;
       let geometries;
       try {
-        geometries = splitSelectedGeometry(part.geometry, selectedVertices);
+        geometries = splitSelectedGeometry(part.geometry, indices);
       } catch {
         editorStatus.textContent = 'この位置では分割できませんでした。';
         return;
@@ -3195,25 +4043,36 @@
 
     function renderEditorSelection() {
       const selection = editorSelection;
-      if (vertexPartId !== selection) {
-        vertexPartId = selection;
-        selectedVertices.clear();
-        vertexPivot = null;
-        cancelVertexInsertion();
+      for (const id of vertexSelections.keys()) {
+        if (!selectedPartIds.has(id)) vertexSelections.delete(id);
       }
       const frameSelected = selection === 'frame';
       const modelSelected = Boolean(getPart(selection));
-      const transformable = modelSelected && selectedParts().some(part => part.kind !== 'outline');
+      const mirrorSelected = getPart(selection)?.kind === 'mirror' && selectedPartIds.size === 1;
+      const transformable = modelSelected && selectedParts().some(part => part.kind !== 'outline' && part.kind !== 'mirror');
       for (const button of Object.values(flipPartButtons)) button.disabled = !transformable;
-      for (const row of objectTransformRows) row.hidden = !transformable;
+      for (const row of objectTransformRows) row.hidden = !transformable && !mirrorSelected;
+      for (const row of shapeTransformRows) row.hidden = !transformable;
+      mirrorProperties.hidden = !mirrorSelected;
+      mirrorFollowRow.hidden = !mirrorSelected;
+      mirrorBakeRow.hidden = !mirrorSelected;
+      const mirror = mirrorSelected ? getPart(selection) : null;
+      const mirrorTarget = mirror && getPart(mirror.parent);
+      bakeMirrorButton.disabled = !mirrorTarget || mirror.baked === true || mirrorTarget.cutter || !isPartVisible(mirror);
+      bakeMirrorButton.textContent = mirror?.baked ? 'モデル化済み' : '複製をモデル化';
+      const movableMirror = mirrorSelected && !mirror.baked;
       editorScreen.toggleAttribute('data-frame-selected', frameSelected);
-      editorScreen.toggleAttribute('data-model-selected', transformable);
+      editorScreen.toggleAttribute('data-model-selected', transformable || movableMirror);
+      editorScreen.toggleAttribute('data-mirror-selected', mirrorSelected);
+      if (mirrorSelected) setPivotEdit(false);
+      pivotToggle.disabled = deformMode || mirrorSelected;
       for (const item of explorerItems) {
         item.setAttribute('aria-pressed', String(item.dataset.editorSelection === selection));
       }
-      for (const [id, { group, button }] of partNodes) {
+      for (const [id, { group, button, vertices }] of partNodes) {
         const selected = selectedPartIds.has(id);
         group.toggleAttribute('data-selected', selected);
+        vertices.toggleAttribute('data-selected', selected);
         button.setAttribute('aria-pressed', String(selected));
       }
       selectedPartCount.hidden = selectedPartIds.size < 2;
@@ -3222,12 +4081,14 @@
       editorProperties.hidden = !modelSelected;
       editorPropertiesEmpty.textContent = modelLoaded && selection === null ? '選択中のモデルはありません。' : '';
       if (frameSelected && activeTool === 'rotate') setEditorTool('select');
+      if (mirrorSelected && activeTool === 'scale') setEditorTool('select');
       for (const tool of editorTools) {
         if (tool.dataset.editorTool === 'rotate') tool.disabled = frameSelected;
+        if (tool.dataset.editorTool === 'scale') tool.disabled = mirrorSelected;
       }
       renderParentOptions();
       renderModelTransform();
-      renderVertexSelection();
+      recenterVertexSelection();
     }
 
     for (const item of explorerItems) {
@@ -3236,18 +4097,19 @@
     }
     document.addEventListener('dragend', () => {
       draggedPartIds = [];
-      for (const target of editorScreen.querySelectorAll('.is-drop-target')) target.classList.remove('is-drop-target');
+      for (const target of editorScreen.querySelectorAll('.' + dropClasses.join(', .'))) target.classList.remove(...dropClasses);
     });
     editorModel.addEventListener('pointerdown', event => {
       if (!event.isPrimary || event.button !== 0) return;
       const group = event.target.closest('[data-part-id]');
       if (deformMode) {
         const point = event.target.closest('[data-vertex-index]');
-        if (vertexInsertArmed || !point || group?.dataset.partId !== editorSelection) return;
+        const id = group?.dataset.partId;
+        if (vertexInsertArmed || !point || !selectedPartIds.has(id)) return;
         const index = Number(point.dataset.vertexIndex);
         const extend = event.ctrlKey || event.metaKey;
-        if (extend || !selectedVertices.has(index) || (activeTool !== 'select' && activeTool !== 'move')) {
-          selectVertex(index, extend);
+        if (extend || !selectedVertexIndices(id).has(index) || (activeTool !== 'select' && activeTool !== 'move')) {
+          selectVertex(index, extend, id);
         }
         return;
       }
@@ -3260,7 +4122,7 @@
           const before = editorSnapshot();
           if (key === 'width') resizeFrame(frameBounds, value, frameBounds.height);
           else if (key === 'height') resizeFrame(frameBounds, frameBounds.width, value);
-          else frameBounds[key] = value;
+          else frameBounds[key] += value - positionAtPivot(frameBounds, framePivotOffset)[key];
           recordEditorEdit(before);
         }
         renderExportFrame();
@@ -3278,6 +4140,28 @@
       }
       renderModelTransform();
     });
+    mirrorLines.addEventListener('change', () => {
+      const mirror = getPart(editorSelection);
+      if (mirror?.kind !== 'mirror') return;
+      const value = mirrorLines.valueAsNumber;
+      if (Number.isFinite(value)) {
+        const before = editorSnapshot();
+        mirror.lines = mirrorLineCount({ lines: value });
+        recordEditorEdit(before);
+      }
+      renderModelTransform();
+    });
+    mirrorFollow.addEventListener('change', () => {
+      const mirror = getPart(editorSelection);
+      if (mirror?.kind !== 'mirror' || mirror.followParent === mirrorFollow.checked) return;
+      const before = editorSnapshot();
+      const pose = partMatrix(mirror);
+      mirror.followParent = mirrorFollow.checked;
+      setPartLocalPose(mirror, partParentMatrix(mirror).inverse().multiply(pose));
+      recordEditorEdit(before);
+      renderModelTransform();
+    });
+    bakeMirrorButton.addEventListener('click', bakeSelectedMirror);
     function flipPart(axis) {
       const part = getPart(editorSelection);
       const start = groupTransform ?? part?.transform;
@@ -3313,7 +4197,9 @@
           }
           const start = part.transform;
           const next = { ...start, [key]: value };
-          if (key === 'angle') {
+          if ((key === 'x' || key === 'y') && part.kind !== 'mirror') {
+            next[key] += start[key] - positionAtPivot(start, modelPivotOffset)[key];
+          } else if (key === 'angle') {
             next.angle %= 360;
             keepPivot(start, next, modelPivotOffset);
           } else if (key === 'sx' || key === 'sy') {
@@ -3403,17 +4289,18 @@
         bottom: (box.bottom - bounds.height / 2 - viewY) / viewZoom
       };
       if (deformMode) {
-        const part = getPart(editorSelection);
-        if (!extend) selectedVertices.clear();
-        if (part && isPartVisible(part)) {
-          const matrix = partMatrix(part);
-          const radius = (part.geometry.vertices.length > 16 ? 1.5 : 4) / viewZoom;
-          part.geometry.vertices.forEach(([x, y], index) => {
-            const point = matrix.transformPoint(new DOMPoint(x, y));
-            const dx = Math.max(world.left - point.x, 0, point.x - world.right);
-            const dy = Math.max(world.top - point.y, 0, point.y - world.bottom);
-            if (Math.hypot(dx, dy) <= radius) selectedVertices.add(index);
-          });
+        if (!extend) vertexSelections.clear();
+        for (const part of selectedParts()) {
+          if (!isPartVisible(part)) continue;
+          const indices = selectedVertexIndices(part.id);
+          for (const dot of partNodes.get(part.id).vertices.children) {
+            const radius = vertexMarkerRadius(partNodes.get(part.id).vertices, dot) / viewZoom;
+            const x = Number(dot.dataset.displayX), y = Number(dot.dataset.displayY);
+            const dx = Math.max(world.left - x, 0, x - world.right);
+            const dy = Math.max(world.top - y, 0, y - world.bottom);
+            if (Math.hypot(dx, dy) <= radius) indices.add(Number(dot.dataset.vertexIndex));
+          }
+          if (indices.size) vertexSelections.set(part.id, indices);
         }
         recenterVertexSelection();
         return;
@@ -3461,14 +4348,17 @@
       let operation = 'view';
       const modelHandle = event.target.closest('[data-model-handle]');
       if (deformMode && modelHandle && (!vertexPivot
-        || (activeTool !== 'move' && selectedVertices.size < 2))) return;
+        || (activeTool !== 'move' && selectedVertexCount() < 2))) return;
       const vertex = deformMode ? event.target.closest('[data-vertex-index]') : null;
+      const vertexOwner = vertex?.closest('[data-part-id]')?.dataset.partId;
       if (vertex) {
         if (event.ctrlKey || event.metaKey || (activeTool !== 'select' && activeTool !== 'move')) return;
-        if (vertex.closest('[data-part-id]')?.dataset.partId !== editorSelection) return;
+        if (!selectedPartIds.has(vertexOwner)) return;
         operation = 'move-xy';
       } else if (event.target === pivotHandle) {
         operation = editorSelection === 'frame' ? 'frame-pivot' : 'model-pivot';
+      } else if (event.target === mirrorHandle) {
+        operation = 'mirror-move';
       } else if (modelHandle) {
         operation = modelHandle.dataset.modelHandle;
       }
@@ -3478,13 +4368,16 @@
         if (event.target === exportResize) operation = 'frame-scale';
         else if (activeTool === 'select' || activeTool === 'move') operation = 'frame-move';
         else return;
-      } else if (!modelHandle && !vertex && event.target !== pivotHandle && event.target !== editorViewport) {
+      } else if (!modelHandle && !vertex && event.target !== pivotHandle && event.target !== mirrorHandle && event.target !== editorViewport) {
         return;
       }
       panDragged = false;
       panStart = { id: event.pointerId, x: event.clientX, y: event.clientY, viewX, viewY, operation, partId: editorSelection, before: editorSnapshot() };
       panStart.vertexEdit = deformMode && Boolean(modelHandle || vertex);
-      if (vertex) panStart.clickedVertex = Number(vertex.dataset.vertexIndex);
+      if (vertex) {
+        panStart.clickedVertex = Number(vertex.dataset.vertexIndex);
+        panStart.clickedVertexOwner = vertexOwner;
+      }
       if (modelHandle) {
         panStart.axisAngle = gizmoAxisAngle(getPart(editorSelection));
       }
@@ -3500,7 +4393,7 @@
       return limitModelScale(value === 0 ? distance / 94 : value * (1 + distance / 94));
     }
 
-    function dragMoveOffset(drag, dx, dy) {
+    function dragMoveOffset(drag, dx, dy, round = true) {
       if (drag.operation !== 'move-xy') {
         const angle = drag.axisAngle + (drag.operation === 'move-y' ? Math.PI / 2 : 0);
         const axisX = Math.cos(angle);
@@ -3509,7 +4402,8 @@
         dx = distance * axisX;
         dy = distance * axisY;
       }
-      return { x: Math.round(dx / viewZoom), y: Math.round(dy / viewZoom) };
+      const x = dx / viewZoom, y = dy / viewZoom;
+      return round ? { x: Math.round(x), y: Math.round(y) } : { x, y };
     }
 
     function dragScaleValues(start, drag, dx, dy, lockRatio) {
@@ -3542,6 +4436,7 @@
         .rotate(angle).scale(sx, sy).rotate(-angle).translate(-start.x, start.y);
       for (const source of before.parts) {
         if (!selection.has(source.id) || hasSelectedAncestor(source, selection, before.parts)) continue;
+        if (source.kind === 'mirror' && resized) continue;
 
         const part = getPart(source.id);
         const original = source.transform;
@@ -3574,6 +4469,10 @@
         for (const source of drag.before.parts) {
           if (selected.has(source.id)) getPart(source.id).transform = { ...source.transform };
         }
+        if (lockRatio && drag.operation === 'move-xy') {
+          spreadSelectedParts(drag, dx, dy, selected);
+          return;
+        }
         if (lockRatio && selected.size === 2) {
           separateSelectedPair(drag, dx, dy, selected);
           return;
@@ -3590,6 +4489,27 @@
         next.angle = (start.angle + Math.round(rotation * 180 / Math.PI)) % 360;
       }
       applyGroupTransform(drag.before, next, drag.axisAngle);
+    }
+
+    function spreadSelectedParts(drag, dx, dy, selected) {
+      const { before } = drag;
+      const distance = Math.hypot(dx, dy) / viewZoom;
+      for (const source of before.parts) {
+        if (!selected.has(source.id)) continue;
+        const pose = partMatrix(source, before.parts, before.frame);
+        const points = source.geometry.vertices.map(vertex => pose.transformPoint(new DOMPoint(...vertex)));
+        const xs = points.map(point => point.x), ys = points.map(point => point.y);
+        const x = (points.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : pose.e) - before.group.x;
+        const y = (points.length ? (Math.min(...ys) + Math.max(...ys)) / 2 : pose.f) + before.group.y;
+        const angle = x || y ? Math.atan2(y, x) : Math.atan2(dy, dx);
+        const part = getPart(source.id);
+        const target = new DOMPoint(pose.e + distance * Math.cos(angle), pose.f + distance * Math.sin(angle));
+        const local = partParentMatrix(part).inverse().transformPoint(target);
+        part.transform.x = local.x;
+        part.transform.y = -local.y;
+      }
+      groupTransform = { ...before.group };
+      renderModelTransform();
     }
 
     function separateSelectedPair(drag, dx, dy, selected) {
@@ -3623,12 +4543,14 @@
     }
 
     function dragVertexGeometry(drag, dx, dy, lockRatio) {
-      const part = getPart(drag.partId);
-      const original = drag.before.parts.find(item => item.id === part.id).geometry.vertices;
       const start = drag.before.vertexPivot;
       const transform = new DOMMatrix();
       if (drag.operation.startsWith('move-')) {
         const offset = dragMoveOffset(drag, dx, dy);
+        if (lockRatio && activeTool === 'move' && drag.before.vertices.length === 1
+          && drag.before.vertices[0][1].length === 1) {
+          snapVertexMove(drag, start, offset);
+        }
         transform.translateSelf(offset.x, offset.y);
         vertexPivot = { x: start.x + offset.x, y: start.y + offset.y };
       } else {
@@ -3645,19 +4567,50 @@
         }
         transform.translateSelf(-start.x, -start.y);
       }
-      const matrix = partMatrix(part);
-      const local = matrix.inverse().multiply(transform).multiply(matrix);
-      const selection = new Set(drag.before.vertices);
-      part.geometry.vertices = original.map((point, index) => {
-        if (!selection.has(index)) return [...point];
-        const position = local.transformPoint(new DOMPoint(...point));
-        return [position.x, position.y];
-      });
-      const { shape, glow } = partNodes.get(part.id);
-      const outline = geometryPath(part.geometry);
-      shape.setAttribute('d', outline);
-      for (const path of glow.children) path.setAttribute('d', outline);
+      for (const [id, indices] of drag.before.vertices) {
+        const part = getPart(id);
+        const source = getPart(id, drag.before.parts);
+        const original = source.geometry.vertices;
+        const matrix = partMatrix(part);
+        const local = matrix.inverse().multiply(transform).multiply(matrix);
+        for (const index of indices) {
+          const position = local.transformPoint(new DOMPoint(...original[index]));
+          part.geometry.vertices[index] = [position.x, position.y];
+        }
+        if (part.kind === 'image') {
+          part.image.corners = source.image.corners.map(([x, y]) => {
+            const index = indices.find(i => original[i][0] === x && original[i][1] === y);
+            return index === undefined ? [x, y] : [...part.geometry.vertices[index]];
+          });
+          renderImageFill(part);
+        }
+        const { shape, glow } = partNodes.get(id);
+        const outline = geometryPath(part.geometry);
+        shape.setAttribute('d', outline);
+        for (const path of glow.children) path.setAttribute('d', outline);
+      }
       renderModelTransform();
+    }
+
+    function snapVertexMove(drag, start, offset) {
+      const { parts: scene, frame, selectedIds, vertices } = drag.before;
+      const [[movingId, [movingIndex]]] = vertices;
+      const x = start.x + offset.x, y = start.y + offset.y;
+      let distance = 14 / viewZoom;
+      for (const id of selectedIds) {
+        const part = getPart(id, scene);
+        if (!isPartVisible(part, scene)) continue;
+        const pose = partMatrix(part, scene, frame);
+        for (const [index, vertex] of part.geometry.vertices.entries()) {
+          if (id === movingId && index === movingIndex) continue;
+          const point = pose.transformPoint(new DOMPoint(...vertex));
+          const gap = Math.hypot(point.x - x, point.y - y);
+          if (gap >= distance) continue;
+          distance = gap;
+          offset.x = point.x - start.x;
+          offset.y = point.y - start.y;
+        }
+      }
     }
 
     function dragModel(drag, dx, dy, lockRatio) {
@@ -3667,13 +4620,15 @@
       const modelTransform = { ...start };
       const parent = partParentMatrix(part);
       const inverse = parent.inverse();
-      const localDelta = (x, y) => inverse.transformPoint(new DOMPoint(x, y, 0, 0));
+      const localDelta = (x, y) => ({ x: inverse.a * x + inverse.c * y, y: inverse.b * x + inverse.d * y });
       if (tool.startsWith('move-')) {
-        const offset = dragMoveOffset(drag, dx, dy);
+        const offset = lockRatio && part.geometry.vertices.length
+          ? gridMoveOffset(start, parent, drag, dx, dy) : dragMoveOffset(drag, dx, dy);
         const delta = localDelta(offset.x, offset.y);
         modelTransform.x = start.x + delta.x;
         modelTransform.y = start.y - delta.y;
       } else if (tool.startsWith('scale-')) {
+        if (part.kind === 'mirror') return;
         Object.assign(modelTransform, dragScaleValues(start, drag, dx, dy, lockRatio));
         applyGizmoStretch(parent, start, modelTransform, drag.axisAngle);
         keepPivot(start, modelTransform, modelPivotOffset);
@@ -3683,10 +4638,27 @@
         const { x, y } = startVector;
         const delta = Math.atan2(x * deltaVector.y - y * deltaVector.x, x * (x + deltaVector.x) + y * (y + deltaVector.y));
         modelTransform.angle = Math.round(start.angle + delta * 180 / Math.PI) % 360;
-        keepPivot(start, modelTransform, modelPivotOffset);
+        if (part.kind !== 'mirror') keepPivot(start, modelTransform, modelPivotOffset);
       }
       part.transform = modelTransform;
       renderModelTransform();
+    }
+
+    function boundsAnchors(vertices) {
+      if (!vertices.length) return [];
+      const xs = vertices.map(([x]) => x), ys = vertices.map(([, y]) => y);
+      const left = Math.min(...xs), right = Math.max(...xs);
+      const top = Math.min(...ys), bottom = Math.max(...ys);
+      return [left, (left + right) / 2, right].flatMap(x =>
+        [top, (top + bottom) / 2, bottom].map(y => [x, y]));
+    }
+
+    function gridMoveOffset(start, parent, drag, dx, dy) {
+      const position = positionAtPivot(start, modelPivotOffset);
+      const center = parent.transformPoint(new DOMPoint(position.x, -position.y));
+      const offset = dragMoveOffset(drag, dx, dy, false);
+      const grid = value => Math.round(value / gridStep) * gridStep;
+      return { x: grid(center.x + offset.x) - center.x, y: grid(center.y + offset.y) - center.y };
     }
 
     function dragPivot(drag, dx, dy, snap) {
@@ -3700,30 +4672,46 @@
         : group ? { x: group.x, y: -group.y } : matrix.transformPoint(new DOMPoint(start.px, start.py));
       const target = { x: origin.x + dx / viewZoom, y: origin.y + dy / viewZoom };
       let closest = null;
-      let distance = 14 / viewZoom;
-      function consider(point, local) {
+      let distance = Infinity;
+      const anchors = [];
+      function consider(point, local, guide = false) {
+        if (guide) anchors.push(point);
         const gap = Math.hypot(point.x - target.x, point.y - target.y);
         if (gap >= distance) return;
         distance = gap;
         closest = { point, local };
       }
       if (snap && isFrame) {
-        for (const x of [-0.5, 0.5]) {
-          for (const y of [-0.5, 0.5]) {
-            consider({ x: frame.x + x * frame.width, y: -frame.y + y * frame.height }, { x, y });
+        for (const x of [-0.5, 0, 0.5]) {
+          for (const y of [-0.5, 0, 0.5]) {
+            consider({ x: frame.x + x * frame.width, y: -frame.y + y * frame.height }, { x, y }, true);
           }
         }
       } else if (snap) {
-        const candidates = group ? startParts.filter(part => selectedIds.includes(part.id)) : [source];
+        const localAnchors = !group && source.geometry.vertices.length > 0;
+        const ids = new Set(group ? selectedIds : [source.id]);
+        const folders = new Set(startParts.filter(part => ids.has(part.id) && part.kind === 'folder').map(part => part.id));
+        const candidates = localAnchors ? [source] : startParts.filter(part => ids.has(part.id)
+          || (folders.size && hasSelectedAncestor(part, folders, startParts)));
+        const worldVertices = [];
         for (const part of candidates) {
           if (!isPartVisible(part, startParts)) continue;
           const pose = part === source ? matrix : partMatrix(part, startParts, frame);
-          for (const vertex of part.geometry.vertices) {
+          const vertices = part.geometry.vertices;
+          for (const vertex of vertices) {
             const local = new DOMPoint(...vertex);
-            consider(pose.transformPoint(local), group ? null : local);
+            const point = pose.transformPoint(local);
+            consider(point, localAnchors ? local : null);
+            if (!localAnchors) worldVertices.push([point.x, point.y]);
+          }
+          if (localAnchors) for (const anchor of boundsAnchors(vertices)) {
+            const local = new DOMPoint(...anchor);
+            consider(pose.transformPoint(local), local, true);
           }
         }
+        for (const [x, y] of boundsAnchors(worldVertices)) consider({ x, y }, null, true);
       }
+      showPivotSnapGuides(anchors, closest?.point);
       const point = closest?.point ?? target;
       if (isFrame) {
         frameBounds.px = closest?.local.x ?? (point.x - frame.x) / frame.width;
@@ -3739,14 +4727,33 @@
       }
     }
 
-    function updatePivotShift(event) {
-      if (event.key === 'Shift' && panStart?.pivotPointer) {
-        const { dx, dy } = panStart.pivotPointer;
-        dragPivot(panStart, dx, dy, event.shiftKey);
+    function showPivotSnapGuides(anchors = [], selected) {
+      pivotSnapGuides.replaceChildren();
+      pivotHandle.toggleAttribute('data-snapped', Boolean(selected));
+      for (const point of selected ? [...anchors, selected] : anchors) {
+        const mark = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const active = point === selected;
+        for (const [key, value] of Object.entries({
+          cx: point.x, cy: point.y, r: (active ? 6 : 4) / viewZoom,
+          fill: '#27292d', stroke: active ? '#fff' : '#e2a9ff', 'stroke-width': 1.5 / viewZoom
+        })) mark.setAttribute(key, value);
+        pivotSnapGuides.append(mark);
       }
     }
-    document.addEventListener('keydown', updatePivotShift);
-    document.addEventListener('keyup', updatePivotShift);
+
+    function updateDragShift(event) {
+      if (event.key !== 'Shift' || !panStart?.shiftPointer) return;
+      const { dx, dy } = panStart.shiftPointer;
+      if (panStart.operation.endsWith('-pivot')) {
+        dragPivot(panStart, dx, dy, event.shiftKey);
+      } else if (panStart.vertexEdit) {
+        dragVertexGeometry(panStart, dx, dy, event.shiftKey);
+      } else {
+        dragModel(panStart, dx, dy, event.shiftKey);
+      }
+    }
+    document.addEventListener('keydown', updateDragShift);
+    document.addEventListener('keyup', updateDragShift);
 
     editorViewport.addEventListener('pointermove', event => {
       if (marqueeDrag?.id === event.pointerId) {
@@ -3774,8 +4781,16 @@
       const worldX = dx / viewZoom;
       const worldY = dy / viewZoom;
       if (panStart.operation.endsWith('-pivot')) {
-        panStart.pivotPointer = { dx, dy };
+        panStart.shiftPointer = { dx, dy };
         dragPivot(panStart, dx, dy, event.shiftKey);
+      } else if (panStart.operation === 'mirror-move') {
+        const mirror = getPart(panStart.partId);
+        const original = getPart(panStart.partId, panStart.before.parts).transform;
+        const inverse = partParentMatrix(mirror).inverse();
+        const delta = inverse.transformPoint(new DOMPoint(worldX, worldY, 0, 0));
+        mirror.transform.x = original.x + delta.x;
+        mirror.transform.y = original.y - delta.y;
+        renderModelTransform();
       } else if (panStart.operation === 'frame-move') {
         frameBounds.x = start.x + Math.round(worldX);
         frameBounds.y = start.y - Math.round(worldY);
@@ -3796,9 +4811,15 @@
         editorViewport.classList.add('is-panning');
         setViewOffset(panStart.viewX + dx, panStart.viewY + dy);
       } else {
-        if (panStart.vertexEdit) dragVertexGeometry(panStart, dx, dy, event.shiftKey);
+        if (panStart.vertexEdit) {
+          if (panStart.operation.startsWith('move-')) panStart.shiftPointer = { dx, dy };
+          dragVertexGeometry(panStart, dx, dy, event.shiftKey);
+        }
         else if (panStart.before.group) dragGroup(panStart, dx, dy, event.shiftKey);
-        else dragModel(panStart, dx, dy, event.shiftKey);
+        else {
+          if (panStart.operation.startsWith('move-')) panStart.shiftPointer = { dx, dy };
+          dragModel(panStart, dx, dy, event.shiftKey);
+        }
       }
     });
     editorViewport.addEventListener('pointerleave', () => {
@@ -3817,6 +4838,7 @@
         return;
       }
       if (panStart?.id !== event.pointerId) return;
+      if (panStart.operation.endsWith('-pivot')) showPivotSnapGuides();
       if (panStart.operation === 'view') {
         if (event.type === 'pointerup' && !panDragged) {
           if (deformMode) selectVertex(null);
@@ -3828,7 +4850,7 @@
         } else {
           recordEditorEdit(panStart.before);
           if (event.type === 'pointerup' && !panDragged && panStart.clickedVertex !== undefined) {
-            selectVertex(panStart.clickedVertex);
+            selectVertex(panStart.clickedVertex, false, panStart.clickedVertexOwner);
           }
         }
       }
@@ -3838,12 +4860,27 @@
     for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) {
       editorViewport.addEventListener(event, endPan);
     }
+    window.addEventListener('resize', () => {
+      renderViewportGrid();
+      renderMirrorGuide();
+      renderVertexInsertGuides();
+    });
 
-    function drawExportOutlines(context, width, height, frame, scene) {
+    function drawExportOutlines(context, width, height, frame, bands) {
       const scaleX = width / frame.width, scaleY = height / frame.height;
       const offsetX = frame.width / 2 - frame.x, offsetY = frame.height / 2 + frame.y;
       let scratch;
-      for (const { path, bounds, blockedPaths, innerRadius, outerRadius, appearance } of sceneOutlineBands(scene, frame)) {
+      for (const band of bands) {
+        const { path, blockedPaths, innerRadius, outerRadius, appearance, matrix } = band;
+        let { bounds } = band;
+        if (matrix) {
+          const corners = [bounds.left, bounds.right].flatMap(x => [bounds.top, bounds.bottom]
+            .map(y => matrix.transformPoint(new DOMPoint(x, y))));
+          bounds = {
+            left: Math.min(...corners.map(point => point.x)), right: Math.max(...corners.map(point => point.x)),
+            top: Math.min(...corners.map(point => point.y)), bottom: Math.max(...corners.map(point => point.y))
+          };
+        }
         const glow = glowLayers(appearance);
         const padding = 4 * (outerRadius + (glow[0]?.spread ?? 0)) + 2;
         const left = Math.max(0, Math.floor((bounds.left + offsetX - padding) * scaleX));
@@ -3858,7 +4895,8 @@
         if (!layer) continue;
         layer.setTransform(scaleX, 0, 0, scaleY, 0, 0);
         layer.globalCompositeOperation = 'source-over';
-        const translation = new DOMMatrix().translate(offsetX - left / scaleX, offsetY - top / scaleY);
+        const offset = new DOMMatrix().translate(offsetX - left / scaleX, offsetY - top / scaleY);
+        const translation = matrix ? offset.multiply(matrix) : offset;
         function translatedPath(data) {
           const result = new Path2D();
           result.addPath(new Path2D(data), translation);
@@ -3885,8 +4923,72 @@
           layer.lineWidth = blocked.width;
           layer.stroke(translatedPath(blocked.path));
         }
-        context.drawImage(scratch, left, top);
+        context.globalAlpha = 1;
+        context.drawImage(scratch, left / scaleX, top / scaleY, (right - left) / scaleX, (bottom - top) / scaleY);
       }
+    }
+
+    const imageResources = new Map();
+
+    function imageResource(data) {
+      let resource = imageResources.get(data);
+      if (resource) return resource;
+      resource = {};
+      const image = new Image();
+      resource.ready = new Promise((resolve, reject) => {
+        image.onload = () => { resource.image = image; resolve(); };
+        image.onerror = () => reject(new Error('Image could not be loaded'));
+      });
+      imageResources.set(data, resource);
+      image.src = data;
+      return resource;
+    }
+
+    function pendingSceneImages(scene) {
+      const resources = new Set(scene.filter(part => part.kind === 'image').map(part => imageResource(part.image.data)));
+      const pending = [...resources].filter(resource => !resource.image);
+      return pending.length ? Promise.all(pending.map(resource => resource.ready)) : null;
+    }
+
+    function tintImage(resource, color) {
+      const image = resource.image;
+      if (color.toLowerCase() === '#ffffff') return image;
+      if (resource.color === color) return resource.tint;
+      const width = image.naturalWidth, height = image.naturalHeight;
+      const canvas = typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(width, height) : document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+      context.globalCompositeOperation = 'source-in';
+      context.fillStyle = color;
+      context.fillRect(0, 0, width, height);
+      resource.color = color;
+      resource.tint = canvas;
+      return canvas;
+    }
+
+    function drawImagePart(context, part, world, appearance) {
+      const resource = imageResource(part.image.data);
+      if (!resource.image) return;
+      const { width, height } = part.image;
+      const texture = tintImage(resource, appearance.color);
+      const geometry = new Path2D(geometryPath(part.geometry));
+      const apply = ({ a, b, c, d, e, f }) => context.transform(a, b, c, d, e, f);
+      context.save();
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      apply(world);
+      context.clip(geometry);
+      context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
+      for (const tile of imageTiles(part.image)) {
+        context.save();
+        if (tile.clip) context.clip(new Path2D(tile.clip));
+        apply(tile.matrix);
+        context.drawImage(texture, -width / 2, -height / 2, width, height);
+        context.restore();
+      }
+      context.restore();
     }
 
     function drawExport(canvas, outputWidth, outputHeight, background, frame = frameBounds, scene = parts) {
@@ -3899,13 +5001,16 @@
         context.fillStyle = background;
         context.fillRect(0, 0, outputWidth, outputHeight);
       }
-      drawExportOutlines(context, outputWidth, outputHeight, frame, scene);
+      const mirrors = sceneMirrors(scene, frame);
       context.scale(outputWidth / width, outputHeight / height);
       const exportOffset = new DOMMatrix().translate(width / 2 - x, height / 2 + y);
-      for (const part of scene) {
-        if (part.cutter || part.kind === 'outline' || !part.geometry.edges.length || !isPartVisible(part, scene)) continue;
+      const paintOrder = partPaintOrder(scene);
+      const visible = paintOrder.filter(part => !part.cutter && part.kind !== 'outline' && part.geometry.edges.length && isPartVisible(part, scene))
+        .map(part => ({ part, pose: partMatrix(part, scene, frame), geometry: new Path2D(geometryPath(part.geometry)) }));
+      function drawPart({ part, pose, geometry }, matrix) {
         const path = new Path2D();
-        path.addPath(new Path2D(geometryPath(part.geometry)), exportOffset.multiply(partMatrix(part, scene, frame)));
+        const world = exportOffset.multiply(matrix ? matrix.multiply(pose) : pose);
+        path.addPath(geometry, world);
         const appearance = partAppearance(part);
         context.strokeStyle = outlineColor(appearance);
         for (const layer of glowLayers(appearance)) {
@@ -3913,31 +5018,91 @@
           context.lineWidth = partOutlineWidth + 2 * layer.spread;
           context.stroke(path);
         }
-        context.fillStyle = appearance.color;
-        context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
-        context.fill(path);
+        if (part.kind === 'image') {
+          drawImagePart(context, part, world, appearance);
+        } else {
+          context.fillStyle = appearance.color;
+          context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
+          context.fill(path);
+        }
         if (appearance.outlineEnabled) {
           context.lineWidth = partOutlineWidth;
           context.globalAlpha = transparencyToOpacity(appearance.outlineTransparency);
           context.stroke(path);
         }
       }
+      const byId = new Map(visible.map(source => [source.part.id, source]));
+      const mirrorById = new Map(mirrors.map(mirror => [mirror.mirrorId, mirror]));
+      const bandsById = new Map();
+      for (const band of sceneOutlineBands(scene, frame, partOutlineWidth / 2, mirrors)) {
+        const id = band.ownerId ?? band.sourceId;
+        if (!bandsById.has(id)) bandsById.set(id, []);
+        bandsById.get(id).push(band);
+      }
+      for (const part of paintOrder) {
+        const bands = bandsById.get(part.id);
+        if (bands) drawExportOutlines(context, outputWidth, outputHeight, frame, bands);
+        const mirror = mirrorById.get(part.id);
+        if (mirror) {
+          const sources = visible.filter(source => mirror.ids.has(source.part.id));
+          for (const matrix of mirror.matrices) {
+            for (const source of sources) drawPart(source, matrix);
+          }
+        }
+        const source = byId.get(part.id);
+        if (source) drawPart(source);
+      }
       return true;
     }
 
     function exportDimensions(scale) {
+      const { width, height } = frameBounds;
+      const automatic = scale === 'auto';
+      const ratio = automatic ? Math.min(2, maxExportEdge / width, maxExportEdge / height,
+        Math.sqrt(maxExportPixels / (width * height))) : Number(scale);
+      const pixels = automatic ? Math.floor : Math.round;
       return {
-        width: Math.max(1, Math.round(frameBounds.width * scale)),
-        height: Math.max(1, Math.round(frameBounds.height * scale))
+        width: Math.max(1, pixels(width * ratio)),
+        height: Math.max(1, pixels(height * ratio))
       };
     }
 
+    function canExportAt(width, height) {
+      return width <= maxExportEdge && height <= maxExportEdge && width * height <= maxExportPixels;
+    }
+
     function exportBackground() {
-      return exportInputs.background.value === 'solid' ? exportInputs.color.value : null;
+      return !exportToPlane && exportInputs.background.value === 'solid' ? exportInputs.color.value : null;
+    }
+
+    function drawSavedImage(canvas, width, height, background) {
+      if (width * height > 1_000_000) return drawExport(canvas, width, height, background);
+      const large = typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(1, 1) : document.createElement('canvas');
+      if (!drawExport(large, width * 2, height * 2, background)) return drawExport(canvas, width, height, background);
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) return false;
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(large, 0, 0, width, height);
+      return true;
+    }
+
+    function drawPlaneImage(canvas, width, height) {
+      if (!drawSavedImage(canvas, width, height, null)) return false;
+      const context = canvas.getContext('2d');
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.globalAlpha = 1;
+      context.globalCompositeOperation = 'source-in';
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, width, height);
+      context.globalCompositeOperation = 'source-over';
+      return true;
     }
 
     function updateExportPreview() {
-      const jpeg = exportInputs.format.value === 'jpeg';
+      const jpeg = !exportToPlane && exportInputs.format.value === 'jpeg';
       const transparent = exportInputs.background.querySelector('[value="transparent"]');
       transparent.disabled = jpeg;
       if (jpeg) exportInputs.background.value = 'solid';
@@ -3945,24 +5110,39 @@
       document.querySelector('#export-quality-field').hidden = !jpeg;
       document.querySelector('#export-quality-value').value = exportInputs.quality.value + '%';
       for (const option of exportInputs.scale.options) {
-        const { width, height } = exportDimensions(Number(option.value));
-        option.disabled = width > 4096 || height > 4096;
+        const { width, height } = exportDimensions(option.value);
+        option.disabled = !canExportAt(width, height);
       }
-      if (exportInputs.scale.selectedOptions[0].disabled) exportInputs.scale.value = '1';
-      const { width, height } = exportDimensions(Number(exportInputs.scale.value));
+      if (exportInputs.scale.selectedOptions[0]?.disabled) exportInputs.scale.value = 'auto';
+      const { width, height } = exportDimensions(exportInputs.scale.value);
       document.querySelector('#export-dimensions').value = width + ' × ' + height + ' px';
       const previewScale = Math.min(360 / width, 240 / height);
-      drawExport(exportPreview, Math.max(1, Math.round(width * previewScale)),
-        Math.max(1, Math.round(height * previewScale)), exportBackground());
+      const w = Math.max(1, Math.round(width * previewScale)), h = Math.max(1, Math.round(height * previewScale));
+      if (exportToPlane) drawPlaneImage(exportPreview, w, h);
+      else drawSavedImage(exportPreview, w, h, exportBackground());
+      const pending = pendingSceneImages(parts);
+      if (pending) {
+        const revision = exportRevision;
+        pending.then(() => {
+          if (exportDialog.open && revision === exportRevision) updateExportPreview();
+        }).catch(() => { if (exportDialog.open && revision === exportRevision) exportError.textContent = '画像素材を読み込めませんでした。'; });
+      }
     }
 
-    exportImageButton.addEventListener('click', () => {
+    function openImageExport(toPlane) {
+      exportToPlane = toPlane;
       exportRevision++;
       exportError.textContent = '';
       saveExportButton.disabled = false;
+      document.querySelector('#export-title').textContent = toPlane ? 'PLANEに画像として保存' : '画像を保存';
+      document.querySelector('#export-format-field').hidden = toPlane;
+      document.querySelector('#export-background-field').hidden = toPlane;
+      document.querySelector('#plane-image-note').hidden = !toPlane;
       updateExportPreview();
       exportDialog.showModal();
-    });
+    }
+    exportImageButton.addEventListener('click', () => openImageExport(false));
+    savePlaneImageButton.addEventListener('click', () => openImageExport(true));
     document.querySelector('#cancel-export').addEventListener('click', () => exportDialog.close());
     for (const input of Object.values(exportInputs)) {
       input.addEventListener('input', updateExportPreview);
@@ -3972,13 +5152,17 @@
       });
     }
 
-    exportForm.addEventListener('submit', event => {
+    exportForm.addEventListener('submit', async event => {
       event.preventDefault();
       if (saveExportButton.disabled) return;
       const revision = exportRevision;
       const canvas = document.createElement('canvas');
-      const { width, height } = exportDimensions(Number(exportInputs.scale.value));
-      const jpeg = exportInputs.format.value === 'jpeg';
+      const { width, height } = exportDimensions(exportInputs.scale.value);
+      if (!canExportAt(width, height)) {
+        exportError.textContent = 'この出力サイズは大きすぎます。倍率を下げてください。';
+        return;
+      }
+      const jpeg = !exportToPlane && exportInputs.format.value === 'jpeg';
       const mime = jpeg ? 'image/jpeg' : 'image/png';
       const name = document.querySelector('#export-filename').value.trim()
         .replace(/\.(png|jpe?g)$/i, '').replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').trim() || 'PLANE';
@@ -3989,7 +5173,17 @@
       saveExportButton.disabled = true;
       exportError.textContent = '';
       try {
-        if (!drawExport(canvas, width, height, exportBackground())) {
+        const pending = pendingSceneImages(parts);
+        if (pending) await pending;
+        if (!exportDialog.open || revision !== exportRevision) return;
+        if (exportToPlane) {
+          if (!drawPlaneImage(canvas, width, height)) throw new Error('Image could not be rendered');
+          savePlaneImage(name, canvas);
+          exportDialog.close();
+          editorStatus.textContent = '「' + name + '」を画像ライブラリーに保存しました。';
+          return;
+        }
+        if (!drawSavedImage(canvas, width, height, exportBackground())) {
           fail();
           return;
         }
@@ -4008,7 +5202,11 @@
           exportDialog.close();
         }, mime, exportInputs.quality.valueAsNumber / 100);
       } catch {
-        fail();
+        if (!exportDialog.open || revision !== exportRevision) return;
+        if (exportToPlane) {
+          saveExportButton.disabled = false;
+          exportError.textContent = '画像を保存できませんでした。ブラウザの保存容量を確認してください。';
+        } else fail();
       }
     });
 
@@ -4037,12 +5235,19 @@
       for (const part of savedParts) {
         if (!part || typeof part.id !== 'string' || ids.has(part.id) || !ids.has(part.parent)
           || typeof part.name !== 'string' || !Object.hasOwn(partNames, part.kind)) return false;
+        // Accept the former maximum so older projects can still be opened.
+        if (part.kind === 'mirror' && part.lines !== undefined
+          && (!Number.isInteger(part.lines) || part.lines < 1 || part.lines > 36)) return false;
+        if (part.kind === 'mirror' && part.followParent !== undefined && typeof part.followParent !== 'boolean') return false;
+        if (part.kind === 'mirror' && part.baked !== undefined && typeof part.baked !== 'boolean') return false;
         const { transform, geometry } = part;
         if (!transform || !Object.keys(defaultModel).every(key => Number.isFinite(transform[key]))
           || (transform.stretch && (!Array.isArray(transform.stretch) || transform.stretch.length !== 4
             || !transform.stretch.every(Number.isFinite)))) return false;
         const { vertices, edges } = geometry ?? {};
         const pair = value => Array.isArray(value) && value.length === 2;
+        if (part.kind === 'image' && (!isPlaneImage(part.image) || !Array.isArray(part.image.corners)
+          || part.image.corners.length !== 4 || !part.image.corners.every(point => pair(point) && point.every(Number.isFinite)))) return false;
         if (!Array.isArray(vertices) || !Array.isArray(edges) || (vertices.length === 0) !== (edges.length === 0)
           || (vertices.length > 0 && (vertices.length < 3 || edges.length < 3))
           || !vertices.every(point => pair(point) && point.every(Number.isFinite))
@@ -4076,6 +5281,45 @@
       if (localStorage.getItem(projectStorageKey) !== serialized) throw new Error('Save could not be confirmed');
     }
 
+    function isPlaneImage(image) {
+      return image && Number.isInteger(image.width) && Number.isInteger(image.height)
+        && image.width === clampFrameSize(image.width) && image.height === clampFrameSize(image.height)
+        && typeof image.data === 'string' && image.data.startsWith('data:image/png;base64,');
+    }
+
+    function readPlaneImages() {
+      try {
+        const images = JSON.parse(localStorage.getItem(imageStorageKey) ?? '[]');
+        return Array.isArray(images) ? images.filter(image => isPlaneImage(image)
+          && typeof image.id === 'string' && typeof image.name === 'string') : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePlaneImage(name, canvas) {
+      const image = {
+        id: crypto.randomUUID(), name, data: canvas.toDataURL('image/png'), savedAt: new Date().toISOString(),
+        width: frameBounds.width, height: frameBounds.height
+      };
+      if (!isPlaneImage(image)) throw new Error('Invalid image');
+      writePlaneImages([image, ...readPlaneImages()]);
+    }
+
+    function writePlaneImages(images) {
+      const serialized = JSON.stringify(images);
+      localStorage.setItem(imageStorageKey, serialized);
+      if (localStorage.getItem(imageStorageKey) !== serialized) throw new Error('Save could not be confirmed');
+    }
+
+    function imagePart(image, id, parent = 'scene') {
+      const { data, width, height, name } = image;
+      const corners = imageRectangle(width, height);
+      return { id, parent, kind: 'image', name, geometry: geometryFromRings([corners]),
+        transform: { ...defaultModel }, appearance: { color: '#ffffff', faceTransparency: 0, outlineEnabled: false },
+        image: { data, width, height, corners } };
+    }
+
     function projectScene(project) {
       if (project.scene) return project.scene;
       const parts = project.foundation === 'rectangle' ? [{
@@ -4088,8 +5332,10 @@
     function drawProjectPreview(canvas, project, maxWidth, maxHeight) {
       const { frame, parts } = projectScene(project);
       const ratio = Math.min(maxWidth / frame.width, maxHeight / frame.height);
-      drawExport(canvas, Math.max(1, Math.round(frame.width * ratio)),
+      const draw = () => drawExport(canvas, Math.max(1, Math.round(frame.width * ratio)),
         Math.max(1, Math.round(frame.height * ratio)), null, frame, parts);
+      draw();
+      pendingSceneImages(parts)?.then(draw).catch(() => {});
     }
 
     function templateScene(name) {
@@ -4222,7 +5468,7 @@
       renderParts();
       setEditorSelection(null);
       exportFrame.hidden = true;
-      exportImageButton.disabled = true;
+      for (const button of [exportImageButton, savePlaneImageButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = true;
       for (const button of projectSaveButtons) button.disabled = true;
       openPartsButton.disabled = true;
       openObjectsButton.disabled = true;
@@ -4230,6 +5476,7 @@
       editorStatus.textContent = 'モデルを読み込んでいます…';
       createScreen.hidden = true;
       editorScreen.hidden = false;
+      renderViewportGrid();
       editorHeading.focus();
       window.scrollTo(0, 0);
 
@@ -4241,6 +5488,12 @@
             frameBounds = { ...savedScene.frame };
             parts = structuredClone(savedScene.parts);
             for (const part of parts) {
+              if (part.kind === 'mirror') part.lines = mirrorLineCount(part);
+              if (part.kind === 'mirror' && part.followParent === undefined) {
+                const pose = partMatrix(part);
+                part.followParent = false;
+                setPartLocalPose(part, pose);
+              }
               const sequence = Number(/^part-(\d+)$/.exec(part.id)?.[1]);
               if (Number.isSafeInteger(sequence)) nextPartId = Math.max(nextPartId, sequence + 1);
             }
@@ -4252,7 +5505,7 @@
           if (projectId) savedSceneVersion = JSON.stringify({ frame: frameBounds, parts });
           setEditorSelection(editorSelection ?? parts[0]?.id ?? null);
           exportFrame.hidden = false;
-          exportImageButton.disabled = false;
+          for (const button of [exportImageButton, savePlaneImageButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = false;
           for (const button of projectSaveButtons) button.disabled = false;
           openPartsButton.disabled = false;
           openObjectsButton.disabled = false;
@@ -4311,6 +5564,7 @@
     document.querySelector('#toolbar-deform').prepend(...Array.from(homeTools, tool => tool.cloneNode(true)));
     const editorTools = editorScreen.querySelectorAll('[data-editor-tool]');
     function setEditorTool(name) {
+      if (name === 'scale' && editorScreen.hasAttribute('data-mirror-selected')) return;
       activeTool = name;
       editorScreen.dataset.activeTool = name;
       for (const tool of editorTools) {
@@ -4346,7 +5600,8 @@
       } else if (deformTab.getAttribute('aria-pressed') === 'true') {
         showToolbarTab(toolbarTabs[0]);
       }
-      pivotToggle.disabled = enabled;
+      pivotToggle.disabled = enabled || editorScreen.hasAttribute('data-mirror-selected');
+      renderVertexPositions();
       selectVertex(null);
     }
     for (const toggle of deformToggles) {
@@ -4370,7 +5625,9 @@
       editorScreen.toggleAttribute('data-pivot-edit', enabled);
       pivotToggle.setAttribute('aria-pressed', String(enabled));
     }
-    pivotToggle.addEventListener('click', () => setPivotEdit(!editorScreen.hasAttribute('data-pivot-edit')));
+    pivotToggle.addEventListener('click', () => {
+      if (!pivotToggle.disabled) setPivotEdit(!editorScreen.hasAttribute('data-pivot-edit'));
+    });
     function showGizmos(visible) {
       editorScreen.toggleAttribute('data-hide-gizmos', !visible);
       gizmoToggle.setAttribute('aria-pressed', String(visible));
@@ -4430,7 +5687,7 @@
         if (selectCard) {
           const label = document.createElement('span');
           label.className = 'overwrite-choice-label';
-          label.textContent = '上書き先に選ぶ';
+          label.textContent = action === '追加する' ? action : '上書き先に選ぶ';
           card.append(label);
           item.append(card);
         } else {
@@ -4451,6 +5708,90 @@
       });
     }
 
+    function renderImageCards(list, images, action, choose, showMenu = false) {
+      list.replaceChildren();
+      for (const image of images) {
+        const item = document.createElement('li');
+        item.className = 'selection-item';
+        const card = document.createElement('button');
+        card.className = 'selection-card';
+        card.type = 'button';
+        card.setAttribute('aria-label', image.name + 'を' + action);
+        const preview = document.createElement('span');
+        preview.className = 'foundation-preview';
+        const thumbnail = document.createElement('img');
+        thumbnail.className = 'image-library-thumbnail';
+        thumbnail.src = image.data;
+        thumbnail.alt = '';
+        preview.append(thumbnail);
+        const label = document.createElement('span');
+        label.className = 'overwrite-choice-label';
+        label.textContent = action;
+        card.append(preview, image.name, label);
+        card.addEventListener('click', () => choose(image));
+        item.append(card);
+        if (showMenu) item.append(makeLibraryMenu(image, libraryStores.image));
+        list.append(item);
+      }
+    }
+
+    function renderImageLibrary() {
+      const images = readPlaneImages();
+      document.querySelector('#image-library-empty').hidden = images.length > 0;
+      renderImageCards(document.querySelector('#image-library-list'), images, '読み込む', image => {
+        const frame = { ...defaultFrame, width: image.width, height: image.height };
+        loadFoundation('blank', image.name, { frame, parts: [imagePart(image, 'part-1')] });
+      }, true);
+    }
+
+    function currentInsertionParent() {
+      return getPart(editorSelection)?.id ?? (editorSelection === 'frame' ? 'frame' : 'scene');
+    }
+
+    function insertLibraryImage(image) {
+      const before = editorSnapshot();
+      const parent = currentInsertionParent();
+      const part = imagePart(image, allocatePartId(), parent);
+      parts.push(part);
+      revealExplorerBranch(parent);
+      renderParts();
+      setEditorSelection(part.id);
+      recordEditorEdit(before);
+      insertLibraryDialog.close();
+      editorStatus.textContent = '「' + image.name + '」を画像として追加しました。';
+    }
+
+    function insertLibraryModel(project) {
+      const source = projectScene(project);
+      const roots = source.parts.filter(part => part.parent === 'scene' || part.parent === 'frame').map(part => {
+        const { a, b, c, d, e, f } = partMatrix(part, source.parts, source.frame);
+        return { id: part.id, pose: [a, b, c, d, e, f] };
+      });
+      if (!roots.length) {
+        const notice = document.querySelector('#insert-library-empty');
+        notice.textContent = 'このモデルには追加できるパーツがありません。';
+        notice.hidden = false;
+        return;
+      }
+      insertCopiedParts({ parts: source.parts, roots }, currentInsertionParent());
+      insertLibraryDialog.close();
+      editorStatus.textContent = '「' + project.name + '」のモデルを追加しました。';
+    }
+
+    function openLibraryInsertion(images) {
+      document.querySelector('#insert-library-title').textContent = images ? '画像を追加' : 'モデルを追加';
+      const list = document.querySelector('#insert-library-list');
+      const empty = document.querySelector('#insert-library-empty');
+      const items = images ? readPlaneImages() : readProjects();
+      empty.hidden = items.length > 0;
+      empty.textContent = images ? '保存された画像はありません。' : '保存されたモデルはありません。';
+      if (images) renderImageCards(list, items, '追加する', insertLibraryImage);
+      else renderProjectCards(list, items, '追加する', insertLibraryModel, true);
+      insertLibraryDialog.showModal();
+    }
+    addLibraryImageButton.addEventListener('click', () => openLibraryInsertion(true));
+    addLibraryModelButton.addEventListener('click', () => openLibraryInsertion(false));
+
     const libraryProjectDialog = document.querySelector('#library-project-dialog');
     const libraryProjectTitle = document.querySelector('#library-project-title');
     const libraryRenameForm = document.querySelector('#library-rename-form');
@@ -4459,21 +5800,26 @@
     const libraryDeleteWarning = document.querySelector('#library-delete-warning');
     const libraryDeleteNext = document.querySelector('#library-delete-next');
     const libraryProjectError = document.querySelector('#library-project-error');
-    const libraryNotice = document.querySelector('#library-notice');
     const cancelLibraryAction = document.querySelector('#cancel-library-action');
-    let libraryProjectId;
+    const libraryStores = {
+      model: { noun: 'モデル', item: '作品', place: 'ライブラリー', read: readProjects, write: writeProjects,
+        render: renderLibrary, info: fillLibraryInfo, notice: document.querySelector('#library-notice') },
+      image: { noun: '画像', item: '画像', place: '画像の一覧', read: readPlaneImages, write: writePlaneImages,
+        render: renderImageLibrary, info: fillImageLibraryInfo, notice: document.querySelector('#image-library-notice') }
+    };
+    let librarySelection;
     let deleteStep = 0;
 
-    function makeLibraryMenu(project) {
+    function makeLibraryMenu(item, store = libraryStores.model) {
       const menu = document.createElement('details');
       menu.className = 'library-card-menu';
       const summary = document.createElement('summary');
       summary.textContent = '⋯';
-      summary.setAttribute('aria-label', project.name + 'のメニュー');
+      summary.setAttribute('aria-label', item.name + 'のメニュー');
       const choices = document.createElement('div');
       choices.className = 'editor-menu-items';
       for (const [action, label] of [
-        ['rename', '名前を変更'], ['info', 'モデルのデータを確認'], ['delete', 'モデルを消去']
+        ['rename', '名前を変更'], ['info', store.noun + 'のデータを確認'], ['delete', store.noun + 'を消去']
       ]) {
         const button = document.createElement('button');
         button.type = 'button';
@@ -4481,7 +5827,7 @@
         button.textContent = label;
         button.addEventListener('click', () => {
           menu.open = false;
-          openLibraryAction(project.id, action);
+          openLibraryAction(item.id, action, store);
         });
         choices.append(button);
       }
@@ -4489,9 +5835,24 @@
       return menu;
     }
 
-    function showLibraryNotice(message) {
-      libraryNotice.textContent = message;
-      libraryNotice.hidden = !message;
+    function showLibraryNotice(store, message) {
+      store.notice.textContent = message;
+      store.notice.hidden = !message;
+    }
+
+    function fillLibraryValues(rows) {
+      const values = document.querySelector('#library-data-values');
+      values.replaceChildren();
+      return rows.map(([label, value]) => {
+        const row = document.createElement('div');
+        const term = document.createElement('dt');
+        const description = document.createElement('dd');
+        term.textContent = label;
+        description.textContent = value;
+        row.append(term, description);
+        values.append(row);
+        return description;
+      });
     }
 
     function fillLibraryInfo(project) {
@@ -4501,32 +5862,44 @@
       const faces = parts.reduce((sum, part) => sum + (part.kind === 'outline' ? 0 : geometryFaceCount(part.geometry)), 0);
       const types = Object.entries(partNames).map(([kind, label]) =>
         label + ' ' + parts.filter(part => part.kind === kind).length).join(' ／ ');
-      const values = document.querySelector('#library-data-values');
-      values.replaceChildren();
-      for (const [label, value] of [
+      fillLibraryValues([
         ['名前', project.name],
         ['最終保存', draftDateFormat.format(new Date(project.savedAt))],
         ['書き出しサイズ', frame.width + ' × ' + frame.height + ' px'],
         ['パーツ数', parts.length],
         ['図形の種類', types],
         ['頂点 / 辺 / 面', vertices + ' / ' + edges + ' / ' + faces]
-      ]) {
-        const row = document.createElement('div');
-        const term = document.createElement('dt');
-        const description = document.createElement('dd');
-        term.textContent = label;
-        description.textContent = value;
-        row.append(term, description);
-        values.append(row);
-      }
-      drawProjectPreview(document.querySelector('#library-data-preview'), project, 300, 220);
+      ]);
+      const canvas = document.querySelector('#library-data-preview');
+      canvas.hidden = false;
+      document.querySelector('#library-image-preview').hidden = true;
+      drawProjectPreview(canvas, project, 300, 220);
     }
 
-    function showDeleteWarning(project) {
+    function fillImageLibraryInfo(image) {
+      document.querySelector('#library-data-preview').hidden = true;
+      const preview = document.querySelector('#library-image-preview');
+      preview.src = image.data;
+      preview.hidden = false;
+      const date = new Date(image.savedAt);
+      const [, , resolution] = fillLibraryValues([
+        ['名前', image.name],
+        ['枠のサイズ', image.width + ' × ' + image.height + ' px'],
+        ['画像の解像度', '読み込み中…'],
+        ['形式', 'PNG（透過）'],
+        ['最終保存', Number.isFinite(date.getTime()) ? draftDateFormat.format(date) : '記録なし']
+      ]);
+      const resource = imageResource(image.data);
+      resource.ready.then(() => {
+        resolution.textContent = resource.image.naturalWidth + ' × ' + resource.image.naturalHeight + ' px';
+      }).catch(() => { resolution.textContent = '読み込めませんでした。'; });
+    }
+
+    function showDeleteWarning(item, store) {
       const warnings = [
-        '「' + project.name + '」を消去しますか？',
-        '消去すると、この作品をライブラリーから読み込めなくなります。',
-        '最終確認です。「消去する」を押すと「' + project.name + '」が消去されます。'
+        '「' + item.name + '」を消去しますか？',
+        '消去すると、この' + store.item + 'を' + store.place + 'から読み込めなくなります。',
+        '最終確認です。「消去する」を押すと「' + item.name + '」が消去されます。'
       ];
       document.querySelector('#library-delete-message').textContent =
         '確認 ' + deleteStep + '/3　' + warnings[deleteStep - 1];
@@ -4534,14 +5907,14 @@
       cancelLibraryAction.focus();
     }
 
-    function openLibraryAction(id, action) {
-      const project = readProjects().find(item => item.id === id);
-      if (!project) {
-        renderLibrary();
-        showLibraryNotice('選んだ作品が見つかりませんでした。');
+    function openLibraryAction(id, action, store = libraryStores.model) {
+      const item = store.read().find(entry => entry.id === id);
+      if (!item) {
+        store.render();
+        showLibraryNotice(store, '選んだ' + store.item + 'が見つかりませんでした。');
         return;
       }
-      libraryProjectId = id;
+      librarySelection = { id, store };
       libraryProjectError.textContent = '';
       libraryRenameForm.hidden = action !== 'rename';
       libraryProjectInfo.hidden = action !== 'info';
@@ -4549,26 +5922,27 @@
       cancelLibraryAction.textContent = action === 'info' ? '閉じる' : 'キャンセル';
       if (action === 'rename') {
         libraryProjectTitle.textContent = '名前を変更';
-        libraryNewName.value = project.name;
+        libraryNewName.value = item.name;
       } else if (action === 'info') {
-        libraryProjectTitle.textContent = 'モデルのデータ';
-        fillLibraryInfo(project);
+        libraryProjectTitle.textContent = store.noun + 'のデータ';
+        store.info(item);
       } else {
-        libraryProjectTitle.textContent = 'モデルを消去';
+        libraryProjectTitle.textContent = store.noun + 'を消去';
         deleteStep = 1;
       }
       libraryProjectDialog.showModal();
       if (action === 'rename') libraryNewName.focus();
-      else if (action === 'delete') showDeleteWarning(project);
+      else if (action === 'delete') showDeleteWarning(item, store);
       else cancelLibraryAction.focus();
     }
 
-    function finishLibraryEdit(projects, notice) {
+    function finishLibraryEdit(store, items, notice) {
       try {
-        writeProjects(projects);
+        store.write(items);
+        if (store === libraryStores.image) refreshVertexMarkerImages();
         libraryProjectDialog.close();
-        renderLibrary();
-        showLibraryNotice(notice);
+        store.render();
+        showLibraryNotice(store, notice);
         createHeading.focus();
       } catch {
         libraryProjectError.textContent = '変更を保存できませんでした。';
@@ -4577,41 +5951,44 @@
 
     libraryRenameForm.addEventListener('submit', event => {
       event.preventDefault();
+      if (!librarySelection || !libraryProjectDialog.open || libraryRenameForm.hidden) return;
+      const { id, store } = librarySelection;
       const name = libraryNewName.value.trim();
-      const projects = readProjects();
-      const target = projects.find(project => project.id === libraryProjectId);
+      const items = store.read();
+      const target = items.find(item => item.id === id);
       if (!target) {
-        libraryProjectError.textContent = '選んだ作品が見つかりませんでした。';
+        libraryProjectError.textContent = '選んだ' + store.item + 'が見つかりませんでした。';
       } else if (!name) {
         libraryProjectError.textContent = '名前を入力してください。';
-      } else if (projects.some(project => project.id !== target.id && project.name === name)) {
-        libraryProjectError.textContent = '同じ名前の作品があります。';
+      } else if (items.some(item => item.id !== target.id && item.name === name)) {
+        libraryProjectError.textContent = '同じ名前の' + store.item + 'があります。';
       } else {
-        const renamed = projects.map(project => project.id === target.id ? { ...project, name } : project);
-        finishLibraryEdit(renamed, '名前を「' + name + '」に変更しました。');
+        const renamed = items.map(item => item.id === target.id ? { ...item, name } : item);
+        finishLibraryEdit(store, renamed, '名前を「' + name + '」に変更しました。');
       }
     });
     libraryDeleteNext.addEventListener('click', event => {
-      if (event.detail > 1 || !libraryProjectDialog.open || libraryDeleteWarning.hidden) return;
-      const projects = readProjects();
-      const target = projects.find(project => project.id === libraryProjectId);
+      if (event.detail > 1 || !librarySelection || !libraryProjectDialog.open || libraryDeleteWarning.hidden) return;
+      const { id, store } = librarySelection;
+      const items = store.read();
+      const target = items.find(item => item.id === id);
       if (!target) {
-        libraryProjectError.textContent = '選んだ作品が見つかりませんでした。';
+        libraryProjectError.textContent = '選んだ' + store.item + 'が見つかりませんでした。';
       } else if (deleteStep < 3) {
         deleteStep++;
-        showDeleteWarning(target);
+        showDeleteWarning(target, store);
       } else {
-        finishLibraryEdit(projects.filter(project => project.id !== target.id), '「' + target.name + '」を消去しました。');
+        finishLibraryEdit(store, items.filter(item => item.id !== target.id), '「' + target.name + '」を消去しました。');
       }
     });
     cancelLibraryAction.addEventListener('click', () => libraryProjectDialog.close());
     document.addEventListener('click', event => {
       const current = event.target.closest('.library-card-menu');
-      for (const menu of draftList.querySelectorAll('.library-card-menu[open]')) {
+      for (const menu of createScreen.querySelectorAll('.library-card-menu[open]')) {
         if (menu !== current) menu.open = false;
       }
     });
-    draftList.addEventListener('keydown', event => {
+    createScreen.addEventListener('keydown', event => {
       const menu = event.target.closest('.library-card-menu[open]');
       if (event.key === 'Escape' && menu) {
         menu.open = false;
@@ -4724,6 +6101,7 @@
         if (active) createHeading.textContent = button.textContent.trim();
       }
       if (view === 'library') renderLibrary();
+      if (view === 'images') renderImageLibrary();
       if (view === 'templates') renderTemplates();
       titleScreen.hidden = true;
       createScreen.hidden = false;
@@ -4756,18 +6134,92 @@
     }
 
     const settings = document.querySelector('#settings');
+    const themeInput = document.querySelector('#site-theme');
+    const markerInput = document.querySelector('#vertex-marker-style');
+    const markerImageInput = document.querySelector('#vertex-marker-image');
+    const themes = new Set(['normal', 'normal-blue', 'dark', 'astral', 'liminal', 'sky', 'rainbow', 'blood']);
+    const vertexStyles = new Set(['circle', 'square', 'diamond', 'image']);
+    function applyTheme(value) {
+      const theme = themes.has(value) ? value : 'normal';
+      themeInput.value = theme;
+      document.body.dataset.theme = theme;
+    }
+
+    function refreshVertexMarkerImages(force = false) {
+      const images = readPlaneImages();
+      const selected = images.find(image => image.id === vertexMarkerImageId);
+      const nextData = selected?.data ?? '';
+      const changed = nextData !== vertexMarkerImageData;
+      vertexMarkerImageData = nextData;
+      markerImageInput.replaceChildren();
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = images.length ? '画像を選択' : '保存画像なし';
+      markerImageInput.append(placeholder);
+      for (const image of images) {
+        const option = document.createElement('option');
+        option.value = image.id;
+        option.textContent = image.name;
+        markerImageInput.append(option);
+      }
+      markerImageInput.value = selected?.id ?? '';
+      markerImageInput.disabled = images.length === 0;
+      document.querySelector('#vertex-marker-image-row').hidden = vertexMarkerStyle !== 'image';
+      document.querySelector('#vertex-marker-image-hint').hidden = images.length > 0;
+      const preview = document.querySelector('#vertex-marker-image-preview');
+      preview.hidden = !nextData;
+      if (nextData) preview.src = nextData;
+      else preview.removeAttribute('src');
+      if (force || (changed && vertexMarkerStyle === 'image')) {
+        for (const { vertices } of partNodes.values()) {
+          for (const dot of vertices.children) {
+            buildVertexMarker(dot);
+            resizeVertexMarker(vertices, dot);
+          }
+        }
+      }
+    }
+
+    themeInput.addEventListener('change', () => {
+      applyTheme(themeInput.value);
+      savePreferences();
+    });
+    markerInput.addEventListener('change', () => {
+      vertexMarkerStyle = vertexStyles.has(markerInput.value) ? markerInput.value : 'circle';
+      refreshVertexMarkerImages(true);
+      savePreferences();
+    });
+    markerImageInput.addEventListener('change', () => {
+      vertexMarkerImageId = markerImageInput.value;
+      refreshVertexMarkerImages();
+      savePreferences();
+    });
     for (const id of ['open-settings', 'open-editor-settings']) {
       document.getElementById(id).addEventListener('click', () => {
+        refreshVertexMarkerImages();
         updateBgmControls();
         settings.showModal();
       });
     }
     const disableTitleMotion = document.querySelector('#disable-title-motion');
+    const previewMotion = document.querySelector('#preview-motion');
     function applyTitleMotion() {
       document.body.classList.toggle('no-title-motion', disableTitleMotion.checked);
     }
     disableTitleMotion.addEventListener('change', () => {
       applyTitleMotion();
+      savePreferences();
+    });
+    function applyPreviewMotion() {
+      document.body.classList.toggle('no-preview-motion', !previewMotion.checked);
+    }
+    previewMotion.addEventListener('change', () => {
+      applyPreviewMotion();
+      savePreferences();
+    });
+    vertexSnapCount.addEventListener('change', () => {
+      vertexSnapCount.value = vertexInsertionSnapCount();
+      renderVertexInsertGuides();
       savePreferences();
     });
     const settingsButtons = settings.querySelectorAll('[data-settings]');
@@ -4901,6 +6353,11 @@
           },
           buttonSound: buttonSound.value,
           disableTitleMotion: disableTitleMotion.checked,
+          previewMotion: previewMotion.checked,
+          vertexSnapCount: vertexInsertionSnapCount(),
+          theme: themeInput.value,
+          vertexMarkerStyle,
+          vertexMarkerImageId,
           editorGizmosVisible: !editorScreen.hasAttribute('data-hide-gizmos'),
           editorWorldGizmos: editorScreen.hasAttribute('data-world-gizmos'),
           imageExport: Object.fromEntries(Object.entries(exportInputs).map(([key, input]) => [key, input.value])),
@@ -4914,6 +6371,11 @@
     }
 
     const preferences = loadPreferences();
+    applyTheme(preferences.theme);
+    vertexMarkerStyle = vertexStyles.has(preferences.vertexMarkerStyle) ? preferences.vertexMarkerStyle : 'circle';
+    vertexMarkerImageId = typeof preferences.vertexMarkerImageId === 'string' ? preferences.vertexMarkerImageId : '';
+    markerInput.value = vertexMarkerStyle;
+    refreshVertexMarkerImages();
     for (const [key, input] of Object.entries(exportInputs)) {
       const value = preferences.imageExport?.[key];
       if (typeof value !== 'string') continue;
@@ -4930,6 +6392,10 @@
     }
     disableTitleMotion.checked = preferences.disableTitleMotion === true;
     applyTitleMotion();
+    previewMotion.checked = preferences.previewMotion !== false;
+    applyPreviewMotion();
+    vertexSnapCount.value = Number.isInteger(preferences.vertexSnapCount) && preferences.vertexSnapCount >= 1
+      ? preferences.vertexSnapCount : 1;
     showGizmos(preferences.editorGizmosVisible !== false);
     useWorldGizmos(preferences.editorWorldGizmos === true);
     for (const toggle of editorDisplayToggles) {
