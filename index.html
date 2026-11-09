@@ -600,6 +600,7 @@
     .editor-scene-children li + li { margin-top: 0.35rem; }
     .editor-properties { margin: 0; }
     .editor-properties div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.35rem; padding-block: 0.45rem; }
+    .editor-properties div[hidden] { display: none; }
     .editor-properties dd { margin: 0; color: #f2f3f4; font-variant-numeric: tabular-nums; }
     .model-property-fields { display: flex; min-width: 0; flex-wrap: wrap; gap: 0.4rem; }
     .model-property-fields label { display: flex; align-items: center; gap: 0.25rem; max-width: 100%; }
@@ -646,6 +647,20 @@
     .parts-choices [aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
     .parts-choices button[hidden] { display: none; }
     .parts-actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    #operation-guide { width: min(44rem, calc(100% - 1rem)); padding: 0; }
+    .guide-layout { display: grid; grid-template-rows: auto minmax(0, 1fr); max-height: min(86dvh, 48rem); }
+    .guide-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0.7rem 1rem; border-bottom: 1px solid var(--line);
+    }
+    .guide-header h2 { margin: 0; }
+    .guide-body { overflow: auto; overscroll-behavior: contain; padding: 0.8rem 1rem 1rem; }
+    .guide-body details { border: 1px solid var(--line); border-radius: 6px; margin-top: 0.45rem; }
+    .guide-body summary { padding: 0.65rem 0.75rem; cursor: pointer; font-weight: 650; }
+    .guide-body details[open] summary { color: var(--accent); }
+    .guide-body ul { margin: 0; padding: 0 0.85rem 0.8rem 1.9rem; color: var(--muted); line-height: 1.65; }
+    .guide-body li + li { margin-top: 0.4rem; }
+    .guide-body strong { color: #f2f3f4; }
     #export-dialog { width: min(45rem, calc(100% - 1rem)); max-height: calc(100dvh - 1rem); }
     .export-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1rem; }
     .export-preview-pane h3 { margin: 0 0 0.55rem; font-size: 0.9rem; }
@@ -879,6 +894,7 @@
           </details>
         </nav>
         <button class="quiet" id="open-editor-settings" type="button">設定</button>
+        <button class="quiet" id="open-operation-guide" type="button" aria-haspopup="dialog">操作ガイド</button>
         <button class="quiet" id="return-editor-title" type="button" data-return-editor-title>タイトルに戻る</button>
       </div>
       <div class="editor-modebar" role="group" aria-label="ツールのメニューバー">
@@ -926,6 +942,10 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M9 6l-6 6 6 6V6Zm6 0 6 6-6 6V6Z"/></svg>
             左右反転
           </button>
+          <button class="quiet" id="flip-part-y" type="button" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M6 9l6-6 6 6H6Zm0 6 6 6 6-6H6Z"/></svg>
+            上下反転
+          </button>
           <button class="quiet" type="button" data-deform-toggle aria-pressed="false">変形モード</button>
         </div>
         <div class="editor-tools" id="toolbar-mode" role="group" aria-label="モードのツール" hidden>
@@ -955,6 +975,7 @@
               <path d="M0 0V9" stroke="#ff7777" stroke-width="3" stroke-opacity="0.72"/>
             </pattern>
           </defs>
+          <g id="editor-outlines"></g>
           <g id="editor-model-content"></g>
         </svg>
         <div class="export-frame" id="export-frame" aria-hidden="true" hidden>
@@ -1039,18 +1060,18 @@
             <dl id="editor-properties" class="editor-properties" hidden>
               <div><dt><label for="model-name">名前</label></dt><dd class="model-property-fields"><input id="model-name" type="text" maxlength="60"></dd></div>
               <div><dt><label for="model-parent">親</label></dt><dd class="model-property-fields"><select id="model-parent"></select></dd></div>
-              <div><dt>位置</dt><dd class="model-property-fields">
+              <div data-object-transform><dt>位置</dt><dd class="model-property-fields">
                 <label>X <input id="model-x" type="number" step="any" aria-label="位置 X"></label>
                 <label>Y <input id="model-y" type="number" step="any" aria-label="位置 Y"></label>
               </dd></div>
-              <div><dt>回転</dt><dd class="model-property-fields">
+              <div data-object-transform><dt>回転</dt><dd class="model-property-fields">
                 <label><input id="model-angle" type="number" step="any" aria-label="回転角度">°</label>
               </dd></div>
-              <div><dt>スケール</dt><dd class="model-property-fields">
+              <div data-object-transform><dt>スケール</dt><dd class="model-property-fields">
                 <label>X <input id="model-sx" type="number" min="-30" max="30" step="0.01" aria-label="スケール X"></label>
                 <label>Y <input id="model-sy" type="number" min="-30" max="30" step="0.01" aria-label="スケール Y"></label>
               </dd></div>
-              <div><dt>頂点 / 辺 / 面</dt><dd id="model-geometry"></dd></div>
+              <div data-object-transform><dt>頂点 / 辺 / 面</dt><dd id="model-geometry"></dd></div>
               <div class="model-appearance-heading" data-part-appearance><dt>外観</dt><dd></dd></div>
               <div data-part-appearance><dt><label for="model-color">全体のカラー</label></dt><dd class="model-property-fields"><input id="model-color" type="color"></dd></div>
               <div data-part-appearance><dt><label for="model-face-transparency">面の透明度</label></dt><dd class="model-property-fields">
@@ -1086,6 +1107,92 @@
       </aside>
     </div>
   </main>
+  <dialog id="operation-guide" aria-labelledby="operation-guide-title">
+    <div class="guide-layout">
+      <header class="guide-header">
+        <h2 id="operation-guide-title">操作ガイド</h2>
+        <form method="dialog"><button class="quiet" autofocus>閉じる</button></form>
+      </header>
+      <div class="guide-body" tabindex="0" role="region" aria-label="操作ガイドの本文">
+        <p>見たい項目を開いて、PLANEの操作を確認できます。</p>
+        <details open>
+          <summary>ビューと選択</summary>
+          <ul>
+            <li><strong>ビューを移動</strong>　何もない場所をドラッグします。</li>
+            <li><strong>ズーム</strong>　マウスホイールでカーソルを基準に拡大・縮小します。左の縦スライダーでも25〜1000％に調整できます。</li>
+            <li><strong>選択・解除</strong>　図形またはエクスプローラーの行をクリックします。ビューの何もないところをクリックすると選択が外れます。タッチ画面ではタップで選べます。</li>
+            <li><strong>複数選択</strong>　<kbd>Ctrl</kbd>（Macは <kbd>⌘</kbd>）を押しながらクリックすると、選択に追加・解除できます。「選択」ツールで右ボタンを押したままドラッグすると、囲みに触れた図形を選択します。<kbd>Ctrl</kbd>／<kbd>⌘</kbd> を併用すると今の選択に追加できます。</li>
+            <li><strong>画面の表示</strong>　「表示」メニューからツールバー・エクスプローラー・プロパティを表示・非表示にできます。「モード → ギズモを表示」で操作ハンドルを切り替えます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>パーツ・オブジェクトの追加と整理</summary>
+          <ul>
+            <li><strong>パーツを追加</strong>　「モデル → パーツを追加」で正方形・円・多角形を選んで「挿入」を押します。多角形は挿入前に頂点数を指定できます。ウィンドウは見出しをドラッグして移動できます。</li>
+            <li><strong>オブジェクトを追加</strong>　「ホーム → オブジェクトを追加」でフォルダーや枠線を挿入できます。枠線は親パーツやフォルダーの中身をまとめて囲みます。枠線の子に枠線を追加すると、その外側にもう一段重なります。</li>
+            <li><strong>親子関係</strong>　挿入時に選んでいた項目が親になります。選択がなければシーンの下に追加されます。親を変更するには、エクスプローラーで項目を新しい親の行へドラッグするか、プロパティの「親」を変更します。親を移動・回転・拡大すると子も一緒に変わります。</li>
+            <li><strong>展開・折りたたみ</strong>　エクスプローラーの行の左にある三角を押すと、子項目の一覧を開閉できます。</li>
+            <li><strong>名前を変更</strong>　エクスプローラーで項目を選び、プロパティの「名前」を編集します。「シーン」と「書き出し枠」は固定の項目です。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>移動・回転・拡大縮小・中心</summary>
+          <ul>
+            <li><strong>移動・回転</strong>　ツールを選び、ビューに表示される矢印や回転リングをドラッグします。プロパティの位置X・Yと回転角度からも変更できます。</li>
+            <li><strong>拡大・縮小</strong>　色付きの四角いハンドルで軸ごとに、白いハンドルで全体の大きさを変えます。白いハンドルを <kbd>Shift</kbd> を押しながら動かすと縦横比を保てます。スケールX・Yはプロパティでも変更できます。</li>
+            <li><strong>反転</strong>　拡大・縮小で軸のハンドルを反対側へ送るか、スケールに負の数を入力すると反転します。「モデル」の「左右反転」「上下反転」でも反転できます。スケールが0のパーツはビューで非表示になります。</li>
+            <li><strong>操作軸</strong>　「モデル → 操作軸を水平・垂直にする」で、移動と拡大・縮小の軸を画面の水平・垂直にそろえます。</li>
+            <li><strong>中心を変更</strong>　「モード → 中心を変更」をオンにして「＋」をドラッグします。<kbd>Shift</kbd> を押すと近くの頂点に吸い付きます。書き出し枠では四隅に吸い付きます。</li>
+            <li><strong>まとめて変形</strong>　複数選択すると、共通の中心を基準に移動・回転・拡大縮小できます。2つだけ選んで <kbd>Shift</kbd> を押しながら移動ハンドルをドラッグすると、2つの間隔を広げたり狭めたりできます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>色・透明度・枠線</summary>
+          <ul>
+            <li><strong>面と枠線</strong>　プロパティの「外観」で全体の色と面の透明度を調整できます。「枠線を表示」で線の有無を、「個別の枠線色」で全体の色とは別の線色を指定します。</li>
+            <li><strong>枠線の発光</strong>　枠線の透明度・明るさ・発光の範囲を調整できます。複数選択時は、使える項目をまとめて変更できます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>頂点の編集・分割・切り取り</summary>
+          <ul>
+            <li><strong>変形モード</strong>　「ホーム」または「モデル」の「変形モード」をオンにし、エクスプローラーで対象を選びます。頂点はクリックで選び、<kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋クリックや、「選択」ツールでの右ドラッグで複数選択できます。</li>
+            <li><strong>頂点を動かす</strong>　「選択」または「移動」で頂点をドラッグします。移動ハンドルも使えます。2頂点以上なら回転・拡大縮小のハンドルも使えます。</li>
+            <li><strong>頂点を追加</strong>　辺でつながる2頂点を選び、「変形 → 頂点を追加」を押します。辺の上でクリックすると確定し、<kbd>Shift</kbd> で中点に合わせられます。<kbd>Esc</kbd> で中止できます。</li>
+            <li><strong>分割</strong>　切り口にしたい頂点を2つ以上選んで「変形 → 分割」を押します。面のつながりが完全に切れたところで、別々のパーツになります。</li>
+            <li><strong>切り取り</strong>　対象のパーツを選んで「モデル → 切り取りパーツを追加」を使い、赤い斜線の図形を切り取りたい位置に合わせます。親を選んで「パーツの切り取り」を押すと、子の切り取りパーツが適用されます。親と一部の切り取りパーツを複数選択すると、選んだ切り取りパーツだけを適用できます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>保存・読み込み・画像書き出し</summary>
+          <ul>
+            <li><strong>作品を保存</strong>　「ファイル → 新規保存…」で名前を付けます。「上書き保存…」ではライブラリーから対象を選び、確認して保存します。</li>
+            <li><strong>作品を開く・管理する</strong>　タイトルの「ライブラリー」で「読み込む」を押します。「⋯」から名前変更、モデル情報とプレビューの確認、消去ができます。新しく始める場合は「作成する」から土台やテンプレートを選べます。</li>
+            <li><strong>書き出す範囲</strong>　エクスプローラーで「書き出し枠」を選び、ドラッグや移動・拡大縮小ツール、またはプロパティで枠の位置とサイズを調整します。<kbd>Shift</kbd> を押しながら枠を拡大・縮小すると縦横比を保てます。</li>
+            <li><strong>画像を保存</strong>　「ファイル → 画像を保存…」でファイル名、PNG／JPEG、倍率、背景、JPEG画質を設定し、プレビューを確認して保存します。</li>
+            <li><strong>タイトルに戻る</strong>　「タイトルに戻る」を押します。未保存のときは確認が開き、その場で保存方法を選べます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>キーボード操作</summary>
+          <ul>
+            <li><kbd>Ctrl</kbd>＋<kbd>Z</kbd> で元に戻す。<kbd>Ctrl</kbd>＋<kbd>Shift</kbd>＋<kbd>Z</kbd> でやり直す。</li>
+            <li><kbd>Ctrl</kbd>＋<kbd>D</kbd> で複製、<kbd>Ctrl</kbd>＋<kbd>C</kbd> でコピー、<kbd>Ctrl</kbd>＋<kbd>V</kbd> で貼り付け。貼り付け先は選択中の項目の下で、選択がなければシーンの下になります。</li>
+            <li><kbd>Delete</kbd> または <kbd>Backspace</kbd> で選択中のパーツやオブジェクトを削除します。複製・コピー・貼り付け・削除は通常の編集時に使えます。</li>
+            <li><kbd>Enter</kbd> でパーツのプロパティ入力を確定します。<kbd>Esc</kbd> で頂点追加・囲み選択を中止したり、メニューやウィンドウを閉じたりできます。</li>
+            <li>Macでは上記の <kbd>Ctrl</kbd> の代わりに <kbd>⌘</kbd> を使えます。</li>
+          </ul>
+        </details>
+        <details>
+          <summary>設定</summary>
+          <ul>
+            <li>メニューバーの「設定」から、タイトルBGMとクリック音のオン・オフ、音量（1〜200％）、クリック音の種類を調整できます。</li>
+            <li>「その他」でタイトルのアニメーションを停止できます。設定とライブラリーの作品は、使用中のブラウザに保存されます。</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </dialog>
   <dialog id="parts-dialog" aria-labelledby="parts-title">
     <header class="parts-window-header" id="parts-window-header"><h2 id="parts-title">パーツを追加</h2></header>
     <div class="parts-window-body">
@@ -1284,8 +1391,11 @@
     const editorViewport = editorScreen.querySelector('.editor-viewport');
     const editorHeading = document.querySelector('#editor-heading');
     const editorStatus = document.querySelector('#editor-status');
+    const operationGuide = document.querySelector('#operation-guide');
+    document.querySelector('#open-operation-guide').addEventListener('click', () => operationGuide.showModal());
     const editorModel = document.querySelector('#editor-model');
     const editorModelContent = document.querySelector('#editor-model-content');
+    const editorOutlines = document.querySelector('#editor-outlines');
     const viewZoomInput = document.querySelector('#view-zoom');
     const viewZoomValue = document.querySelector('#view-zoom-value');
     const editorObjectEmpty = document.querySelector('#editor-object-empty');
@@ -1332,7 +1442,10 @@
     const editorMarquee = document.querySelector('#editor-marquee');
     const modelName = document.querySelector('#model-name');
     const modelParent = document.querySelector('#model-parent');
-    const flipPartButton = document.querySelector('#flip-part-x');
+    const flipPartButtons = {
+      sx: document.querySelector('#flip-part-x'),
+      sy: document.querySelector('#flip-part-y')
+    };
     const modelInputs = {
       x: document.querySelector('#model-x'),
       y: document.querySelector('#model-y'),
@@ -1358,6 +1471,7 @@
     const openCuttersButton = document.querySelector('#open-cutters');
     const applyPartCutButton = document.querySelector('#apply-part-cut');
     const appearanceRows = editorProperties.querySelectorAll('[data-part-appearance]');
+    const objectTransformRows = editorProperties.querySelectorAll('[data-object-transform]');
     const defaultFrame = { x: 0, y: 0, width: 300, height: 220, px: 0, py: 0 };
     const defaultModel = { x: 0, y: 0, angle: 0, sx: 1, sy: 1, px: 0, py: 0 };
     let frameBounds = { ...defaultFrame };
@@ -1449,9 +1563,9 @@
     }
 
     function makeGeometry(kind, sides) {
-      if (kind === 'folder') return { vertices: [], edges: [] };
+      if (kind === 'folder' || kind === 'outline') return { vertices: [], edges: [] };
       const count = kind === 'circle' ? 64 : sides;
-      const vertices = kind === 'square' || kind === 'outline'
+      const vertices = kind === 'square'
         ? [[-70, -70], [70, -70], [70, 70], [-70, 70]]
         : Array.from({ length: count }, (_, index) => {
           const angle = index * 2 * Math.PI / count - Math.PI / 2;
@@ -1792,7 +1906,7 @@
       return winding.map(value => value !== 0);
     }
 
-    function buildCutBoundary(subject, cutters, seams = null) {
+    function buildCutBoundary(subject, cutters, seams = null, union = false) {
       const geometries = [subject, ...cutters];
       const points = geometries.flatMap(geometry => geometry.vertices);
       if (!subject.edges.length || !points.length) return null;
@@ -1823,17 +1937,17 @@
         .filter(segment => segment.length > epsilon);
       for (let i = 0; i < segments.length; i++) {
         for (let j = i + 1; j < segments.length; j++) {
-          if (topology) {
-            const a = segments[i], b = segments[j];
-            if ([0, 1].some(axis => Math.max(a.a[axis], a.b[axis]) < Math.min(b.a[axis], b.b[axis])
-              || Math.max(b.a[axis], b.b[axis]) < Math.min(a.a[axis], a.b[axis]))) continue;
-            splitTopologySegments(a, b);
-          }
-          else splitCutSegments(segments[i], segments[j], epsilon);
+          const a = segments[i], b = segments[j];
+          if ((topology || union) && [0, 1].some(axis =>
+            Math.max(a.a[axis], a.b[axis]) + epsilon < Math.min(b.a[axis], b.b[axis])
+            || Math.max(b.a[axis], b.b[axis]) + epsilon < Math.min(a.a[axis], a.b[axis]))) continue;
+          if (topology) splitTopologySegments(a, b);
+          else splitCutSegments(a, b, epsilon);
         }
       }
 
-      const inside = (x, y) => geometryContains(subject, x, y) && !cutters.some(cutter => geometryContains(cutter, x, y));
+      const inside = union ? (x, y) => geometries.some(geometry => geometryContains(geometry, x, y))
+        : (x, y) => geometryContains(subject, x, y) && !cutters.some(cutter => geometryContains(cutter, x, y));
       const boundary = [];
       const snapped = [];
       const cells = new Map();
@@ -2006,6 +2120,7 @@
 
     function renderPartAppearance(part) {
       const { shape, glow } = partNodes.get(part.id);
+      if (part.kind === 'outline') return;
       if (part.cutter) {
         shape.setAttribute('fill', 'url(#cutter-hatch)');
         shape.setAttribute('fill-opacity', '1');
@@ -2016,7 +2131,7 @@
       }
       const appearance = partAppearance(part);
       const edgeColor = outlineColor(appearance);
-      shape.setAttribute('fill', part.kind === 'outline' ? 'none' : appearance.color);
+      shape.setAttribute('fill', appearance.color);
       shape.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
       shape.setAttribute('stroke', appearance.outlineEnabled ? edgeColor : 'none');
       shape.setAttribute('stroke-opacity', transparencyToOpacity(appearance.outlineTransparency));
@@ -2097,6 +2212,133 @@
       return partParentMatrix(part, scene, frame).multiply(partLocalMatrix(part.transform));
     }
 
+    function sceneOutlineBands(scene, frame, nativeRadius = partOutlineWidth / 2) {
+      const outlines = scene.filter(part => part.kind === 'outline');
+      if (!outlines.length) return [];
+      const byId = new Map(scene.map(part => [part.id, part]));
+      const silhouettes = new Map();
+      const descendantStrokes = new Map();
+      const bands = [];
+      const targets = outlines.flatMap(outline => {
+        const appearance = partAppearance(outline);
+        if (!appearance.outlineEnabled || appearance.outlineTransparency === 100 || !isPartVisible(outline, scene)) return [];
+        let target = byId.get(outline.parent);
+        while (target?.kind === 'outline') target = byId.get(target.parent);
+        if (!target || target.cutter) return [];
+        const ancestors = [];
+        for (let parent = byId.get(target.parent); parent; parent = byId.get(parent.parent)) {
+          ancestors.push(parent.id);
+        }
+        return [{ target, ancestors, appearance }];
+      }).sort((a, b) => b.ancestors.length - a.ancestors.length);
+      for (const { target, ancestors, appearance } of targets) {
+        let silhouette = silhouettes.get(target.id);
+        if (!silhouettes.has(target.id)) {
+          const members = [];
+          const subtree = new Set([target.id]);
+          for (const part of scene) {
+            if (part !== target && !subtree.has(part.parent)) continue;
+            subtree.add(part.id);
+            if (part.cutter || part.kind === 'outline' || !part.geometry.edges.length || !isPartVisible(part, scene)) continue;
+            const style = partAppearance(part);
+            const outlined = style.outlineEnabled && style.outlineTransparency < 100;
+            if (!outlined && style.faceTransparency === 100) continue;
+            const pose = partMatrix(part, scene, frame);
+            const vertices = part.geometry.vertices.map(vertex => {
+              const point = pose.transformPoint(new DOMPoint(...vertex));
+              return [point.x, point.y];
+            });
+            members.push({ geometry: { vertices, edges: part.geometry.edges }, outlined });
+          }
+          silhouette = outlineSilhouette(members, nativeRadius);
+          silhouettes.set(target.id, silhouette);
+        }
+        if (!silhouette) continue;
+        const { path, nativePaths, radius, bounds } = silhouette;
+        const blockedPaths = radius ? [] : [...nativePaths, ...(descendantStrokes.get(target.id)?.values() ?? [])];
+        const innerExtent = blockedPaths.reduce((extent, stroke) => Math.max(extent, stroke.width / 2), radius);
+        const outerRadius = innerExtent + partOutlineWidth;
+        bands.push({ path, bounds, blockedPaths, innerRadius: radius, outerRadius, appearance });
+        silhouette.radius = outerRadius;
+        for (const id of ancestors) {
+          if (!descendantStrokes.has(id)) descendantStrokes.set(id, new Map());
+          descendantStrokes.get(id).set(target.id, { path, width: 2 * outerRadius });
+        }
+      }
+      return bands;
+    }
+
+    function outlineSilhouette(members, nativeRadius) {
+      if (!members.length) return null;
+      const geometries = members.map(({ geometry }) => geometry);
+      let merged = geometries[0];
+      if (geometries.length > 1) {
+        const arrangement = buildCutBoundary(merged, geometries.slice(1), null, true);
+        const { boundary, snapped, epsilon } = arrangement;
+        try {
+          merged = stitchCutBoundary(boundary, snapped, epsilon);
+        } catch {
+          // A degenerate join can still be drawn with the combined filled contours.
+          merged = geometryFromRings(geometries.flatMap(geometry => {
+            const reflected = geometryArea(geometry) < 0;
+            return geometryRings(geometry).map(ring => {
+              const points = ring.map(index => geometry.vertices[index]);
+              return reflected ? points.reverse() : points;
+            });
+          }));
+        }
+      }
+      const rings = geometryRings(merged).map(ring => ring.map(index => merged.vertices[index]));
+      // Reflections reverse every contour of an individual shape.
+      const outerSign = geometries.length === 1 ? Math.sign(geometryArea(merged)) : 1;
+      const outer = rings.filter(ring => Math.sign(geometryArea(geometryFromRings([ring]))) === outerSign);
+      const geometry = geometryFromRings(outer);
+      const path = geometryPath(geometry);
+      if (!path) return null;
+      const bounds = geometry.vertices.reduce(({ left, right, top, bottom }, [x, y]) => ({
+        left: Math.min(left, x), right: Math.max(right, x), top: Math.min(top, y), bottom: Math.max(bottom, y)
+      }), { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity });
+      const nativePaths = members.filter(member => member.outlined).map(({ geometry }) =>
+        ({ path: geometryPath(geometry), width: 2 * nativeRadius }));
+      return { path, bounds, nativePaths, radius: 0 };
+    }
+
+    function renderSceneOutlines() {
+      editorOutlines.replaceChildren();
+      editorOutlines.setAttribute('transform', 'scale(' + viewZoom + ')');
+      const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
+      function pathElement(path, fill, stroke, width, opacity = 1) {
+        const element = svg('path');
+        for (const [key, value] of Object.entries({
+          d: path, fill, stroke, 'stroke-width': width, 'stroke-opacity': opacity
+        })) element.setAttribute(key, value);
+        return element;
+      }
+      for (const [index, band] of sceneOutlineBands(parts, frameBounds, partOutlineWidth / 2 / viewZoom).entries()) {
+        const { path, innerRadius, outerRadius, blockedPaths, appearance, bounds } = band;
+        const mask = svg('mask');
+        const id = 'scene-outline-mask-' + index;
+        mask.setAttribute('id', id);
+        const glow = glowLayers(appearance);
+        const width = 2 * (outerRadius + (glow[0]?.spread ?? 0));
+        mask.setAttribute('maskUnits', 'userSpaceOnUse');
+        const padding = width * 2 + 1;
+        mask.setAttribute('x', bounds.left - padding);
+        mask.setAttribute('y', bounds.top - padding);
+        mask.setAttribute('width', bounds.right - bounds.left + 2 * padding);
+        mask.setAttribute('height', bounds.bottom - bounds.top + 2 * padding);
+        mask.append(pathElement(path, 'white', 'white', width));
+        mask.append(pathElement(path, 'black', 'black', 2 * innerRadius));
+        for (const blocked of blockedPaths) mask.append(pathElement(blocked.path, 'none', 'black', blocked.width));
+        const group = svg('g');
+        group.setAttribute('mask', 'url(#' + id + ')');
+        const color = outlineColor(appearance);
+        for (const layer of glow) group.append(pathElement(path, 'none', color, 2 * (outerRadius + layer.spread), layer.opacity));
+        group.append(pathElement(path, 'none', color, 2 * outerRadius, transparencyToOpacity(appearance.outlineTransparency)));
+        editorOutlines.append(mask, group);
+      }
+    }
+
     function updateExplorerBranch(id, toggle, children) {
       const expanded = !collapsedBranches.has(id);
       toggle.hidden = children.children.length === 0;
@@ -2134,6 +2376,7 @@
       for (const part of parts) {
         const group = makeSvg('g');
         group.dataset.partId = part.id;
+        if (part.kind === 'outline') group.setAttribute('display', 'none');
         const shape = makeSvg('path');
         shape.classList.add('part-shape');
         shape.setAttribute('d', geometryPath(part.geometry));
@@ -2222,7 +2465,8 @@
       previewPane.hidden = objects;
       partSidesLabel.hidden = !polygon;
       if (objects) {
-        partFixedNote.textContent = partKind === 'folder' ? '子項目をまとめるフォルダーです。' : '内側が透明な四角い枠線です。';
+        partFixedNote.textContent = partKind === 'folder' ? '子項目をまとめるフォルダーです。'
+          : '親パーツやフォルダー全体の外側に枠線を付けます。枠線の下に挿入すると、さらに外側に重なります。';
       } else {
         partFixedNote.textContent = polygon ? '挿入後に頂点の数が固定されます。' : '挿入時に図形の種類が確定します。';
         partPreview.setAttribute('d', geometryPath(makeGeometry(partKind, chosenSides())));
@@ -2278,6 +2522,7 @@
       const parentPart = getPart(editorSelection);
       const parent = parentPart ? parentPart.id : editorSelection === 'frame' ? 'frame' : 'scene';
       const part = makePart(partKind, chosenSides(), parent);
+      if (part.kind === 'outline') part.appearance = { color: '#9bdcff' };
       if (insertionMode === 'cutter') {
         part.cutter = true;
         part.name = '切り取り・' + part.name;
@@ -2290,6 +2535,7 @@
       renderParts();
       setEditorSelection(part.id);
       recordEditorEdit(before);
+      if (part.kind === 'outline' && !parentPart) editorStatus.textContent = '枠線の親にパーツやフォルダーを指定してください。';
       partsDialog.close();
     });
     partsHeader.addEventListener('pointerdown', event => {
@@ -2320,6 +2566,7 @@
       viewZoom = next;
       editorViewport.style.setProperty('--view-zoom', next);
       editorModelContent.setAttribute('transform', 'scale(' + next + ')');
+      renderSceneOutlines();
       viewZoomInput.value = Math.round(next * 100);
       const label = viewZoomInput.value + '%';
       viewZoomInput.setAttribute('aria-valuetext', label);
@@ -2573,6 +2820,7 @@
         });
         if (button.textContent !== part.name) button.textContent = part.name;
       }
+      renderSceneOutlines();
       const selected = getPart(editorSelection);
       if (selected) {
         renderGizmoAxes(selected);
@@ -2696,7 +2944,7 @@
     }
 
     document.addEventListener('keydown', event => {
-      if (editorScreen.hidden || partsDialog.open || exportDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open
+      if (editorScreen.hidden || partsDialog.open || exportDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open
         || panStart || event.isComposing || event.altKey) return;
       if (marqueeDrag) {
         if (event.key === 'Escape') clearMarquee();
@@ -2809,7 +3057,8 @@
     }
 
     function renderVertexSelection() {
-      const part = deformMode ? getPart(editorSelection) : null;
+      const selected = deformMode ? getPart(editorSelection) : null;
+      const part = selected?.kind === 'outline' ? null : selected;
       for (const [id, { group, vertices }] of partNodes) {
         const target = part?.id === id;
         group.toggleAttribute('data-vertex-target', target);
@@ -2954,9 +3203,11 @@
       }
       const frameSelected = selection === 'frame';
       const modelSelected = Boolean(getPart(selection));
-      flipPartButton.disabled = !modelSelected;
+      const transformable = modelSelected && selectedParts().some(part => part.kind !== 'outline');
+      for (const button of Object.values(flipPartButtons)) button.disabled = !transformable;
+      for (const row of objectTransformRows) row.hidden = !transformable;
       editorScreen.toggleAttribute('data-frame-selected', frameSelected);
-      editorScreen.toggleAttribute('data-model-selected', modelSelected);
+      editorScreen.toggleAttribute('data-model-selected', transformable);
       for (const item of explorerItems) {
         item.setAttribute('aria-pressed', String(item.dataset.editorSelection === selection));
       }
@@ -3027,22 +3278,24 @@
       }
       renderModelTransform();
     });
-    flipPartButton.addEventListener('click', () => {
+    function flipPart(axis) {
       const part = getPart(editorSelection);
-      if (!part || (groupTransform ?? part.transform).sx === 0) return;
+      const start = groupTransform ?? part?.transform;
+      if (!start || start[axis] === 0 || flipPartButtons[axis].disabled) return;
       const before = editorSnapshot();
+      const next = { ...start, [axis]: -start[axis] };
       if (groupTransform) {
-        applyGroupTransform(before, { ...groupTransform, sx: -groupTransform.sx }, gizmoAxisAngle(part));
-        recordEditorEdit(before);
-        return;
+        applyGroupTransform(before, next, gizmoAxisAngle(part));
+      } else {
+        applyGizmoStretch(partParentMatrix(part), start, next, gizmoAxisAngle(part));
+        part.transform = keepPivot(start, next, modelPivotOffset);
+        renderModelTransform();
       }
-      const start = part.transform;
-      const next = { ...start, sx: -start.sx };
-      applyGizmoStretch(partParentMatrix(part), start, next, gizmoAxisAngle(part));
-      part.transform = keepPivot(start, next, modelPivotOffset);
       recordEditorEdit(before);
-      renderModelTransform();
-    });
+    }
+    for (const [axis, button] of Object.entries(flipPartButtons)) {
+      button.addEventListener('click', () => flipPart(axis));
+    }
     for (const [key, input] of Object.entries(modelInputs)) {
       input.addEventListener('change', () => {
         const part = getPart(editorSelection);
@@ -3096,6 +3349,7 @@
             selected.appearance = { ...appearance, [key]: value };
             renderPartAppearance(selected);
           }
+          renderSceneOutlines();
           recordEditorEdit(before);
         }
         showPartAppearance(part);
@@ -3167,7 +3421,7 @@
 
       const selection = new Set(extend ? selectedPartIds : []);
       for (const part of parts) {
-        if (!isPartVisible(part) || !part.geometry.edges.length) continue;
+        if (part.kind === 'outline' || !isPartVisible(part) || !part.geometry.edges.length) continue;
         const matrix = partMatrix(part);
         const vertices = part.geometry.vertices.map(([x, y]) => {
           const point = matrix.transformPoint(new DOMPoint(x, y));
@@ -3585,6 +3839,56 @@
       editorViewport.addEventListener(event, endPan);
     }
 
+    function drawExportOutlines(context, width, height, frame, scene) {
+      const scaleX = width / frame.width, scaleY = height / frame.height;
+      const offsetX = frame.width / 2 - frame.x, offsetY = frame.height / 2 + frame.y;
+      let scratch;
+      for (const { path, bounds, blockedPaths, innerRadius, outerRadius, appearance } of sceneOutlineBands(scene, frame)) {
+        const glow = glowLayers(appearance);
+        const padding = 4 * (outerRadius + (glow[0]?.spread ?? 0)) + 2;
+        const left = Math.max(0, Math.floor((bounds.left + offsetX - padding) * scaleX));
+        const top = Math.max(0, Math.floor((bounds.top + offsetY - padding) * scaleY));
+        const right = Math.min(width, Math.ceil((bounds.right + offsetX + padding) * scaleX));
+        const bottom = Math.min(height, Math.ceil((bounds.bottom + offsetY + padding) * scaleY));
+        if (left >= right || top >= bottom) continue;
+        scratch ??= typeof OffscreenCanvas === 'function' ? new OffscreenCanvas(1, 1) : document.createElement('canvas');
+        scratch.width = right - left;
+        scratch.height = bottom - top;
+        const layer = scratch.getContext('2d');
+        if (!layer) continue;
+        layer.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+        layer.globalCompositeOperation = 'source-over';
+        const translation = new DOMMatrix().translate(offsetX - left / scaleX, offsetY - top / scaleY);
+        function translatedPath(data) {
+          const result = new Path2D();
+          result.addPath(new Path2D(data), translation);
+          return result;
+        }
+        const contour = translatedPath(path);
+        layer.strokeStyle = outlineColor(appearance);
+        for (const { spread, opacity } of glow) {
+          layer.globalAlpha = opacity;
+          layer.lineWidth = 2 * (outerRadius + spread);
+          layer.stroke(contour);
+        }
+        layer.globalAlpha = transparencyToOpacity(appearance.outlineTransparency);
+        layer.lineWidth = 2 * outerRadius;
+        layer.stroke(contour);
+        layer.globalAlpha = 1;
+        layer.globalCompositeOperation = 'destination-out';
+        layer.fill(contour);
+        if (innerRadius) {
+          layer.lineWidth = 2 * innerRadius;
+          layer.stroke(contour);
+        }
+        for (const blocked of blockedPaths) {
+          layer.lineWidth = blocked.width;
+          layer.stroke(translatedPath(blocked.path));
+        }
+        context.drawImage(scratch, left, top);
+      }
+    }
+
     function drawExport(canvas, outputWidth, outputHeight, background, frame = frameBounds, scene = parts) {
       const { x, y, width, height } = frame;
       canvas.width = outputWidth;
@@ -3595,10 +3899,11 @@
         context.fillStyle = background;
         context.fillRect(0, 0, outputWidth, outputHeight);
       }
+      drawExportOutlines(context, outputWidth, outputHeight, frame, scene);
       context.scale(outputWidth / width, outputHeight / height);
       const exportOffset = new DOMMatrix().translate(width / 2 - x, height / 2 + y);
       for (const part of scene) {
-        if (part.cutter || !part.geometry.edges.length || !isPartVisible(part, scene)) continue;
+        if (part.cutter || part.kind === 'outline' || !part.geometry.edges.length || !isPartVisible(part, scene)) continue;
         const path = new Path2D();
         path.addPath(new Path2D(geometryPath(part.geometry)), exportOffset.multiply(partMatrix(part, scene, frame)));
         const appearance = partAppearance(part);
