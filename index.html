@@ -1123,6 +1123,8 @@
           <g id="editor-model-content"></g>
           <g id="vertex-position-guides" aria-hidden="true"></g>
           <g id="editor-vertices"></g>
+          <circle id="vertex-move-snap-guide" aria-hidden="true" visibility="hidden"
+            fill="none" stroke="#82e1ff" stroke-width="2" pointer-events="none" r="10"/>
           <g id="mirror-guides" aria-hidden="true"></g>
           <g id="vertex-insert-guides" aria-hidden="true"></g>
           <g id="pivot-snap-guides" aria-hidden="true"></g>
@@ -1320,7 +1322,7 @@
           <summary>頂点の編集・分割・切り取り</summary>
           <ul>
             <li><strong>変形モード</strong>　「ホーム」または「モデル」の「変形モード」をオンにし、エクスプローラーで対象を選びます。「変形」タブからもオフにできます。複数パーツを選ぶと、すべての頂点が見えます。<kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋クリックや、「選択」ツールでの右ドラッグで頂点を複数選択できます。</li>
-            <li><strong>頂点を動かす</strong>　「選択」または「移動」で頂点をドラッグします。「移動」で1頂点を <kbd>Shift</kbd> と一緒に動かすと、選択中のパーツの近くの頂点に吸着します。2頂点以上なら回転・拡大縮小のハンドルも使えます。</li>
+            <li><strong>頂点を動かす</strong>　「選択」または「移動」で頂点をドラッグします。1頂点を <kbd>Shift</kbd> と一緒に動かすと、選択中のパーツの近くの頂点に吸着します。吸着先には水色のリングが出ます。2頂点以上なら回転・拡大縮小のハンドルも使えます。</li>
             <li><strong>頂点を追加</strong>　辺でつながる2頂点を選び、「変形 → 頂点を追加」を押します。辺の上でクリックすると確定します。<kbd>Shift</kbd> で薄い点に吸着し、点の数は「設定 → 編集」で変更できます。<kbd>Esc</kbd> で中止できます。</li>
             <li><strong>分割</strong>　切り口にしたい頂点を2つ以上選んで「変形 → 分割」を押します。面のつながりが完全に切れたところで、別々のパーツになります。</li>
             <li><strong>切り取り</strong>　対象のパーツを選んで「モデル → 切り取りパーツを追加」を使い、赤い斜線の図形を切り取りたい位置に合わせます。親を選んで「パーツの切り取り」を押すと、子の切り取りパーツが適用されます。親と一部の切り取りパーツを複数選択すると、選んだ切り取りパーツだけを適用できます。</li>
@@ -1697,6 +1699,7 @@
     const vertexSnapCount = document.querySelector('#vertex-snap-count');
     const editorVertices = document.querySelector('#editor-vertices');
     const vertexPositionGuides = document.querySelector('#vertex-position-guides');
+    const vertexMoveSnapGuide = document.querySelector('#vertex-move-snap-guide');
     let vertexMarkerStyle = 'circle';
     let vertexMarkerImageId = '';
     let vertexMarkerImageData = '';
@@ -4108,7 +4111,8 @@
         if (vertexInsertArmed || !point || !selectedPartIds.has(id)) return;
         const index = Number(point.dataset.vertexIndex);
         const extend = event.ctrlKey || event.metaKey;
-        if (extend || !selectedVertexIndices(id).has(index) || (activeTool !== 'select' && activeTool !== 'move')) {
+        if (extend || !selectedVertexIndices(id).has(index) || (activeTool !== 'select' && activeTool !== 'move')
+          || (event.shiftKey && selectedVertexCount() > 1)) {
           selectVertex(index, extend, id);
         }
         return;
@@ -4545,9 +4549,10 @@
     function dragVertexGeometry(drag, dx, dy, lockRatio) {
       const start = drag.before.vertexPivot;
       const transform = new DOMMatrix();
+      vertexMoveSnapGuide.setAttribute('visibility', 'hidden');
       if (drag.operation.startsWith('move-')) {
         const offset = dragMoveOffset(drag, dx, dy);
-        if (lockRatio && activeTool === 'move' && drag.before.vertices.length === 1
+        if (lockRatio && (activeTool === 'move' || drag.clickedVertex !== undefined) && drag.before.vertices.length === 1
           && drag.before.vertices[0][1].length === 1) {
           snapVertexMove(drag, start, offset);
         }
@@ -4596,7 +4601,8 @@
       const { parts: scene, frame, selectedIds, vertices } = drag.before;
       const [[movingId, [movingIndex]]] = vertices;
       const x = start.x + offset.x, y = start.y + offset.y;
-      let distance = 14 / viewZoom;
+      let distance = 18 / viewZoom;
+      let target = null;
       for (const id of selectedIds) {
         const part = getPart(id, scene);
         if (!isPartVisible(part, scene)) continue;
@@ -4607,9 +4613,15 @@
           const gap = Math.hypot(point.x - x, point.y - y);
           if (gap >= distance) continue;
           distance = gap;
-          offset.x = point.x - start.x;
-          offset.y = point.y - start.y;
+          target = point;
         }
+      }
+      if (target) {
+        offset.x = target.x - start.x;
+        offset.y = target.y - start.y;
+        vertexMoveSnapGuide.setAttribute('cx', target.x * viewZoom);
+        vertexMoveSnapGuide.setAttribute('cy', target.y * viewZoom);
+        vertexMoveSnapGuide.setAttribute('visibility', 'visible');
       }
     }
 
@@ -4839,6 +4851,7 @@
       }
       if (panStart?.id !== event.pointerId) return;
       if (panStart.operation.endsWith('-pivot')) showPivotSnapGuides();
+      if (panStart.vertexEdit) vertexMoveSnapGuide.setAttribute('visibility', 'hidden');
       if (panStart.operation === 'view') {
         if (event.type === 'pointerup' && !panDragged) {
           if (deformMode) selectVertex(null);
