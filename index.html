@@ -60,7 +60,7 @@
       background: #111; color: #fff; border-color: #fff;
     }
     body[data-theme="liminal"] #editor-model-content > [data-selected] > .part-visual
-      > :is(.part-shape:not(.part-image-hit, .part-line), .part-image-fill) {
+      > .part-shape:not(.part-image-hit, .part-line) {
       fill: #000;
       fill-opacity: 1;
     }
@@ -375,6 +375,7 @@
     .selection-card time { color: var(--muted); font-size: 0.8rem; font-weight: 400; }
     .editor-screen:not([hidden]) {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
       height: 100vh;
       height: 100dvh;
@@ -435,7 +436,31 @@
       box-shadow: 0 0.5rem 1rem #0005;
     }
     .editor-menu:not(:first-child) .editor-menu-items { inset-inline: auto 0; }
-    .editor-tools:not([hidden]) { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .editor-toolbar:not([hidden]), .editor-modebar { overflow-x: auto; flex-wrap: nowrap; min-width: 0; }
+    .editor-tools:not([hidden]) { display: flex; flex-wrap: nowrap; gap: 0.35rem; }
+    .editor-tools > *, .editor-subtab { flex: 0 0 auto; white-space: nowrap; }
+    .editor-toolbar > .editor-tools { min-width: max-content; }
+    #smooth-dialog { width: min(48rem, calc(100% - 1rem)); }
+    .smooth-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 0.75rem; }
+    #smooth-preview { width: 100%; height: clamp(9rem, 35dvh, 20rem); border: 1px solid #363a40; background: #21242a; }
+    #smooth-preview path { fill: none; vector-effect: non-scaling-stroke; }
+    .smooth-fields label { display: grid; gap: 0.25rem; margin-bottom: 0.65rem; }
+    .smooth-fields input { min-width: 0; max-width: 100%; }
+    #smooth-dialog form { gap: 0.4rem; margin-top: 0.6rem; }
+    #touch-controls, #shortcut-menu {
+      position: fixed; z-index: 8; padding: 0.4rem; color: var(--text);
+      background: var(--dialog); border: 1px solid var(--line); border-radius: 8px;
+      box-shadow: 0 8px 24px #0006;
+    }
+    #touch-controls { display: none; left: 0.5rem; bottom: max(0.5rem, env(safe-area-inset-bottom)); gap: 0.25rem; align-items: center; }
+    #touch-controls button { padding: 0.35rem 0.45rem; min-height: 2.45rem; }
+    #touch-controls [aria-pressed="true"] { color: var(--toolbar-selection-text); background: var(--toolbar-selection); }
+    #touch-controls [data-touch-grip] { touch-action: none; cursor: grab; }
+    #shortcut-menu { z-index: 9; width: min(20rem, calc(100% - 1rem)); max-height: min(26rem, 65dvh); overflow: auto; }
+    #shortcut-menu button { width: 100%; display: flex; justify-content: space-between; gap: 1rem; text-align: start; }
+    #shortcut-menu kbd { white-space: nowrap; }
+    @media (any-pointer: coarse) { #touch-controls { display: flex; } }
+    @media (max-width: 540px) { .smooth-layout { grid-template-columns: minmax(0, 1fr); } }
     [data-editor-tool][aria-pressed="true"],
     [data-editor-display][aria-pressed="true"] { color: var(--active); border-color: var(--active-border); }
     .editor-tools svg { flex: none; }
@@ -463,6 +488,28 @@
     body[data-theme="liminal"] :is(.editor-subtab, .editor-tools button)[aria-pressed="true"]:not(:disabled) {
       box-shadow: inset 0 -3px #a3a3a3;
     }
+    body[data-theme="remembrance"] {
+      --page: #0e162c; --surface: #0e162c; --panel: #111d37; --dialog: #172444; --card: #18284b; --raised: #1b2e54; --hover: #233a64;
+      --viewport: #0b1328; --line: #35558d; --grid-line: #263d69; --text: #eaf3ff; --muted: #b0c4e8;
+      --accent: #8fd5ff; --selection: #ffa2f3; --vertex-selected: #ffa2f3; --toolbar-selection-text: #080808;
+      --skin-background: radial-gradient(ellipse at 50% 78%, #1250ad60, transparent 68%), linear-gradient(0deg, #a9338e55, transparent 35%);
+    }
+    body[data-theme="white-blue"] {
+      color-scheme: light;
+      --page: #f2f7ff; --surface: #f2f7ff; --panel: #e5efff; --dialog: #fff; --card: #f6faff; --raised: #d4e4ff; --hover: #cddfff;
+      --viewport: #f5fbff; --line: #718df2; --grid-line: #c9d9f2; --text: #10264d; --muted: #2f4b80;
+      --accent: #153dce; --selection: #153dce; --vertex-selected: #1255ee; --toolbar-selection-text: #fff;
+      --skin-background: linear-gradient(145deg, #4a8aff22, transparent 42%, #00d8ff22);
+    }
+    body[data-theme="meta"] {
+      --page: #08091a; --surface: #08091a; --panel: #0e1230; --dialog: #111638; --card: #152bc1;
+      --raised: #171e61; --hover: #2445ec; --viewport: #000; --line: #385aff; --grid-line: #171d38;
+      --text: #fff6ff; --muted: #c4cbff; --accent: #ff48bf; --selection: #ff48bf;
+      --vertex-selected: #ff48bf; --toolbar-selection-text: #100014;
+    }
+    body[data-theme="meta"] .primary { color: var(--text); background: var(--card); border-color: var(--line); }
+    body[data-theme="meta"] .primary:hover { background: var(--hover); }
+    .editor-viewport { background-image: var(--skin-background, none); }
     .editor-workspace {
       display: grid;
       grid-template-columns: minmax(0, 1fr) clamp(14rem, 27vw, 20rem);
@@ -546,6 +593,7 @@
     .editor-model .part-glow, .editor-model .model-vertices { pointer-events: none; }
     .part-glow path { stroke-width: calc((var(--part-stroke-width, 2px) + var(--glow-width)) * var(--view-zoom)); }
     .editor-model [data-zero-scale] { display: none; }
+    .editor-model [data-unselectable] * { pointer-events: none !important; }
     #mirror-handle {
       position: absolute;
       left: calc(50% + var(--pan-x) + var(--mirror-x, 0px) * var(--view-zoom));
@@ -579,6 +627,7 @@
     #vertex-insert-guides { pointer-events: none; }
     #vertex-snap-count, #move-arrow-step, #rotation-step, #scale-step, #max-view-zoom { width: 7rem; max-width: 45%; font: inherit; }
     .appearance-settings select { min-width: 0; max-width: 100%; min-height: 2rem; font: inherit; }
+    #vertex-marker-image { width: min(100%, 12rem); height: auto; }
     #vertex-marker-image-preview { width: 2rem; height: 2rem; object-fit: contain; background: #101217; border: 1px solid var(--line); }
     #viewport-grid-lines { stroke: var(--grid-line); }
     .vertex-insert-marker {
@@ -646,6 +695,8 @@
       pointer-events: none;
     }
     .editor-screen[data-frame-selected] .export-frame { border: 2px solid var(--selection); }
+    .export-frame[data-frame-hidden] { visibility: hidden; }
+    .export-frame:is([data-frame-hidden], [data-frame-unselectable]) * { pointer-events: none !important; }
     .export-edge { position: absolute; pointer-events: auto; cursor: move; }
     .export-edge[data-edge="top"], .export-edge[data-edge="bottom"] { inset-inline: 0; height: 14px; }
     .export-edge[data-edge="top"] { top: -7px; }
@@ -821,7 +872,6 @@
     }
     #insert-library-dialog { width: min(42rem, calc(100% - 1rem)); max-height: calc(85dvh); }
     #insert-library-dialog form { margin-top: 1rem; }
-    .image-library-thumbnail { display: block; max-width: 100%; max-height: 5.5rem; object-fit: contain; }
     .export-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1rem; }
     .export-preview-pane h3 { margin: 0 0 0.55rem; font-size: 0.9rem; }
     .export-preview-stage {
@@ -833,14 +883,14 @@
       border-radius: 6px;
       background: #191b1e;
     }
-    #export-preview, #library-data-preview, #library-image-preview, #current-preview-canvas {
+    #export-preview, #library-data-preview, #current-preview-canvas {
       display: block;
       max-width: 100%;
       max-height: 15rem;
       object-fit: contain;
       background: repeating-conic-gradient(#464a51 0 25%, #30333a 0 50%) 0 0 / 16px 16px;
     }
-    #library-data-preview[hidden], #library-image-preview[hidden] { display: none; }
+    #library-data-preview[hidden] { display: none; }
     #current-preview-canvas { max-height: 65dvh; }
     #export-dimensions { display: block; margin-top: 0.5rem; color: var(--muted); font-size: 0.85rem; }
     .export-field:not([hidden]) { display: grid; gap: 0.3rem; margin-bottom: 0.6rem; font-size: 0.85rem; }
@@ -891,13 +941,13 @@
     #library-delete-warning { padding: 0.8rem; border: 1px solid #a96842; border-radius: 6px; background: #382a25; }
     #library-delete-warning p { color: #ffd5b9; }
     #library-project-error { margin: 0.5rem 0 0; color: #ff9c8c; }
-    #library-notice, #image-library-notice { color: var(--muted); }
+    #library-notice { color: var(--muted); }
     @media (max-width: 580px) {
       .export-layout { grid-template-columns: minmax(0, 1fr); }
       .export-preview-stage { min-height: 8rem; }
       #export-preview { max-height: 10rem; }
       #library-project-info:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
-      #library-data-preview, #library-image-preview { max-height: 10rem; }
+      #library-data-preview { max-height: 10rem; }
     }
     @media (max-width: 680px) {
       .editor-screen:not([hidden]) { height: auto; min-height: 100svh; }
@@ -979,7 +1029,7 @@
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4l.5 2.3 1.5.9 2.3-.7 2 3.5-1.7 1.6v1.8l1.7 1.6-2 3.5-2.3-.7-1.5.9L14 20h-4l-.5-2.3-1.5-.9-2.3.7-2-3.5 1.7-1.6v-1.8L3.7 9l2-3.5 2.3.7 1.5-.9L10 3Z"/><circle cx="12" cy="11.5" r="2.5"/></svg>
       設定
     </button>
-    <span class="label" aria-label="バージョン 0.1.0">v0.1.0</span>
+    <span class="label" aria-label="バージョン 0.2.1">v0.2.1</span>
   </footer>
   </div>
   <main id="create-screen" class="create-screen" aria-labelledby="create-heading" hidden>
@@ -987,7 +1037,6 @@
       <button class="quiet" type="button" id="return-title">タイトルに戻る</button>
       <button class="quiet" type="button" data-create-view="foundation" aria-controls="foundation-view" aria-pressed="true">土台</button>
       <button class="quiet" type="button" data-create-view="library" aria-controls="library-view" aria-pressed="false">ライブラリー</button>
-      <button class="quiet" type="button" data-create-view="images" aria-controls="images-view" aria-pressed="false">画像</button>
       <button class="quiet" type="button" data-create-view="templates" aria-controls="templates-view" aria-pressed="false">テンプレート</button>
     </nav>
     <div class="create-content">
@@ -1022,11 +1071,6 @@
       <section class="selection-panel" id="templates-view" aria-label="テンプレート" hidden>
         <ul id="template-list" class="selection-grid" aria-label="テンプレートの選択"></ul>
       </section>
-      <section class="selection-panel" id="images-view" aria-label="画像" hidden>
-        <p id="image-library-empty">保存された画像はありません。</p>
-        <p id="image-library-notice" role="status" hidden></p>
-        <ul id="image-library-list" class="selection-grid" aria-label="保存した画像"></ul>
-      </section>
     </div>
   </main>
   <main id="editor-screen" class="editor-screen" aria-labelledby="editor-heading" hidden>
@@ -1039,7 +1083,6 @@
             <div class="editor-menu-items">
               <button class="quiet" id="export-image" type="button" disabled>画像を保存…</button>
               <button class="quiet" id="open-current-preview" type="button" disabled>現在のプレビューを表示</button>
-              <button class="quiet" id="save-plane-image" type="button" disabled>PLANEに画像として保存</button>
               <button class="quiet" id="add-library-image" type="button" disabled>画像を追加</button>
               <button class="quiet" id="add-library-model" type="button" disabled>モデルを追加</button>
               <button class="quiet" type="button" data-project-save="new" disabled>新規保存…</button>
@@ -1134,6 +1177,7 @@
           <button class="quiet" type="button" data-deform-toggle aria-pressed="false">変形モード</button>
           <button class="quiet" id="add-vertex" type="button" disabled aria-pressed="false">頂点を追加</button>
           <button class="quiet" id="split-vertices" type="button" disabled>分割</button>
+          <button class="quiet" id="smooth-vertices" type="button" disabled>なめらか</button>
           <span id="deform-hint" role="status"></span>
         </div>
       </div>
@@ -1244,6 +1288,11 @@
           <h2 id="properties-heading">プロパティ<span id="selected-part-count" hidden></span></h2>
           <div class="editor-panel-content">
             <span id="editor-properties-empty"></span>
+            <div id="selection-visibility" hidden>
+              <label class="volume-row">表示 <input id="part-visible" type="checkbox" checked></label>
+              <label class="volume-row">選択 <input id="part-selectable" type="checkbox" checked></label>
+              <div id="image-preview-setting" hidden><label class="volume-row">プレビューに表示しない <input id="image-hide-preview" type="checkbox"></label></div>
+            </div>
             <dl id="editor-properties" class="editor-properties" hidden>
               <div><dt><label for="model-name">名前</label></dt><dd class="model-property-fields"><input id="model-name" type="text" maxlength="60"></dd></div>
               <div><dt><label for="model-parent">親</label></dt><dd class="model-property-fields"><select id="model-parent"></select></dd></div>
@@ -1314,12 +1363,70 @@
                 <label>幅 <input id="frame-width" type="number" min="16" max="4096" step="1"></label>
                 <label>高さ <input id="frame-height" type="number" min="16" max="4096" step="1"></label>
               </div>
+              <button class="quiet" id="open-frame-size" type="button" aria-haspopup="dialog">サイズの設定</button>
             </div>
           </div>
         </section>
       </aside>
     </div>
+    <div id="touch-controls" role="group" aria-label="タッチ操作">
+      <button class="quiet" type="button" data-touch-grip aria-label="タッチ操作パネルを移動">⠿</button>
+      <button class="quiet" type="button" data-touch-modifier="shift" aria-pressed="false">Shift</button>
+      <button class="quiet" type="button" data-touch-modifier="control" aria-pressed="false">Ctrl</button>
+      <button class="quiet" type="button" data-touch-modifier="alt" aria-pressed="false">Alt</button>
+      <button class="quiet" type="button" id="touch-marquee" aria-pressed="false">囲み</button>
+      <button class="quiet" type="button" id="touch-shortcuts" aria-controls="shortcut-menu" aria-expanded="false">操作</button>
+    </div>
+    <div id="shortcut-menu" role="group" aria-label="ショートカット操作" hidden></div>
   </main>
+  <dialog id="frame-size-dialog" aria-labelledby="frame-size-title">
+    <h2 id="frame-size-title">書き出し枠のサイズの設定</h2>
+    <form id="frame-size-form" method="dialog" style="display:grid;gap:0.75rem">
+      <label class="volume-row">比率（X：Y）
+        <select id="frame-size-ratio">
+          <option>1:1</option><option>3:2</option><option>2:3</option>
+          <option>4:3</option><option>3:4</option><option>5:4</option><option>4:5</option>
+          <option>16:9</option><option>9:16</option><option>16:10</option><option>10:16</option>
+          <option>2:1</option><option>1:2</option><option>21:9</option><option>9:21</option>
+          <option>3:1</option><option>1:3</option><option value="custom">カスタム</option>
+        </select>
+      </label>
+      <div id="frame-custom-ratio" hidden>
+        <div class="frame-fields">
+          <label>比率 X <input id="frame-ratio-x" type="number" min="0.000001" step="any" value="1"></label>
+          <label>比率 Y <input id="frame-ratio-y" type="number" min="0.000001" step="any" value="1"></label>
+        </div>
+      </div>
+      <div class="frame-fields">
+        <label>X <input id="frame-size-x" type="number" min="16" max="4096" step="1" required> px</label>
+        <label>Y <input id="frame-size-y" type="number" min="16" max="4096" step="1" required> px</label>
+      </div>
+      <p id="frame-size-status" role="status" hidden></p>
+      <div class="export-actions">
+        <button class="quiet" id="cancel-frame-size" type="button">キャンセル</button>
+        <button class="quiet primary" id="apply-frame-size" type="submit">適用</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="smooth-dialog" aria-labelledby="smooth-title">
+    <h2 id="smooth-title">なめらか</h2>
+    <div class="smooth-layout">
+      <div>
+        <svg id="smooth-preview" aria-label="選択した辺の変更プレビュー">
+          <path id="smooth-before" stroke="#778397" stroke-dasharray="4 3"></path>
+          <path id="smooth-after" stroke="#82e1ff" stroke-width="2"></path>
+          <path id="smooth-points" stroke="#f6fcff" stroke-width="5" stroke-linecap="round"></path>
+        </svg>
+        <p>破線は変更前、水色は変更後です。</p>
+      </div>
+      <div class="smooth-fields">
+        <label>端から端までの頂点の数 <input type="number" id="smooth-count" min="2" max="512" step="1" value="8"></label>
+        <label>滑らかさ <input type="range" id="smooth-amount" min="0" max="100" step="1" value="50"></label>
+        <p id="smooth-status" role="status"></p>
+      </div>
+    </div>
+    <form method="dialog"><button class="quiet" type="submit">キャンセル</button><button class="quiet" id="apply-smooth" type="button">適用</button></form>
+  </dialog>
   <dialog id="operation-guide" aria-labelledby="operation-guide-title">
     <div class="guide-layout">
       <header class="guide-header">
@@ -1350,7 +1457,8 @@
             <li><strong>ビューを移動</strong>　何もない場所をドラッグします。</li>
             <li><strong>ズーム</strong>　マウスホイールでカーソルを基準に拡大・縮小します。左の縦スライダーも使えます。「設定 → 編集」でズームの上限を変更できます。</li>
             <li><strong>選択・解除</strong>　図形またはエクスプローラーの行をクリックします。ビューの何もないところをクリックすると選択が外れます。タッチ画面ではタップで選べます。</li>
-            <li><strong>囲み選択</strong>　「選択」ツールで右ボタンを押したままドラッグすると、囲みに触れた図形を選択できます。</li>
+            <li><strong>囲み選択</strong>　どのツールでも、右ボタンでドラッグすると囲みに触れた図形を選べます。動かさずに右クリックすると操作メニューが開きます。</li>
+            <li><strong>タッチ操作</strong>　2本指でズーム・移動できます。浮かぶ操作パネルは左端の取っ手で移動でき、Shift・Ctrl・Altや「囲み」をオン・オフできます。「操作」からショートカットの機能も実行できます。</li>
             <li><strong>画面の表示</strong>　「表示」メニューからツールバー・エクスプローラー・プロパティを表示・非表示にできます。「モード → ギズモを表示」で操作ハンドルを切り替えます。</li>
           </ul>
         </details>
@@ -1399,10 +1507,12 @@
             <li><strong>作品を保存</strong>　「ファイル → 新規保存…」で名前を付けます。「上書き保存…」ではライブラリーから対象を選び、確認して保存します。</li>
             <li><strong>作品を開く・管理する</strong>　タイトルの「ライブラリー」で「読み込む」を押します。「⋯」から名前変更、モデル情報とプレビューの確認、消去ができます。新しく始める場合は「作成する」から土台やテンプレートを選べます。</li>
             <li><strong>書き出す範囲</strong>　エクスプローラーで「書き出し枠」を選び、ドラッグや移動・拡大縮小ツール、またはプロパティで枠の位置とサイズを調整します。</li>
+            <li><strong>書き出し枠のサイズ設定</strong>　新規の枠は512×512 pxです。書き出し枠を選び、プロパティの「サイズの設定」を開きます。1:1、16:9、9:16などから比率を選ぶか、「カスタム」で比率のX・Yを入力します。寸法のXかYを変えると、もう片方が自動で調整されます。「適用」で確定します。</li>
             <li><strong>画像を保存</strong>　「ファイル → 画像を保存…」でファイル名、PNG／JPEG、倍率、背景、JPEG画質を設定します。出力倍率の「高画質（自動）」は最大200％で、書き出し枠のサイズに応じて手動で最大400％まで選べます。</li>
             <li><strong>現在のプレビュー</strong>　「ファイル → 現在のプレビューを表示」で、書き出し枠に収まる画像を確認できます。</li>
-            <li><strong>PLANEに画像として保存</strong>　書き出し枠と同じ形の透明PNGを、白一色でPLANEに保存します。「作成する → 画像」から開けます。画像の「⋯」から名前変更、情報の確認、消去ができます。</li>
-            <li><strong>編集中の作品に追加</strong>　「ファイル → 画像を追加」や「モデルを追加」で、保存した素材を選べます。追加した画像はプロパティで色を変更でき、頂点編集や切り取りも使えます。</li>
+            <li><strong>画像を追加</strong>　「ファイル → 画像を追加」で端末から画像を選びます。編集用の参考画像はプロパティの「プレビューに表示しない」で書き出しから除外できます。</li>
+            <li><strong>表示・選択</strong>　「表示」をオフにすると編集ビューから隠れます。「選択」をオフにするとビューのクリック・囲み選択の対象外になります。どちらもエクスプローラーから選び直せます。</li>
+            <li><strong>モデルを追加</strong>　「ファイル → モデルを追加」で、ライブラリーの作品を編集中のシーンに読み込めます。追加した画像はプロパティで色を変更でき、頂点編集や切り取りも使えます。</li>
             <li><strong>タイトルに戻る</strong>　「タイトルに戻る」を押します。未保存のときは確認が開き、その場で保存方法を選べます。</li>
           </ul>
         </details>
@@ -1416,8 +1526,9 @@
             <li><kbd>Delete</kbd>、<kbd>Backspace</kbd>、<kbd>Ctrl</kbd>＋<kbd>X</kbd> で、通常時は選択中のパーツやオブジェクトを子孫ごと削除します。変形モードでは選択中の頂点を削除し、残った頂点をつなぎ直します。</li>
             <li><kbd>Enter</kbd> でパーツのプロパティ入力を確定します。<kbd>Esc</kbd> で頂点追加・囲み選択を中止したり、メニューやウィンドウを閉じたりできます。</li>
             <li><kbd>Ctrl</kbd>＋クリックでパーツや頂点の選択を追加・解除します。右ドラッグの囲み選択に <kbd>Ctrl</kbd> を併用すると現在の選択に追加します。</li>
+            <li>変形モードでは、頂点を選んで <kbd>Shift</kbd>＋クリックすると、同じパーツ内で辺の数が最も少ない経路上の頂点が選ばれます。続けて <kbd>Shift</kbd>＋クリックすると、最後に指定した頂点から次の区間が選択に加わります。</li>
             <li>エクスプローラーで1つ選び、<kbd>Shift</kbd>＋クリックすると、間に表示されている項目もまとめて選べます。</li>
-            <li><kbd>Shift</kbd>＋移動で単一パーツを方眼に合わせ、複数パーツでは白い丸をドラッグして中心から離せます。2つだけ選んだときは色付きの矢印で間隔も調整できます。</li>
+            <li><kbd>Shift</kbd>＋移動で単一パーツを方眼に合わせ、複数パーツでは白い丸をドラッグして中心から離せます。<kbd>Shift</kbd>＋<kbd>Alt</kbd>を押すと中心に寄せられます。</li>
             <li><kbd>Shift</kbd>＋回転で45度刻みになります。白い拡大ハンドルや書き出し枠の拡大で <kbd>Shift</kbd> を押すと縦横比を固定します。中心を変更するときは頂点・中央・辺の中点・四隅に、頂点追加中は設定した目印に吸着します。</li>
             <li>Macでは上記の <kbd>Ctrl</kbd> の代わりに <kbd>⌘</kbd> を使えます。</li>
             <li>ここで紹介しているキーは初期設定です。「設定」の「キーバウンド」で割り当ての変更や初期化ができます。</li>
@@ -1427,13 +1538,13 @@
           <summary>設定</summary>
           <ul>
             <li>メニューバーの「設定」から、タイトルBGMとクリック音のオン・オフ、音量（1〜200％）、クリック音の種類を調整できます。</li>
-            <li>「その他」でテーマ、頂点の形、タイトルやプレビューのアニメーションを変更できます。頂点に使う画像はPLANEの画像一覧から選べます。設定と作品は使用中のブラウザに保存されます。</li>
+            <li>「その他」でテーマ、頂点の形、タイトルやプレビューのアニメーションを変更できます。頂点に使う画像も端末から選べます。設定と作品は使用中のブラウザに保存されます。</li>
           </ul>
         </details>
         <details data-guide-content="tips" hidden>
           <summary>素材を繰り返し使う</summary>
           <ul>
-            <li>同じ図柄を何色かで使うときは、一度「PLANEに画像として保存」し、必要な回数だけ追加して、プロパティで色を付けます。</li>
+            <li>変形モードで辺でつながった頂点を選んで「なめらか」を開くと、プレビューを見ながら頂点数と滑らかさを調整できます。中間の値では角が丸くなり、100にすると両端を結ぶ直線になります。閉じた輪郭全体を選んだ場合は、面を保ったまま丸めます。</li>
             <li>子の階層や個々のパーツを再編集したいときは、モデルとして新規保存して「モデルを追加」から読み込みます。</li>
           </ul>
         </details>
@@ -1445,14 +1556,14 @@
     <div class="parts-window-body">
       <div>
         <div class="parts-preview" id="parts-preview">
-          <svg viewBox="-100 -100 200 200" role="img" aria-label="パーツのプレビュー">
+          <svg viewBox="-180 -180 360 360" role="img" aria-label="パーツのプレビュー">
             <path id="parts-preview-shape" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="3"/>
-            <circle id="parts-preview-marker" cx="0" cy="-70" r="4" fill="currentColor" visibility="hidden"/>
+            <circle id="parts-preview-marker" cx="0" cy="-120" r="7" fill="currentColor" visibility="hidden"/>
           </svg>
         </div>
         <fieldset class="parts-fixed">
           <legend>変更不可のプロパティ</legend>
-          <label id="part-sides-label" hidden>頂点の数 <input id="part-sides" type="number" min="3" max="64" step="1" value="5"></label>
+          <label id="part-sides-label" hidden>頂点の数 <input id="part-sides" type="number" min="3" max="256" step="1" value="5"></label>
           <div id="mirror-initial-alignment" hidden>
             <label><input id="mirror-align-position" type="checkbox"> 挿入時に位置を親に合わせる</label>
             <label><input id="mirror-align-angle" type="checkbox"> 挿入時に角度を親に合わせる</label>
@@ -1519,7 +1630,6 @@
         <label class="export-field" id="export-quality-field" hidden>JPEG画質 <output id="export-quality-value">97%</output>
           <input id="export-quality" type="range" min="10" max="100" value="97">
         </label>
-        <p id="plane-image-note" hidden>書き出し枠の範囲を、透明度を保った白い画像としてPLANE内に保存します。</p>
         <p id="export-error" role="status"></p>
         <div class="export-actions">
           <button class="quiet primary" id="save-export" type="submit">保存</button>
@@ -1534,6 +1644,7 @@
     <p id="current-preview-status" role="status" hidden></p>
     <form method="dialog"><button class="quiet" autofocus>閉じる</button></form>
   </dialog>
+  <input id="import-image-file" type="file" accept="image/*" hidden>
   <dialog id="insert-library-dialog" aria-labelledby="insert-library-title">
     <h2 id="insert-library-title"></h2>
     <p id="insert-library-empty" hidden></p>
@@ -1588,7 +1699,6 @@
     <section id="library-project-info" aria-label="ライブラリーの情報" hidden>
       <div class="export-preview-stage">
         <canvas id="library-data-preview" aria-label="モデルのプレビュー"></canvas>
-        <img id="library-image-preview" alt="画像のプレビュー" hidden>
       </div>
       <dl class="library-data-values" id="library-data-values"></dl>
     </section>
@@ -1681,6 +1791,9 @@
             <option value="dark">ダーク</option><option value="astral">アストラル</option>
             <option value="liminal">リミナル</option><option value="sky">スカイ</option>
             <option value="rainbow">レインボー</option><option value="blood">ブラッド</option>
+            <option value="remembrance">リメンバランス</option>
+            <option value="white-blue">ホワイト＆ブルー</option>
+            <option value="meta">メタ</option>
             <option value="custom">カスタム</option>
           </select>
         </label>
@@ -1703,10 +1816,10 @@
         </label>
         <div id="vertex-marker-image-row" hidden>
           <label class="volume-row">頂点に使う画像
-            <select id="vertex-marker-image"></select>
+            <input id="vertex-marker-image" type="file" accept="image/*">
           </label>
           <img id="vertex-marker-image-preview" alt="頂点に使う画像のプレビュー" hidden>
-          <p id="vertex-marker-image-hint" hidden>「PLANEに画像として保存」で画像を保存すると選べます。</p>
+          <p id="vertex-marker-image-hint" role="status" hidden></p>
         </div>
       </div>
       <label class="volume-row">タイトルのアニメーションをなくす
@@ -1763,6 +1876,13 @@
     const sceneParts = document.querySelector('#scene-parts');
     const frameParts = document.querySelector('#frame-parts');
     const editorProperties = document.querySelector('#editor-properties');
+    const selectionVisibility = document.querySelector('#selection-visibility');
+    const imagePreviewSetting = document.querySelector('#image-preview-setting');
+    const visibilityInputs = {
+      visible: document.querySelector('#part-visible'),
+      selectable: document.querySelector('#part-selectable'),
+      previewHidden: document.querySelector('#image-hide-preview')
+    };
     const editorPropertiesEmpty = document.querySelector('#editor-properties-empty');
     const selectedPartCount = document.querySelector('#selected-part-count');
     const exportFrame = document.querySelector('#export-frame');
@@ -1778,7 +1898,6 @@
     const exportImageButton = document.querySelector('#export-image');
     const openCurrentPreviewButton = document.querySelector('#open-current-preview');
     const currentPreviewDialog = document.querySelector('#current-preview-dialog');
-    const savePlaneImageButton = document.querySelector('#save-plane-image');
     const addLibraryImageButton = document.querySelector('#add-library-image');
     const addLibraryModelButton = document.querySelector('#add-library-model');
     const insertLibraryDialog = document.querySelector('#insert-library-dialog');
@@ -1798,7 +1917,6 @@
       quality: document.querySelector('#export-quality')
     };
     let exportRevision = 0;
-    let exportToPlane = false;
     const maxExportEdge = 8192;
     const maxExportPixels = 4096 ** 2;
     const modelGizmo = editorViewport.querySelector('.model-gizmo');
@@ -1808,6 +1926,11 @@
     const deformTab = document.querySelector('#deform-tab');
     const addVertexButton = document.querySelector('#add-vertex');
     const splitVerticesButton = document.querySelector('#split-vertices');
+    const smoothVerticesButton = document.querySelector('#smooth-vertices');
+    const smoothDialog = document.querySelector('#smooth-dialog');
+    const smoothCount = document.querySelector('#smooth-count');
+    const smoothAmount = document.querySelector('#smooth-amount');
+    const smoothApply = document.querySelector('#apply-smooth');
     const deformHint = document.querySelector('#deform-hint');
     const vertexInsertMarker = document.querySelector('#vertex-insert-marker');
     const vertexInsertGuides = document.querySelector('#vertex-insert-guides');
@@ -1822,7 +1945,6 @@
     const vertexPositionGuides = document.querySelector('#vertex-position-guides');
     const vertexMoveSnapGuide = document.querySelector('#vertex-move-snap-guide');
     let vertexMarkerStyle = 'circle';
-    let vertexMarkerImageId = '';
     let vertexMarkerImageData = '';
     const editorMarquee = document.querySelector('#editor-marquee');
     const modelName = document.querySelector('#model-name');
@@ -1864,9 +1986,10 @@
     const appearanceRows = editorProperties.querySelectorAll('[data-part-appearance]');
     const objectTransformRows = editorProperties.querySelectorAll('[data-object-transform]');
     const shapeTransformRows = editorProperties.querySelectorAll('[data-shape-transform]');
-    const defaultFrame = { x: 0, y: 0, width: 300, height: 220, px: 0, py: 0 };
+    const defaultFrame = { x: 0, y: 0, width: 512, height: 512, px: 0, py: 0 };
+    const initialPartRadius = 120;
     const defaultModel = { x: 0, y: 0, angle: 0, sx: 1, sy: 1, px: 0, py: 0 };
-    let frameBounds = { ...defaultFrame };
+    let frameBounds = { ...defaultFrame, parentBasis: 512 };
     const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー', line: '直線', 'unified-copy': '一体複製' };
     const partNames = { square: '正方形', circle: '円', polygon: '多角形', image: '画像', ...objectNames };
     const partOutlineWidth = 2;
@@ -1920,6 +2043,14 @@
     let panStart;
     let marqueeDrag = null;
     let panDragged = false;
+    const touchModifiers = new Set();
+    const viewportTouches = new Map();
+    let viewportPinch = null;
+    const touchMarquee = document.querySelector('#touch-marquee');
+    let touchMarqueeActive = false;
+    const shiftHeld = event => event.shiftKey || touchModifiers.has('shift');
+    const controlHeld = event => event.ctrlKey || event.metaKey || touchModifiers.has('control');
+    const altHeld = event => event.altKey || touchModifiers.has('alt');
 
     function getPart(id, scene = parts) {
       return scene.find(part => part.id === id);
@@ -1958,14 +2089,15 @@
     }
 
     function makeGeometry(kind, sides) {
-      if (kind === 'line') return { vertices: [[-70, 0], [70, 0]], edges: [[0, 1]] };
+      const radius = initialPartRadius;
+      if (kind === 'line') return { vertices: [[-radius, 0], [radius, 0]], edges: [[0, 1]] };
       if (Object.hasOwn(objectNames, kind)) return { vertices: [], edges: [] };
-      const count = kind === 'circle' ? 64 : sides;
+      const count = kind === 'circle' ? 128 : sides;
       const vertices = kind === 'square'
-        ? [[-70, -70], [70, -70], [70, 70], [-70, 70]]
+        ? [[-radius, -radius], [radius, -radius], [radius, radius], [-radius, radius]]
         : Array.from({ length: count }, (_, index) => {
           const angle = index * 2 * Math.PI / count - Math.PI / 2;
-          return [Math.cos(angle) * 70, Math.sin(angle) * 70];
+          return [Math.cos(angle) * radius, Math.sin(angle) * radius];
         });
       const edges = vertices.map((_, index) => [index, (index + 1) % vertices.length]);
       return { vertices, edges };
@@ -2640,8 +2772,11 @@
       shape.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
       if (imageFill) {
         shape.setAttribute('fill-opacity', '0');
-        imageFill.setAttribute('fill', appearance.color);
-        imageFill.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
+        imageFill.setAttribute('opacity', transparencyToOpacity(appearance.faceTransparency));
+        const tint = partNodes.get(part.id).imageDefs.querySelector('feFlood');
+        tint?.setAttribute('flood-color', appearance.color);
+        if (appearance.color.toLowerCase() === '#ffffff') imageFill.removeAttribute('filter');
+        else imageFill.setAttribute('filter', 'url(#' + partNodes.get(part.id).visualId + '-image-tint)');
       }
       const spiked = part.kind === 'line' && lineCap(part) === 'spike';
       shape.setAttribute('stroke', appearance.outlineEnabled ? (spiked ? 'transparent' : edgeColor) : 'none');
@@ -2703,20 +2838,30 @@
     function renderImageFill(part) {
       if (part.kind !== 'image') return;
       const { imageFill, imageDefs, visualId } = partNodes.get(part.id);
-      const { width, height, corners, data } = part.image;
-      imageFill.setAttribute('d', geometryPath(part.geometry));
+      const { width, height, data } = part.image;
       imageDefs.replaceChildren();
+      imageFill.replaceChildren();
       const svg = name => document.createElementNS('http://www.w3.org/2000/svg', name);
-      const mask = svg('mask');
-      const maskId = visualId + '-image-mask';
-      mask.setAttribute('id', maskId);
-      mask.setAttribute('maskUnits', 'userSpaceOnUse');
-      mask.style.setProperty('mask-type', 'alpha');
-      const xs = corners.map(point => point[0]), ys = corners.map(point => point[1]);
-      mask.setAttribute('x', Math.min(...xs) - 1);
-      mask.setAttribute('y', Math.min(...ys) - 1);
-      mask.setAttribute('width', Math.max(...xs) - Math.min(...xs) + 2);
-      mask.setAttribute('height', Math.max(...ys) - Math.min(...ys) + 2);
+      const clipId = visualId + '-image-clip';
+      const addClip = (id, geometry) => {
+        const clip = svg('clipPath');
+        clip.setAttribute('id', id);
+        const path = svg('path');
+        path.setAttribute('d', geometry);
+        clip.append(path);
+        imageDefs.append(clip);
+      };
+      addClip(clipId, geometryPath(part.geometry));
+      imageFill.setAttribute('clip-path', 'url(#' + clipId + ')');
+      const tint = svg('filter');
+      tint.setAttribute('id', visualId + '-image-tint');
+      const flood = svg('feFlood');
+      flood.setAttribute('flood-color', partAppearance(part).color);
+      const composite = svg('feComposite');
+      composite.setAttribute('in2', 'SourceAlpha');
+      composite.setAttribute('operator', 'in');
+      tint.append(flood, composite);
+      imageDefs.append(tint);
       for (const [index, tile] of imageTiles(part.image).entries()) {
         const image = svg('image');
         image.setAttribute('href', data);
@@ -2727,23 +2872,16 @@
         image.setAttribute('preserveAspectRatio', 'none');
         image.setAttribute('transform', svgMatrix(tile.matrix));
         if (!tile.clip) {
-          mask.append(image);
+          imageFill.append(image);
           continue;
         }
-        const clip = svg('clipPath');
-        const clipId = maskId + '-' + index;
-        clip.setAttribute('id', clipId);
-        const path = svg('path');
-        path.setAttribute('d', tile.clip);
-        clip.append(path);
+        const tileClipId = clipId + '-' + index;
+        addClip(tileClipId, tile.clip);
         const group = svg('g');
-        group.setAttribute('clip-path', 'url(#' + clipId + ')');
+        group.setAttribute('clip-path', 'url(#' + tileClipId + ')');
         group.append(image);
-        imageDefs.append(clip);
-        mask.append(group);
+        imageFill.append(group);
       }
-      imageDefs.append(mask);
-      imageFill.setAttribute('mask', 'url(#' + maskId + ')');
     }
 
     function appearanceEditable(key, appearance, part) {
@@ -2780,7 +2918,7 @@
       }
       if (part.parent === 'frame') {
         return new DOMMatrix().translate(frame.x, -frame.y)
-          .scale(frame.width / defaultFrame.width, frame.height / defaultFrame.height);
+          .scale(frame.width / (frame.parentBasis ?? 300), frame.height / (frame.parentBasis ?? 220));
       }
       const parent = getPart(part.parent, scene);
       return parent ? partMatrix(parent, scene, frame) : new DOMMatrix();
@@ -2800,11 +2938,16 @@
       return value === 0 ? 1 : value;
     }
 
-    function isPartVisible(part, scene = parts) {
+    function isPartVisible(part, scene = parts, preview = false) {
+      if (preview && part.kind === 'image' && part.previewHidden === true) return false;
       for (let item = part; item; item = getPart(item.parent, scene)) {
-        if (item.transform.sx === 0 || item.transform.sy === 0) return false;
+        if ((!preview && item.visible === false) || item.transform.sx === 0 || item.transform.sy === 0) return false;
       }
       return true;
+    }
+
+    function isViewportSelectable(part) {
+      return Boolean(part && part.selectable !== false && isPartVisible(part));
     }
 
     function modelLinearMatrix({ angle, sx, sy, stretch }) {
@@ -2827,8 +2970,8 @@
       return Math.max(1, Math.min(18, Math.round(part.lines ?? 2)));
     }
 
-    function mirrorCopies(mirror, scene, frame) {
-      if (mirror.kind !== 'mirror' || mirror.baked || !isPartVisible(mirror, scene)) return null;
+    function mirrorCopies(mirror, scene, frame, preview = false) {
+      if (mirror.kind !== 'mirror' || mirror.baked || !isPartVisible(mirror, scene, preview)) return null;
       const target = getPart(mirror.parent, scene);
       if (!target || target.cutter) return null;
       const ids = new Set([target.id]);
@@ -2849,8 +2992,8 @@
       return { mirrorId: mirror.id, target, ids, matrices };
     }
 
-    function sceneMirrors(scene, frame) {
-      return scene.map(part => mirrorCopies(part, scene, frame)).filter(Boolean);
+    function sceneMirrors(scene, frame, preview = false) {
+      return scene.map(part => mirrorCopies(part, scene, frame, preview)).filter(Boolean);
     }
 
     function svgMatrix({ a, b, c, d, e, f }) {
@@ -2891,7 +3034,7 @@
     function renderMirrorGuide() {
       mirrorGuides.replaceChildren();
       const mirror = getPart(editorSelection);
-      mirrorHandle.hidden = mirror?.kind !== 'mirror' || mirror.baked || selectedPartIds.size !== 1;
+      mirrorHandle.hidden = mirror?.kind !== 'mirror' || mirror.baked || selectedPartIds.size !== 1 || !isViewportSelectable(mirror);
       if (mirrorHandle.hidden) return;
       const pose = partMatrix(mirror);
       editorViewport.style.setProperty('--mirror-x', pose.e + 'px');
@@ -2913,7 +3056,7 @@
       }
     }
 
-    function sceneOutlineBands(scene, frame, mirrors = sceneMirrors(scene, frame)) {
+    function sceneOutlineBands(scene, frame, mirrors = sceneMirrors(scene, frame), preview = false) {
       const outlines = scene.filter(part => part.kind === 'outline');
       if (!outlines.length) return [];
       const byId = new Map(scene.map(part => [part.id, part]));
@@ -2922,7 +3065,7 @@
       const bands = [];
       const targets = outlines.flatMap(outline => {
         const appearance = partAppearance(outline);
-        if (!appearance.outlineEnabled || appearance.outlineTransparency === 100 || !isPartVisible(outline, scene)) return [];
+        if (!appearance.outlineEnabled || appearance.outlineTransparency === 100 || !isPartVisible(outline, scene, preview)) return [];
         let target = byId.get(outline.parent);
         while (target?.kind === 'outline') target = byId.get(target.parent);
         if (!target || target.cutter) return [];
@@ -2940,7 +3083,7 @@
           for (const part of scene) {
             if (part !== target && !subtree.has(part.parent)) continue;
             subtree.add(part.id);
-            if (part.cutter || part.kind === 'outline' || part.kind === 'line' || !part.geometry.edges.length || !isPartVisible(part, scene)) continue;
+            if (part.cutter || part.kind === 'outline' || part.kind === 'line' || !part.geometry.edges.length || !isPartVisible(part, scene, preview)) continue;
             const style = partAppearance(part);
             const outlined = style.outlineEnabled && style.outlineTransparency < 100;
             if (!outlined && style.faceTransparency === 100) continue;
@@ -3099,8 +3242,8 @@
     }
 
     function clickExplorerPart(id, event) {
-      const extend = event.ctrlKey || event.metaKey;
-      if (event.shiftKey && selectedPartIds.has(explorerRangeAnchor)) {
+      const extend = controlHeld(event);
+      if (shiftHeld(event) && selectedPartIds.has(explorerRangeAnchor)) {
         const children = partsByParent(parts);
         const visible = [];
         function visit(parent) {
@@ -3168,7 +3311,7 @@
         visual.append(glow);
         if (part.kind === 'image') {
           imageDefs = makeSvg('defs');
-          imageFill = makeSvg('path');
+          imageFill = makeSvg('g');
           imageFill.classList.add('part-image-fill');
           shape.classList.add('part-image-hit');
           imageFill.setAttribute('pointer-events', 'none');
@@ -3248,7 +3391,7 @@
       if (partKind === 'square') return 4;
       if (partKind === 'circle') return 0;
       const value = partSides.valueAsNumber;
-      return Number.isFinite(value) ? Math.max(3, Math.min(64, Math.round(value))) : 5;
+      return Number.isFinite(value) ? Math.max(3, Math.min(Number(partSides.max), Math.round(value))) : 5;
     }
 
     function updatePartPreview() {
@@ -3438,6 +3581,8 @@
     viewZoomInput.addEventListener('input', () => setViewZoom(viewZoomInput.valueAsNumber / 100));
 
     function renderExportFrame() {
+      exportFrame.toggleAttribute('data-frame-hidden', frameBounds.visible === false);
+      exportFrame.toggleAttribute('data-frame-unselectable', frameBounds.selectable === false);
       const position = positionAtPivot(frameBounds, framePivotOffset);
       for (const [key, input] of Object.entries(frameInputs)) {
         exportFrame.style.setProperty('--frame-' + key, frameBounds[key] + 'px');
@@ -3455,6 +3600,75 @@
     function clampFrameSize(value) {
       return Math.min(4096, Math.max(16, Math.round(value)));
     }
+
+    const frameSizeDialog = document.querySelector('#frame-size-dialog');
+    const frameRatio = document.querySelector('#frame-size-ratio');
+    const customFrameRatio = document.querySelector('#frame-custom-ratio');
+    const frameRatioX = document.querySelector('#frame-ratio-x');
+    const frameRatioY = document.querySelector('#frame-ratio-y');
+    const frameSizeX = document.querySelector('#frame-size-x');
+    const frameSizeY = document.querySelector('#frame-size-y');
+    const frameSizeStatus = document.querySelector('#frame-size-status');
+    const applyFrameSize = document.querySelector('#apply-frame-size');
+    let frameSizeDriver = frameSizeX;
+
+    function updateFrameSize(commit = false) {
+      const custom = frameRatio.value === 'custom';
+      customFrameRatio.hidden = !custom;
+      const [x, y] = custom ? [frameRatioX.valueAsNumber, frameRatioY.valueAsNumber] : frameRatio.value.split(':').map(Number);
+      const ratio = x / y;
+      const validRatio = x > 0 && y > 0 && ratio >= 16 / 4096 && ratio <= 4096 / 16;
+      frameSizeStatus.hidden = validRatio;
+      frameSizeStatus.textContent = validRatio ? '' : 'X・Yがともに16〜4096 pxに収まる比率を入力してください。';
+      const value = frameSizeDriver.valueAsNumber;
+      applyFrameSize.disabled = !validRatio || !Number.isFinite(value);
+      if (applyFrameSize.disabled) return false;
+      const fromX = frameSizeDriver === frameSizeX;
+      const factor = fromX ? 1 / ratio : ratio;
+      const min = Math.max(16, Math.ceil(16 / factor - 0.000001));
+      const max = Math.min(4096, Math.floor(4096 / factor + 0.000001));
+      const driver = Math.max(min, Math.min(max, Math.round(value)));
+      if (commit) frameSizeDriver.value = String(driver);
+      (fromX ? frameSizeY : frameSizeX).value = String(clampFrameSize(driver * factor));
+      return true;
+    }
+
+    document.querySelector('#open-frame-size').addEventListener('click', () => {
+      const { width, height } = frameBounds;
+      frameSizeX.value = String(width);
+      frameSizeY.value = String(height);
+      frameRatioX.value = String(width);
+      frameRatioY.value = String(height);
+      frameRatio.value = Array.from(frameRatio.options).find(option => {
+        const [x, y] = option.value.split(':').map(Number);
+        return width * y === height * x;
+      })?.value ?? 'custom';
+      frameSizeDriver = frameSizeX;
+      updateFrameSize();
+      frameSizeDialog.showModal();
+    });
+    document.querySelector('#cancel-frame-size').addEventListener('click', () => frameSizeDialog.close());
+    frameRatio.addEventListener('change', () => updateFrameSize(true));
+    for (const input of [frameRatioX, frameRatioY]) {
+      input.addEventListener('input', () => updateFrameSize());
+      input.addEventListener('change', () => updateFrameSize(true));
+    }
+    for (const input of [frameSizeX, frameSizeY]) {
+      input.addEventListener('input', () => {
+        frameSizeDriver = input;
+        updateFrameSize();
+      });
+      input.addEventListener('change', () => updateFrameSize(true));
+    }
+    document.querySelector('#frame-size-form').addEventListener('submit', event => {
+      event.preventDefault();
+      if (!updateFrameSize(true)) return;
+      const before = editorSnapshot();
+      resizeFrame(frameBounds, frameSizeX.valueAsNumber, frameSizeY.valueAsNumber);
+      renderExportFrame();
+      recordEditorEdit(before);
+      frameSizeDialog.close();
+    });
 
     function framePivotOffset(frame) {
       return { x: frame.px * frame.width, y: frame.py * frame.height };
@@ -3855,6 +4069,7 @@
         const matrix = partMatrix(part);
         const { group, shape, glow, button, imageFill } = partNodes.get(part.id);
         group.toggleAttribute('data-zero-scale', !isPartVisible(part));
+        group.toggleAttribute('data-unselectable', part.selectable === false);
         const transform = svgMatrix(matrix);
         shape.setAttribute('transform', transform);
         glow.setAttribute('transform', transform);
@@ -3960,6 +4175,7 @@
         const pose = partMatrix(part);
         const visible = isPartVisible(part);
         vertices.toggleAttribute('data-zero-scale', !visible);
+        vertices.toggleAttribute('data-unselectable', part.selectable === false);
         part.geometry.vertices.forEach(([x, y], index) => {
           const dot = vertices.children[index];
           const position = pose.transformPoint(new DOMPoint(x, y));
@@ -3969,7 +4185,7 @@
           resizeVertexMarker(vertices, dot);
           dot.dataset.displayX = position.x;
           dot.dataset.displayY = position.y;
-          if (!deformMode || !visible || !selectedPartIds.has(part.id)) return;
+          if (!deformMode || !visible || part.selectable === false || !selectedPartIds.has(part.id)) return;
           const key = Math.round(position.x * viewZoom) + ',' + Math.round(position.y * viewZoom);
           if (!coincident.has(key)) coincident.set(key, []);
           coincident.get(key).push(dot);
@@ -4210,8 +4426,8 @@
         modelName.select();
       }],
       ['split', '分割', 'none', '', () => shortcutClick('split-vertices')],
+      ['smooth', 'なめらか', 'none', '', () => shortcutClick('smooth-vertices')],
       ['export', '画像を保存', 'none', '', () => shortcutClick('export-image')],
-      ['saveImage', 'PLANEに画像として保存', 'none', '', () => shortcutClick('save-plane-image')],
       ['addImage', '画像を追加', 'none', '', () => shortcutClick('add-library-image')],
       ['addModel', 'モデルを追加', 'none', '', () => shortcutClick('add-library-model')]
     ];
@@ -4219,6 +4435,87 @@
     const shortcutModifiers = { none: 'なし', control: 'コントロール', shift: 'シフト',
       'control-shift': 'コントロール＋シフト', alt: 'オルト' };
     let shortcutBindings = {};
+    const shortcutMenu = document.querySelector('#shortcut-menu');
+    const touchShortcuts = document.querySelector('#touch-shortcuts');
+    const touchControls = document.querySelector('#touch-controls');
+    const touchGrip = document.querySelector('[data-touch-grip]');
+    let touchControlsDrag;
+
+    function closeShortcutMenu() {
+      shortcutMenu.hidden = true;
+      touchShortcuts.setAttribute('aria-expanded', 'false');
+    }
+
+    function openShortcutMenu(x, y) {
+      shortcutMenu.replaceChildren();
+      const labels = { none: '', control: 'Ctrl+', shift: 'Shift+', 'control-shift': 'Ctrl+Shift+', alt: 'Alt+' };
+      for (const [id, label, , , run] of shortcutActions) {
+        if (id === 'cancel' || id === 'deleteBackspace' || id === 'deleteControl') continue;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'quiet';
+        button.textContent = label;
+        const { modifier, key } = shortcutBindings[id];
+        if (key) {
+          const binding = document.createElement('kbd');
+          binding.textContent = labels[modifier] + (key.length === 1 ? key.toUpperCase() : key);
+          button.append(binding);
+        }
+        button.addEventListener('click', () => {
+          closeShortcutMenu();
+          run();
+        });
+        shortcutMenu.append(button);
+      }
+      shortcutMenu.hidden = false;
+      touchShortcuts.setAttribute('aria-expanded', 'true');
+      const bounds = shortcutMenu.getBoundingClientRect();
+      shortcutMenu.style.left = Math.max(4, Math.min(x, window.innerWidth - bounds.width - 4)) + 'px';
+      shortcutMenu.style.top = Math.max(4, Math.min(y, window.innerHeight - bounds.height - 4)) + 'px';
+      shortcutMenu.scrollTop = 0;
+    }
+
+    for (const button of touchControls.querySelectorAll('[data-touch-modifier]')) {
+      button.addEventListener('click', () => {
+        const modifier = button.dataset.touchModifier;
+        if (!touchModifiers.delete(modifier)) touchModifiers.add(modifier);
+        button.setAttribute('aria-pressed', String(touchModifiers.has(modifier)));
+      });
+    }
+    touchMarquee.addEventListener('click', () => {
+      touchMarqueeActive = !touchMarqueeActive;
+      touchMarquee.setAttribute('aria-pressed', String(touchMarqueeActive));
+    });
+    touchShortcuts.addEventListener('click', () => {
+      if (!shortcutMenu.hidden) return closeShortcutMenu();
+      const bounds = touchShortcuts.getBoundingClientRect();
+      openShortcutMenu(bounds.left, bounds.bottom + 4);
+    });
+    function placeTouchControls(x, y) {
+      const { width, height } = touchControls.getBoundingClientRect();
+      touchControls.style.left = Math.max(0, Math.min(x, window.innerWidth - width)) + 'px';
+      touchControls.style.top = Math.max(0, Math.min(y, window.innerHeight - height)) + 'px';
+      touchControls.style.bottom = 'auto';
+    }
+    touchGrip.addEventListener('pointerdown', event => {
+      if (event.button !== 0) return;
+      const { left, top } = touchControls.getBoundingClientRect();
+      touchControlsDrag = { id: event.pointerId, x: event.clientX - left, y: event.clientY - top };
+      touchGrip.setPointerCapture(event.pointerId);
+    });
+    touchGrip.addEventListener('pointermove', event => {
+      if (touchControlsDrag?.id === event.pointerId) placeTouchControls(event.clientX - touchControlsDrag.x, event.clientY - touchControlsDrag.y);
+    });
+    touchGrip.addEventListener('lostpointercapture', () => { touchControlsDrag = null; });
+    window.addEventListener('resize', () => {
+      if (!touchControls.style.top || editorScreen.hidden) return;
+      const { left, top } = touchControls.getBoundingClientRect();
+      placeTouchControls(left, top);
+      closeShortcutMenu();
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!shortcutMenu.hidden && !shortcutMenu.contains(event.target) && !touchShortcuts.contains(event.target)) closeShortcutMenu();
+    });
 
     function shortcutKey(key) {
       if (typeof key !== 'string') return '';
@@ -4242,8 +4539,12 @@
 
     document.addEventListener('keydown', event => {
       if (editorScreen.hidden || !modelLoaded || partsDialog.open || exportDialog.open || insertLibraryDialog.open
-        || currentPreviewDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open
+        || currentPreviewDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open || smoothDialog.open || frameSizeDialog.open
         || panStart || event.isComposing) return;
+      if (event.key === 'Escape' && !shortcutMenu.hidden) {
+        closeShortcutMenu();
+        return;
+      }
       const key = eventShortcutKey(event);
       const modifier = eventShortcutModifier(event);
       if (!key || !modifier) return;
@@ -4325,6 +4626,165 @@
       return [...vertexSelections.values()].reduce((count, indices) => count + indices.size, 0);
     }
 
+    function resampleSmoothPath(points, closed, count, amount) {
+      count = Math.max(closed ? 3 : 2, count);
+      const path = closed ? [...points, points[0]] : points;
+      const lengths = [0];
+      for (let i = 1; i < path.length; i++) {
+        lengths.push(lengths[i - 1] + Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]));
+      }
+      const total = lengths.at(-1);
+      if (!total) return points;
+      let segment = 1;
+      let result = Array.from({ length: count }, (_, index) => {
+        if (index === 0) return points[0];
+        if (!closed && index === count - 1) return points.at(-1);
+        const distance = total * index / (closed ? count : count - 1);
+        while (segment < path.length - 1 && lengths[segment] <= distance) segment++;
+        const t = (distance - lengths[segment - 1]) / (lengths[segment] - lengths[segment - 1]);
+        return path[segment - 1].map((value, axis) => value + (path[segment][axis] - value) * t);
+      });
+      if (!closed) {
+        const first = points[0], last = points.at(-1);
+        if (amount > 0 && amount < 1) {
+          const strength = Math.sqrt(amount) / 2;
+          const span = Math.max(1, Math.round((count - 1) / 10));
+          for (let pass = 0; pass < 6; pass++) {
+            result = result.map((point, index, all) => {
+              if (index === 0 || index === count - 1) return point;
+              const step = Math.min(span, index, count - 1 - index);
+              const left = all[index - step], right = all[index + step];
+              return point.map((value, axis) => value + ((left[axis] + right[axis]) / 2 - value) * strength);
+            });
+          }
+        }
+        const straighten = amount ** 3;
+        return result.map((point, index) => {
+          if (index === 0 || index === count - 1) return point;
+          const t = index / (count - 1);
+          const straight = first.map((value, axis) => value + (last[axis] - value) * t);
+          return amount === 1 ? straight : point.map((value, axis) => value + (straight[axis] - value) * straighten);
+        });
+      }
+      const initial = result;
+      const span = Math.max(1, Math.floor(count / 32));
+      for (let pass = 0; pass < 8 && amount > 0; pass++) {
+        result = result.map((point, index, all) => {
+          const left = all[(index + all.length - span) % all.length], right = all[(index + span) % all.length];
+          return point.map((value, axis) => value + ((left[axis] + right[axis]) / 2 - value) * amount / 2);
+        });
+      }
+      if (result !== initial) {
+        const areaBefore = Math.abs(geometryArea(geometryFromRings([initial])));
+        const areaAfter = Math.abs(geometryArea(geometryFromRings([result])));
+        if (areaBefore && areaAfter) {
+          const center = initial.reduce(([x, y], [px, py]) => [x + px / count, y + py / count], [0, 0]);
+          const scale = Math.sqrt(areaBefore / areaAfter);
+          result = result.map(point => point.map((value, axis) => center[axis] + (value - center[axis]) * scale));
+        }
+      }
+      return result;
+    }
+
+    function smoothSelectedPaths(part, count, amount) {
+      const { geometry } = part;
+      const indices = selectedVertexIndices(part.id);
+      const closed = part.kind !== 'line';
+      const paths = closed ? geometryRings(geometry) : lineRuns(geometry);
+      const changes = [];
+      const pathsAfter = paths.map(path => {
+        if (closed) {
+          const start = path.findIndex(index => !indices.has(index));
+          if (start === -1) {
+            const before = path.map(index => geometry.vertices[index]);
+            const after = resampleSmoothPath(before, true, count, amount);
+            changes.push({ before, after, closed: true });
+            return after;
+          }
+          path = [...path.slice(start), ...path.slice(0, start)];
+        }
+        const output = [];
+        for (let i = 0; i < path.length;) {
+          let end = i + 1;
+          if (indices.has(path[i])) while (end < path.length && indices.has(path[end])) end++;
+          const before = path.slice(i, end).map(index => geometry.vertices[index]);
+          if (before.length > 1) {
+            const minCount = closed ? Math.max(2, 3 - (path.length - before.length)) : 2;
+            const after = resampleSmoothPath(before, false, Math.max(count, minCount), amount);
+            changes.push({ before, after, closed: false });
+            output.push(...after);
+          } else output.push(...before);
+          i = end;
+        }
+        return output;
+      });
+      if (!changes.length) return null;
+      const result = closed ? geometryFromRings(pathsAfter) : geometryFromLines(pathsAfter);
+      if (geometry.cutAnchors?.length) {
+        const anchors = new Set(geometry.cutAnchors.map(index => geometry.vertices[index]));
+        const retained = pathsAfter.flat().flatMap((point, index) => anchors.has(point) ? [index] : []);
+        if (retained.length) result.cutAnchors = retained;
+      }
+      return { part, geometry: result, changes };
+    }
+
+    function updateSmoothPreview() {
+      const count = Number.isFinite(smoothCount.valueAsNumber)
+        ? Math.max(2, Math.min(512, Math.round(smoothCount.valueAsNumber))) : 8;
+      const changes = selectedParts().filter(isViewportSelectable)
+        .map(part => smoothSelectedPaths(part, count, smoothAmount.valueAsNumber / 100)).filter(Boolean);
+      let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
+      const before = [], after = [], dots = [];
+      for (const { part, changes: paths } of changes) {
+        const matrix = partMatrix(part);
+        const points = path => path.map(vertex => {
+          const { x, y } = matrix.transformPoint(new DOMPoint(...vertex));
+          left = Math.min(left, x); top = Math.min(top, y); right = Math.max(right, x); bottom = Math.max(bottom, y);
+          return x + ' ' + y;
+        });
+        for (const change of paths) {
+          const old = points(change.before), next = points(change.after);
+          const close = change.closed ? ' Z' : '';
+          before.push('M ' + old.join(' L ') + close);
+          after.push('M ' + next.join(' L ') + close);
+          dots.push(...next.map(point => 'M ' + point + ' L ' + point));
+        }
+      }
+      const svg = document.querySelector('#smooth-preview');
+      if (changes.length) {
+        const margin = Math.max(right - left, bottom - top, 1) * 0.1;
+        svg.setAttribute('viewBox', [left - margin, top - margin, right - left + 2 * margin, bottom - top + 2 * margin].join(' '));
+      }
+      document.querySelector('#smooth-before').setAttribute('d', before.join(' '));
+      document.querySelector('#smooth-after').setAttribute('d', after.join(' '));
+      document.querySelector('#smooth-points').setAttribute('d', dots.join(' '));
+      document.querySelector('#smooth-status').textContent = changes.length
+        ? '端のある区間は滑らかさ100で直線になります。閉じた輪郭全体は最低3頂点で丸めます。'
+        : '辺でつながった頂点を2つ以上選んでください。';
+      smoothApply.disabled = !changes.length;
+      return changes;
+    }
+
+    smoothVerticesButton.addEventListener('click', () => {
+      cancelVertexInsertion();
+      updateSmoothPreview();
+      smoothDialog.showModal();
+    });
+    for (const input of [smoothCount, smoothAmount]) input.addEventListener('input', updateSmoothPreview);
+    smoothApply.addEventListener('click', () => {
+      const changes = updateSmoothPreview();
+      if (!changes.length) return;
+      const before = editorSnapshot();
+      for (const { part, geometry } of changes) {
+        part.geometry = geometry;
+        vertexSelections.delete(part.id);
+      }
+      renderParts();
+      renderEditorSelection();
+      recordEditorEdit(before);
+      smoothDialog.close();
+    });
+
     function activeVertexPart() {
       return vertexSelections.size === 1 ? getPart(vertexSelections.keys().next().value) : null;
     }
@@ -4354,6 +4814,7 @@
         }
       }
       const count = deformMode ? selectedVertexCount() : 0;
+      smoothVerticesButton.disabled = count < 2;
       const canTransform = count > 0 && (activeTool === 'move' || (count > 1 && (activeTool === 'rotate' || activeTool === 'scale')));
       editorScreen.toggleAttribute('data-vertex-gizmo', canTransform);
       addVertexButton.disabled = !part || selectedVertexEdge(part) < 0;
@@ -4362,7 +4823,7 @@
       if (!vertexInsertArmed) vertexInsertMarker.hidden = true;
       deformHint.textContent = vertexInsertArmed ? 'クリックで追加 · Shiftで吸着 · Escで中止'
         : !selectedParts().some(item => item.geometry.vertices.length) ? 'エクスプローラーでパーツを選択'
-        : count + '頂点を選択 · Ctrl＋クリックで複数選択';
+        : count + '頂点を選択 · Ctrlで追加 · Shiftで最短経路を選択';
       renderVertexInsertGuides();
       renderPivot();
     }
@@ -4377,6 +4838,33 @@
         else vertexSelections.delete(id);
       }
       recenterVertexSelection();
+    }
+
+    function selectVertexPath(id, destination) {
+      const indices = selectedVertexIndices(id);
+      const start = [...indices].at(-1);
+      if (start === undefined || start === destination) return false;
+      const { vertices, edges } = getPart(id).geometry;
+      const neighbors = vertices.map(() => []);
+      for (const [a, b] of edges) {
+        neighbors[a].push(b);
+        neighbors[b].push(a);
+      }
+      const previous = new Map([[start, null]]);
+      const queue = [start];
+      for (let i = 0; i < queue.length && !previous.has(destination); i++) {
+        for (const neighbor of neighbors[queue[i]]) {
+          if (previous.has(neighbor)) continue;
+          previous.set(neighbor, queue[i]);
+          queue.push(neighbor);
+        }
+      }
+      if (!previous.has(destination)) return false;
+      for (let index = destination; index !== null; index = previous.get(index)) indices.add(index);
+      indices.delete(destination);
+      indices.add(destination);
+      recenterVertexSelection();
+      return true;
     }
 
     function recenterVertexSelection() {
@@ -4412,12 +4900,12 @@
       const length = dx * dx + dy * dy;
       if (length === 0) return null;
       const projection = ((x - start.x) * dx + (y - start.y) * dy) / length;
-      if (projection < 0 || projection > 1 || (!event.shiftKey && (projection === 0 || projection === 1))) return null;
+      if (projection < 0 || projection > 1 || (!shiftHeld(event) && (projection === 0 || projection === 1))) return null;
       if (Math.hypot(x - start.x - dx * projection, y - start.y - dy * projection) * viewZoom > 18) return null;
       const count = vertexInsertionSnapCount();
-      let t = event.shiftKey
+      let t = shiftHeld(event)
         ? Math.min(count, Math.max(1, Math.round(projection * (count + 1)))) / (count + 1) : projection;
-      if (event.shiftKey) {
+      if (shiftHeld(event)) {
         for (const crossing of vertexInsertionCrossings(part, start, end)) {
           if (Math.abs(crossing - projection) < Math.abs(t - projection)) t = crossing;
         }
@@ -4580,7 +5068,7 @@
     function renderEditorSelection() {
       const selection = editorSelection;
       for (const id of vertexSelections.keys()) {
-        if (!selectedPartIds.has(id)) vertexSelections.delete(id);
+        if (!selectedPartIds.has(id) || !isViewportSelectable(getPart(id))) vertexSelections.delete(id);
       }
       const frameSelected = selection === 'frame';
       const selected = getPart(selection);
@@ -4599,8 +5087,8 @@
       bakeMirrorButton.disabled = !mirrorTarget || mirror.baked === true || mirrorTarget.cutter || !isPartVisible(mirror);
       bakeMirrorButton.textContent = mirror?.baked ? 'モデル化済み' : '複製をモデル化';
       const movableMirror = mirrorSelected && !mirror.baked;
-      editorScreen.toggleAttribute('data-frame-selected', frameSelected);
-      editorScreen.toggleAttribute('data-model-selected', transformable || movableMirror);
+      editorScreen.toggleAttribute('data-frame-selected', frameSelected && frameBounds.visible !== false && frameBounds.selectable !== false);
+      editorScreen.toggleAttribute('data-model-selected', (transformable || movableMirror) && isViewportSelectable(selected));
       editorScreen.toggleAttribute('data-mirror-selected', mirrorSelected);
       if (mirrorSelected) setPivotEdit(false);
       pivotToggle.disabled = deformMode || mirrorSelected || (unifiedCopySelected && !transformable);
@@ -4616,6 +5104,15 @@
       selectedPartCount.hidden = selectedPartIds.size < 2;
       selectedPartCount.textContent = selectedPartIds.size + '個選択';
       frameProperties.hidden = !frameSelected;
+      selectionVisibility.hidden = !modelSelected && !frameSelected;
+      imagePreviewSetting.hidden = !selectedParts().some(part => part.kind === 'image');
+      for (const [key, input] of Object.entries(visibilityInputs)) {
+        const targets = frameSelected && key !== 'previewHidden' ? [frameBounds] : selectedParts();
+        const values = targets.filter(part => key !== 'previewHidden' || part.kind === 'image')
+          .map(part => key === 'previewHidden' ? part[key] === true : part[key] !== false);
+        input.checked = values[0] ?? key !== 'previewHidden';
+        input.indeterminate = values.some(value => value !== input.checked);
+      }
       editorProperties.hidden = !modelSelected || unifiedCopySelected;
       unifiedCopyProperties.hidden = !unifiedCopySelected || selectedPartIds.size !== 1;
       unifiedCopyButton.disabled = !unifiedCopySelected || !getPart(selected.parent);
@@ -4643,22 +5140,41 @@
       for (const target of editorScreen.querySelectorAll('.' + dropClasses.join(', .'))) target.classList.remove(...dropClasses);
     });
     editorModel.addEventListener('pointerdown', event => {
-      if (!event.isPrimary || event.button !== 0) return;
+      if (!event.isPrimary || event.button !== 0 || (event.pointerType === 'touch' && touchMarqueeActive)) return;
       const group = event.target.closest('[data-part-id]');
+      if (group && !isViewportSelectable(getPart(group.dataset.partId))) return;
       if (deformMode) {
         const point = event.target.closest('[data-vertex-index]');
         const id = group?.dataset.partId;
         if (vertexInsertArmed || !point || !selectedPartIds.has(id)) return;
         const index = Number(point.dataset.vertexIndex);
-        const extend = event.ctrlKey || event.metaKey;
+        const extend = controlHeld(event);
+        if (shiftHeld(event) && !extend && selectVertexPath(id, index)) {
+          event.stopPropagation();
+          return;
+        }
         if (extend || !selectedVertexIndices(id).has(index) || (activeTool !== 'select' && activeTool !== 'move')
-          || (event.shiftKey && selectedVertexCount() > 1)) {
+          || (shiftHeld(event) && selectedVertexCount() > 1)) {
           selectVertex(index, extend, id);
         }
         return;
       }
-      if (group) setEditorSelection(group.dataset.partId, event.ctrlKey || event.metaKey);
+      if (group) setEditorSelection(group.dataset.partId, controlHeld(event));
     });
+    for (const [key, input] of Object.entries(visibilityInputs)) {
+      input.addEventListener('change', () => {
+        const before = editorSnapshot();
+        const frameSelected = editorSelection === 'frame' && key !== 'previewHidden';
+        for (const part of frameSelected ? [frameBounds] : selectedParts()) {
+          if (key === 'previewHidden' && part.kind !== 'image') continue;
+          part[key] = input.checked;
+          if (key !== 'previewHidden' && !input.checked) vertexSelections.delete(part.id);
+        }
+        if (frameSelected) renderExportFrame();
+        renderEditorSelection();
+        recordEditorEdit(before);
+      });
+    }
     for (const [key, input] of Object.entries(frameInputs)) {
       input.addEventListener('change', () => {
         const value = input.valueAsNumber;
@@ -4863,7 +5379,7 @@
       if (deformMode) {
         if (!extend) vertexSelections.clear();
         for (const part of selectedParts()) {
-          if (!isPartVisible(part)) continue;
+          if (!isViewportSelectable(part)) continue;
           const indices = selectedVertexIndices(part.id);
           for (const dot of partNodes.get(part.id).vertices.children) {
             const radius = vertexMarkerRadius(partNodes.get(part.id).vertices, dot) / viewZoom;
@@ -4880,7 +5396,7 @@
 
       const selection = new Set(extend ? selectedPartIds : []);
       for (const part of parts) {
-        if (part.kind === 'outline' || !isPartVisible(part) || !part.geometry.edges.length) continue;
+        if (part.kind === 'outline' || !isViewportSelectable(part) || !part.geometry.edges.length) continue;
         const matrix = partMatrix(part);
         const vertices = part.geometry.vertices.map(([x, y]) => {
           const point = matrix.transformPoint(new DOMPoint(x, y));
@@ -4897,17 +5413,59 @@
     }
 
     editorViewport.addEventListener('contextmenu', event => {
-      if (activeTool === 'select' && !event.target.closest('.viewport-zoom')) event.preventDefault();
+      if (!event.target.closest('.viewport-zoom')) event.preventDefault();
     });
+    function pinchPosition() {
+      const [a, b] = viewportTouches.values();
+      const bounds = editorViewport.getBoundingClientRect();
+      return {
+        x: (a.clientX + b.clientX) / 2 - bounds.left - bounds.width / 2,
+        y: (a.clientY + b.clientY) / 2 - bounds.top - bounds.height / 2,
+        distance: Math.max(1, Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY))
+      };
+    }
+    editorViewport.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'touch' || event.target.closest('.viewport-zoom')) return;
+      viewportTouches.set(event.pointerId, event);
+      if (viewportTouches.size < 2) return;
+      if (viewportTouches.size === 2) {
+        if (panStart && panStart.operation !== 'view') restoreEditor(panStart.before);
+        panStart = null;
+        editorViewport.classList.remove('is-panning');
+        clearMarquee();
+        viewportPinch = pinchPosition();
+      }
+      for (const id of viewportTouches.keys()) editorViewport.setPointerCapture(id);
+      event.stopPropagation();
+    }, true);
+    editorViewport.addEventListener('pointermove', event => {
+      if (!viewportTouches.has(event.pointerId)) return;
+      viewportTouches.set(event.pointerId, event);
+      if (!viewportPinch || viewportTouches.size < 2) return;
+      const next = pinchPosition();
+      const previous = viewportPinch;
+      setViewZoom(viewZoom * next.distance / previous.distance, previous.x, previous.y);
+      setViewOffset(viewX + next.x - previous.x, viewY + next.y - previous.y);
+      viewportPinch = next;
+    }, true);
+    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      editorViewport.addEventListener(type, event => {
+        if (type === 'lostpointercapture' && event.target !== editorViewport) return;
+        if (!viewportTouches.delete(event.pointerId)) return;
+        if (viewportTouches.size < 2) viewportPinch = null;
+        else if (viewportPinch) viewportPinch = pinchPosition();
+      }, true);
+    }
     editorViewport.addEventListener('pointerdown', event => {
       if (!event.isPrimary || panStart || marqueeDrag) return;
-      if (event.button === 2 && activeTool === 'select' && !event.target.closest('.viewport-zoom')) {
+      if ((event.button === 2 || (event.button === 0 && event.pointerType === 'touch' && touchMarqueeActive))
+        && !event.target.closest('.viewport-zoom')) {
         cancelVertexInsertion();
         if (deformMode) renderVertexSelection();
         const bounds = editorViewport.getBoundingClientRect();
         marqueeDrag = {
           id: event.pointerId, bounds, x: event.clientX - bounds.left, y: event.clientY - bounds.top,
-          extend: event.ctrlKey || event.metaKey
+          extend: controlHeld(event), menuOnClick: event.button === 2
         };
         editorViewport.setPointerCapture(event.pointerId);
         return;
@@ -4925,7 +5483,7 @@
       const vertex = deformMode ? event.target.closest('[data-vertex-index]') : null;
       const vertexOwner = vertex?.closest('[data-part-id]')?.dataset.partId;
       if (vertex) {
-        if (event.ctrlKey || event.metaKey || (activeTool !== 'select' && activeTool !== 'move')) return;
+        if (controlHeld(event) || (activeTool !== 'select' && activeTool !== 'move')) return;
         if (!selectedPartIds.has(vertexOwner)) return;
         operation = 'move-xy';
       } else if (event.target === pivotHandle) {
@@ -4936,6 +5494,7 @@
         operation = modelHandle.dataset.modelHandle;
       }
       if (exportFrame.contains(event.target)) {
+        if (frameBounds.visible === false || frameBounds.selectable === false) return;
         setEditorSelection('frame');
         if (editorScreen.hasAttribute('data-pivot-edit')) return;
         if (event.target === exportResize) operation = 'frame-scale';
@@ -5062,7 +5621,7 @@
       renderModelTransform();
     }
 
-    function dragGroup(drag, dx, dy, lockRatio) {
+    function dragGroup(drag, dx, dy, lockRatio, gather = false) {
       const start = drag.before.group;
       const next = { ...start };
       if (drag.operation.startsWith('move-')) {
@@ -5071,11 +5630,11 @@
           if (selected.has(source.id)) getPart(source.id).transform = { ...source.transform };
         }
         if (lockRatio && drag.operation === 'move-xy') {
-          spreadSelectedParts(drag, dx, dy, selected);
+          spreadSelectedParts(drag, dx, dy, selected, gather);
           return;
         }
         if (lockRatio && selected.size === 2) {
-          separateSelectedPair(drag, dx, dy, selected);
+          separateSelectedPair(drag, dx, dy, selected, gather);
           return;
         }
         const offset = dragMoveOffset(drag, dx, dy);
@@ -5092,7 +5651,7 @@
       applyGroupTransform(drag.before, next, drag.axisAngle);
     }
 
-    function spreadSelectedParts(drag, dx, dy, selected) {
+    function spreadSelectedParts(drag, dx, dy, selected, gather = false) {
       const { before } = drag;
       const distance = Math.hypot(dx, dy) / viewZoom;
       for (const source of before.parts) {
@@ -5103,8 +5662,9 @@
         const x = (points.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : pose.e) - before.group.x;
         const y = (points.length ? (Math.min(...ys) + Math.max(...ys)) / 2 : pose.f) + before.group.y;
         const angle = x || y ? Math.atan2(y, x) : Math.atan2(dy, dx);
+        const offset = gather ? -Math.min(distance, Math.hypot(x, y)) : distance;
         const part = getPart(source.id);
-        const target = new DOMPoint(pose.e + distance * Math.cos(angle), pose.f + distance * Math.sin(angle));
+        const target = new DOMPoint(pose.e + offset * Math.cos(angle), pose.f + offset * Math.sin(angle));
         const local = partParentMatrix(part).inverse().transformPoint(target);
         part.transform.x = local.x;
         part.transform.y = -local.y;
@@ -5113,7 +5673,7 @@
       renderModelTransform();
     }
 
-    function separateSelectedPair(drag, dx, dy, selected) {
+    function separateSelectedPair(drag, dx, dy, selected, gather = false) {
       const { before, operation, axisAngle } = drag;
       const angle = axisAngle + (operation === 'move-y' ? -Math.PI / 2 : 0);
       const screenDistance = operation === 'move-xy' ? (Math.abs(dx) >= Math.abs(dy) ? dx : -dy)
@@ -5133,7 +5693,8 @@
       const y = pair[1].center.y - pair[0].center.y;
       const gap = Math.hypot(x, y);
       const direction = gap ? Math.atan2(y, x) : operation === 'move-xy' ? Math.atan2(dy, dx) : angle;
-      const distance = (gap ? Math.max(-gap, screenDistance / viewZoom) : Math.abs(screenDistance) / viewZoom) / 2;
+      const movement = gather ? -Math.abs(screenDistance) : gap ? screenDistance : Math.abs(screenDistance);
+      const distance = Math.max(-gap, movement / viewZoom) / 2;
       pair.forEach(({ part, pose }, index) => {
         const offset = index === 0 ? -distance : distance;
         const desired = new DOMMatrix().translate(offset * Math.cos(direction), offset * Math.sin(direction)).multiply(pose);
@@ -5351,18 +5912,18 @@
     }
 
     function updateDragShift(event) {
-      if (event.key !== 'Shift' || !panStart?.shiftPointer) return;
+      if (!['Shift', 'Alt'].includes(event.key) || !panStart?.shiftPointer) return;
       const { dx, dy } = panStart.shiftPointer;
       if (panStart.operation.endsWith('-pivot')) {
-        dragPivot(panStart, dx, dy, event.shiftKey);
+        dragPivot(panStart, dx, dy, shiftHeld(event));
       } else if (panStart.operation === 'frame-scale') {
-        dragFrameScale(panStart, dx, dy, event.shiftKey);
+        dragFrameScale(panStart, dx, dy, shiftHeld(event));
       } else if (panStart.vertexEdit) {
-        dragVertexGeometry(panStart, dx, dy, event.shiftKey);
+        dragVertexGeometry(panStart, dx, dy, shiftHeld(event));
       } else if (panStart.before.group) {
-        dragGroup(panStart, dx, dy, event.shiftKey);
+        dragGroup(panStart, dx, dy, shiftHeld(event), altHeld(event));
       } else {
-        dragModel(panStart, dx, dy, event.shiftKey);
+        dragModel(panStart, dx, dy, shiftHeld(event));
       }
     }
     document.addEventListener('keydown', updateDragShift);
@@ -5412,7 +5973,7 @@
       const worldY = dy / viewZoom;
       if (panStart.operation.endsWith('-pivot')) {
         panStart.shiftPointer = { dx, dy };
-        dragPivot(panStart, dx, dy, event.shiftKey);
+        dragPivot(panStart, dx, dy, shiftHeld(event));
       } else if (panStart.operation === 'mirror-move') {
         const mirror = getPart(panStart.partId);
         const original = getPart(panStart.partId, panStart.before.parts).transform;
@@ -5427,7 +5988,7 @@
         renderExportFrame();
       } else if (panStart.operation === 'frame-scale') {
         panStart.shiftPointer = { dx, dy };
-        dragFrameScale(panStart, dx, dy, event.shiftKey);
+        dragFrameScale(panStart, dx, dy, shiftHeld(event));
       } else if (panStart.operation === 'view') {
         editorViewport.classList.add('is-panning');
         setViewOffset(panStart.viewX + dx, panStart.viewY + dy);
@@ -5436,11 +5997,11 @@
           panStart.shiftPointer = { dx, dy };
         }
         if (panStart.vertexEdit) {
-          dragVertexGeometry(panStart, dx, dy, event.shiftKey);
+          dragVertexGeometry(panStart, dx, dy, shiftHeld(event));
         }
-        else if (panStart.before.group) dragGroup(panStart, dx, dy, event.shiftKey);
+        else if (panStart.before.group) dragGroup(panStart, dx, dy, shiftHeld(event), altHeld(event));
         else {
-          dragModel(panStart, dx, dy, event.shiftKey);
+          dragModel(panStart, dx, dy, shiftHeld(event));
         }
       }
     });
@@ -5453,7 +6014,9 @@
         if (event.type === 'pointerup') {
           const box = marqueeBox(event);
           if (Math.hypot(box.right - box.left, box.bottom - box.top) >= 3) {
-            applyMarquee(box, marqueeDrag.extend || event.ctrlKey || event.metaKey);
+            applyMarquee(box, marqueeDrag.extend || controlHeld(event));
+          } else if (marqueeDrag.menuOnClick) {
+            openShortcutMenu(event.clientX, event.clientY);
           }
         }
         clearMarquee();
@@ -5624,11 +6187,11 @@
         context.fillStyle = background;
         context.fillRect(0, 0, outputWidth, outputHeight);
       }
-      const mirrors = sceneMirrors(scene, frame);
+      const mirrors = sceneMirrors(scene, frame, true);
       context.scale(outputWidth / width, outputHeight / height);
       const exportOffset = new DOMMatrix().translate(width / 2 - x, height / 2 + y);
       const paintOrder = partPaintOrder(scene);
-      const visible = paintOrder.filter(part => !part.cutter && part.kind !== 'outline' && part.geometry.edges.length && isPartVisible(part, scene))
+      const visible = paintOrder.filter(part => !part.cutter && part.kind !== 'outline' && part.geometry.edges.length && isPartVisible(part, scene, true))
         .map(part => ({ part, pose: partMatrix(part, scene, frame), geometry: new Path2D(geometryPath(part.geometry)) }));
       function drawPart({ part, pose, geometry }, matrix) {
         const path = new Path2D();
@@ -5665,7 +6228,7 @@
       const byId = new Map(visible.map(source => [source.part.id, source]));
       const mirrorById = new Map(mirrors.map(mirror => [mirror.mirrorId, mirror]));
       const bandsById = new Map();
-      for (const band of sceneOutlineBands(scene, frame, mirrors)) {
+      for (const band of sceneOutlineBands(scene, frame, mirrors, true)) {
         const id = band.ownerId ?? band.sourceId;
         if (!bandsById.has(id)) bandsById.set(id, []);
         bandsById.get(id).push(band);
@@ -5703,7 +6266,7 @@
     }
 
     function exportBackground() {
-      return !exportToPlane && exportInputs.background.value === 'solid' ? exportInputs.color.value : null;
+      return exportInputs.background.value === 'solid' ? exportInputs.color.value : null;
     }
 
     function drawSavedImage(canvas, width, height, background) {
@@ -5717,18 +6280,6 @@
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = 'high';
       context.drawImage(large, 0, 0, width, height);
-      return true;
-    }
-
-    function drawPlaneImage(canvas, width, height) {
-      if (!drawSavedImage(canvas, width, height, null)) return false;
-      const context = canvas.getContext('2d');
-      context.setTransform(1, 0, 0, 1, 0, 0);
-      context.globalAlpha = 1;
-      context.globalCompositeOperation = 'source-in';
-      context.fillStyle = '#ffffff';
-      context.fillRect(0, 0, width, height);
-      context.globalCompositeOperation = 'source-over';
       return true;
     }
 
@@ -5759,7 +6310,7 @@
     });
 
     function updateExportPreview() {
-      const jpeg = !exportToPlane && exportInputs.format.value === 'jpeg';
+      const jpeg = exportInputs.format.value === 'jpeg';
       const transparent = exportInputs.background.querySelector('[value="transparent"]');
       transparent.disabled = jpeg;
       if (jpeg) exportInputs.background.value = 'solid';
@@ -5775,8 +6326,7 @@
       document.querySelector('#export-dimensions').value = width + ' × ' + height + ' px';
       const previewScale = Math.min(360 / width, 240 / height);
       const w = Math.max(1, Math.round(width * previewScale)), h = Math.max(1, Math.round(height * previewScale));
-      if (exportToPlane) drawPlaneImage(exportPreview, w, h);
-      else drawSavedImage(exportPreview, w, h, exportBackground());
+      drawSavedImage(exportPreview, w, h, exportBackground());
       const pending = pendingSceneImages(parts);
       if (pending) {
         const revision = exportRevision;
@@ -5786,20 +6336,14 @@
       }
     }
 
-    function openImageExport(toPlane) {
-      exportToPlane = toPlane;
+    function openImageExport() {
       exportRevision++;
       exportError.textContent = '';
       saveExportButton.disabled = false;
-      document.querySelector('#export-title').textContent = toPlane ? 'PLANEに画像として保存' : '画像を保存';
-      document.querySelector('#export-format-field').hidden = toPlane;
-      document.querySelector('#export-background-field').hidden = toPlane;
-      document.querySelector('#plane-image-note').hidden = !toPlane;
       updateExportPreview();
       exportDialog.showModal();
     }
-    exportImageButton.addEventListener('click', () => openImageExport(false));
-    savePlaneImageButton.addEventListener('click', () => openImageExport(true));
+    exportImageButton.addEventListener('click', openImageExport);
     document.querySelector('#cancel-export').addEventListener('click', () => exportDialog.close());
     for (const input of Object.values(exportInputs)) {
       input.addEventListener('input', updateExportPreview);
@@ -5819,7 +6363,7 @@
         exportError.textContent = 'この出力サイズは大きすぎます。倍率を下げてください。';
         return;
       }
-      const jpeg = !exportToPlane && exportInputs.format.value === 'jpeg';
+      const jpeg = exportInputs.format.value === 'jpeg';
       const mime = jpeg ? 'image/jpeg' : 'image/png';
       const name = document.querySelector('#export-filename').value.trim()
         .replace(/\.(png|jpe?g)$/i, '').replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').trim() || 'PLANE';
@@ -5833,13 +6377,6 @@
         const pending = pendingSceneImages(parts);
         if (pending) await pending;
         if (!exportDialog.open || revision !== exportRevision) return;
-        if (exportToPlane) {
-          if (!drawPlaneImage(canvas, width, height)) throw new Error('Image could not be rendered');
-          savePlaneImage(name, canvas);
-          exportDialog.close();
-          editorStatus.textContent = '「' + name + '」を画像ライブラリーに保存しました。';
-          return;
-        }
         if (!drawSavedImage(canvas, width, height, exportBackground())) {
           fail();
           return;
@@ -5860,10 +6397,7 @@
         }, mime, exportInputs.quality.valueAsNumber / 100);
       } catch {
         if (!exportDialog.open || revision !== exportRevision) return;
-        if (exportToPlane) {
-          saveExportButton.disabled = false;
-          exportError.textContent = '画像を保存できませんでした。ブラウザの保存容量を確認してください。';
-        } else fail();
+        fail();
       }
     });
 
@@ -5886,6 +6420,7 @@
       if (!project.scene) return Object.hasOwn(foundationNames, project.foundation);
       const { frame, parts: savedParts } = project.scene;
       if (!frame || !Object.keys(defaultFrame).every(key => Number.isFinite(frame[key]))
+        || (frame.parentBasis !== undefined && frame.parentBasis !== 512)
         || frame.width !== clampFrameSize(frame.width) || frame.height !== clampFrameSize(frame.height)
         || !Array.isArray(savedParts)) return false;
       const ids = new Set(['scene', 'frame']);
@@ -5943,8 +6478,8 @@
 
     function isPlaneImage(image) {
       return image && Number.isInteger(image.width) && Number.isInteger(image.height)
-        && image.width === clampFrameSize(image.width) && image.height === clampFrameSize(image.height)
-        && typeof image.data === 'string' && image.data.startsWith('data:image/png;base64,');
+        && image.width >= 1 && image.width <= 4096 && image.height >= 1 && image.height <= 4096
+        && typeof image.data === 'string' && /^data:image\/(png|webp);base64,/.test(image.data);
     }
 
     function readPlaneImages() {
@@ -5955,21 +6490,6 @@
       } catch {
         return [];
       }
-    }
-
-    function savePlaneImage(name, canvas) {
-      const image = {
-        id: crypto.randomUUID(), name, data: canvas.toDataURL('image/png'), savedAt: new Date().toISOString(),
-        width: frameBounds.width, height: frameBounds.height
-      };
-      if (!isPlaneImage(image)) throw new Error('Invalid image');
-      writePlaneImages([image, ...readPlaneImages()]);
-    }
-
-    function writePlaneImages(images) {
-      const serialized = JSON.stringify(images);
-      localStorage.setItem(imageStorageKey, serialized);
-      if (localStorage.getItem(imageStorageKey) !== serialized) throw new Error('Save could not be confirmed');
     }
 
     function imagePart(image, id, parent = 'scene') {
@@ -5986,7 +6506,7 @@
         id: 'preview-square', parent: 'scene', kind: 'square', name: '四角形',
         geometry: makeGeometry('square', 4), transform: { ...defaultModel }
       }] : [];
-      return { frame: defaultFrame, parts };
+      return { frame: { ...defaultFrame, parentBasis: 512 }, parts };
     }
 
     function drawProjectPreview(canvas, project, maxWidth, maxHeight) {
@@ -6000,17 +6520,18 @@
 
     function templateScene(name) {
       const shapes = [];
+      const scale = 1.6;
       function add(label, color, outline, holes = [], kind = 'polygon') {
         const vertices = outline.concat(...holes);
         const center = [0, 1].map(axis => {
           const coordinates = vertices.map(point => point[axis]);
           return (Math.min(...coordinates) + Math.max(...coordinates)) / 2;
         });
-        const rings = [outline, ...holes].map(ring => ring.map(([x, y]) => [x - center[0], y - center[1]]));
+        const rings = [outline, ...holes].map(ring => ring.map(([x, y]) => [(x - center[0]) * scale, (y - center[1]) * scale]));
         shapes.push({
           id: 'part-' + (shapes.length + 1), parent: 'scene', name: label, kind,
           geometry: geometryFromRings(rings),
-          transform: { ...defaultModel, x: center[0], y: -center[1] },
+          transform: { ...defaultModel, x: center[0] * scale, y: -center[1] * scale },
           appearance: { color, faceTransparency: 0, outlineEnabled: false }
         });
       }
@@ -6091,7 +6612,7 @@
           break;
         }
       }
-      return { frame: { ...defaultFrame }, parts: shapes };
+      return { frame: { ...defaultFrame, parentBasis: 512 }, parts: shapes };
     }
 
     function renderTemplates() {
@@ -6116,7 +6637,7 @@
       setViewOffset(0, 0);
       modelLoaded = false;
       savedSceneVersion = null;
-      frameBounds = { ...defaultFrame };
+      frameBounds = { ...defaultFrame, parentBasis: 512 };
       parts = [];
       nextPartId = 1;
       collapsedBranches.clear();
@@ -6129,7 +6650,7 @@
       renderParts();
       setEditorSelection(null);
       exportFrame.hidden = true;
-      for (const button of [exportImageButton, openCurrentPreviewButton, savePlaneImageButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = true;
+      for (const button of [exportImageButton, openCurrentPreviewButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = true;
       for (const button of projectSaveButtons) button.disabled = true;
       openPartsButton.disabled = true;
       openObjectsButton.disabled = true;
@@ -6166,7 +6687,7 @@
           if (projectId) savedSceneVersion = JSON.stringify({ frame: frameBounds, parts });
           setEditorSelection(editorSelection ?? parts[0]?.id ?? null);
           exportFrame.hidden = false;
-          for (const button of [exportImageButton, openCurrentPreviewButton, savePlaneImageButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = false;
+          for (const button of [exportImageButton, openCurrentPreviewButton, addLibraryImageButton, addLibraryModelButton]) button.disabled = false;
           for (const button of projectSaveButtons) button.disabled = false;
           openPartsButton.disabled = false;
           openObjectsButton.disabled = false;
@@ -6180,6 +6701,7 @@
       cancelAnimationFrame(editorLoadFrame);
       clearMarquee();
       editorScreen.hidden = true;
+      closeShortcutMenu();
       createScreen.hidden = true;
       titleScreen.hidden = false;
       titleLauncher.focus();
@@ -6369,56 +6891,18 @@
       });
     }
 
-    function renderImageCards(list, images, action, choose, showMenu = false) {
-      list.replaceChildren();
-      for (const image of images) {
-        const item = document.createElement('li');
-        item.className = 'selection-item';
-        const card = document.createElement('button');
-        card.className = 'selection-card';
-        card.type = 'button';
-        card.setAttribute('aria-label', image.name + 'を' + action);
-        const preview = document.createElement('span');
-        preview.className = 'foundation-preview';
-        const thumbnail = document.createElement('img');
-        thumbnail.className = 'image-library-thumbnail';
-        thumbnail.src = image.data;
-        thumbnail.alt = '';
-        preview.append(thumbnail);
-        const label = document.createElement('span');
-        label.className = 'overwrite-choice-label';
-        label.textContent = action;
-        card.append(preview, image.name, label);
-        card.addEventListener('click', () => choose(image));
-        item.append(card);
-        if (showMenu) item.append(makeLibraryMenu(image, libraryStores.image));
-        list.append(item);
-      }
-    }
-
-    function renderImageLibrary() {
-      const images = readPlaneImages();
-      document.querySelector('#image-library-empty').hidden = images.length > 0;
-      renderImageCards(document.querySelector('#image-library-list'), images, '読み込む', image => {
-        const frame = { ...defaultFrame, width: image.width, height: image.height };
-        loadFoundation('blank', image.name, { frame, parts: [imagePart(image, 'part-1')] });
-      }, true);
-    }
-
     function currentInsertionParent() {
       return getPart(editorSelection)?.id ?? (editorSelection === 'frame' ? 'frame' : 'scene');
     }
 
-    function insertLibraryImage(image) {
+    function insertImportedImage(image, parent) {
       const before = editorSnapshot();
-      const parent = currentInsertionParent();
       const part = imagePart(image, allocatePartId(), parent);
       parts.push(part);
       revealExplorerBranch(parent);
       renderParts();
       setEditorSelection(part.id);
       recordEditorEdit(before);
-      insertLibraryDialog.close();
       editorStatus.textContent = '「' + image.name + '」を画像として追加しました。';
     }
 
@@ -6439,19 +6923,57 @@
       editorStatus.textContent = '「' + project.name + '」のモデルを追加しました。';
     }
 
-    function openLibraryInsertion(images) {
-      document.querySelector('#insert-library-title').textContent = images ? '画像を追加' : 'モデルを追加';
+    function openLibraryInsertion() {
+      document.querySelector('#insert-library-title').textContent = 'モデルを追加';
       const list = document.querySelector('#insert-library-list');
       const empty = document.querySelector('#insert-library-empty');
-      const items = images ? readPlaneImages() : readProjects();
+      const items = readProjects();
       empty.hidden = items.length > 0;
-      empty.textContent = images ? '保存された画像はありません。' : '保存されたモデルはありません。';
-      if (images) renderImageCards(list, items, '追加する', insertLibraryImage);
-      else renderProjectCards(list, items, '追加する', insertLibraryModel, true);
+      empty.textContent = '保存されたモデルはありません。';
+      renderProjectCards(list, items, '追加する', insertLibraryModel, true);
       insertLibraryDialog.showModal();
     }
-    addLibraryImageButton.addEventListener('click', () => openLibraryInsertion(true));
-    addLibraryModelButton.addEventListener('click', () => openLibraryInsertion(false));
+    async function decodeImageFile(file, maxEdge) {
+      const url = URL.createObjectURL(file);
+      try {
+        const source = new Image();
+        source.src = url;
+        await source.decode();
+        if (!source.naturalWidth || !source.naturalHeight) throw new Error('Empty image');
+        const scale = Math.min(1, maxEdge / Math.max(source.naturalWidth, source.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(source.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(source.naturalHeight * scale));
+        canvas.getContext('2d').drawImage(source, 0, 0, canvas.width, canvas.height);
+        const geometryScale = Math.min(1, 4096 / Math.max(source.naturalWidth, source.naturalHeight));
+        const width = Math.round(source.naturalWidth * geometryScale);
+        const height = Math.round(source.naturalHeight * geometryScale);
+        return { data: canvas.toDataURL('image/webp', 0.93), width: Math.max(1, width), height: Math.max(1, height),
+          name: file.name.replace(/\.[^.]+$/, '').slice(0, 60) || '画像' };
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    const importImageFile = document.querySelector('#import-image-file');
+    let importRequest = 0;
+    addLibraryImageButton.addEventListener('click', () => importImageFile.click());
+    importImageFile.addEventListener('change', async () => {
+      const file = importImageFile.files[0];
+      importImageFile.value = '';
+      if (!file) return;
+      const request = ++importRequest;
+      const scene = parts;
+      const parent = currentInsertionParent();
+      try {
+        const image = await decodeImageFile(file, 2048);
+        if (request !== importRequest || editorScreen.hidden || parts !== scene) return;
+        insertImportedImage(image, getPart(parent) || parent === 'frame' ? parent : 'scene');
+      } catch {
+        if (request === importRequest && !editorScreen.hidden && parts === scene) editorStatus.textContent = 'この画像を読み込めませんでした。';
+      }
+    });
+    addLibraryModelButton.addEventListener('click', openLibraryInsertion);
 
     const libraryProjectDialog = document.querySelector('#library-project-dialog');
     const libraryProjectTitle = document.querySelector('#library-project-title');
@@ -6464,9 +6986,7 @@
     const cancelLibraryAction = document.querySelector('#cancel-library-action');
     const libraryStores = {
       model: { noun: 'モデル', item: '作品', place: 'ライブラリー', read: readProjects, write: writeProjects,
-        render: renderLibrary, info: fillLibraryInfo, notice: document.querySelector('#library-notice') },
-      image: { noun: '画像', item: '画像', place: '画像の一覧', read: readPlaneImages, write: writePlaneImages,
-        render: renderImageLibrary, info: fillImageLibraryInfo, notice: document.querySelector('#image-library-notice') }
+        render: renderLibrary, info: fillLibraryInfo, notice: document.querySelector('#library-notice') }
     };
     let librarySelection;
     let deleteStep = 0;
@@ -6533,27 +7053,7 @@
       ]);
       const canvas = document.querySelector('#library-data-preview');
       canvas.hidden = false;
-      document.querySelector('#library-image-preview').hidden = true;
       drawProjectPreview(canvas, project, 300, 220);
-    }
-
-    function fillImageLibraryInfo(image) {
-      document.querySelector('#library-data-preview').hidden = true;
-      const preview = document.querySelector('#library-image-preview');
-      preview.src = image.data;
-      preview.hidden = false;
-      const date = new Date(image.savedAt);
-      const [, , resolution] = fillLibraryValues([
-        ['名前', image.name],
-        ['枠のサイズ', image.width + ' × ' + image.height + ' px'],
-        ['画像の解像度', '読み込み中…'],
-        ['形式', 'PNG（透過）'],
-        ['最終保存', Number.isFinite(date.getTime()) ? draftDateFormat.format(date) : '記録なし']
-      ]);
-      const resource = imageResource(image.data);
-      resource.ready.then(() => {
-        resolution.textContent = resource.image.naturalWidth + ' × ' + resource.image.naturalHeight + ' px';
-      }).catch(() => { resolution.textContent = '読み込めませんでした。'; });
     }
 
     function showDeleteWarning(item, store) {
@@ -6600,7 +7100,6 @@
     function finishLibraryEdit(store, items, notice) {
       try {
         store.write(items);
-        if (store === libraryStores.image) refreshVertexMarkerImages();
         libraryProjectDialog.close();
         store.render();
         showLibraryNotice(store, notice);
@@ -6762,7 +7261,6 @@
         if (active) createHeading.textContent = button.textContent.trim();
       }
       if (view === 'library') renderLibrary();
-      if (view === 'images') renderImageLibrary();
       if (view === 'templates') renderTemplates();
       titleScreen.hidden = true;
       createScreen.hidden = false;
@@ -6884,7 +7382,7 @@
     const customThemeInputs = Array.from(customThemePanel.querySelectorAll('input[type="color"]'));
     const markerInput = document.querySelector('#vertex-marker-style');
     const markerImageInput = document.querySelector('#vertex-marker-image');
-    const themes = new Set(['normal', 'normal-blue', 'dark', 'astral', 'liminal', 'sky', 'rainbow', 'blood', 'custom']);
+    const themes = new Set(['normal', 'normal-blue', 'dark', 'astral', 'liminal', 'sky', 'rainbow', 'blood', 'remembrance', 'white-blue', 'meta', 'custom']);
     const vertexStyles = new Set(['circle', 'square', 'diamond', 'image']);
     function applyTheme(value) {
       const theme = themes.has(value) ? value : 'normal';
@@ -6920,37 +7418,16 @@
       });
     }
 
-    function refreshVertexMarkerImages(force = false) {
-      const images = readPlaneImages();
-      const selected = images.find(image => image.id === vertexMarkerImageId);
-      const nextData = selected?.data ?? '';
-      const changed = nextData !== vertexMarkerImageData;
-      vertexMarkerImageData = nextData;
-      markerImageInput.replaceChildren();
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = images.length ? '画像を選択' : '保存画像なし';
-      markerImageInput.append(placeholder);
-      for (const image of images) {
-        const option = document.createElement('option');
-        option.value = image.id;
-        option.textContent = image.name;
-        markerImageInput.append(option);
-      }
-      markerImageInput.value = selected?.id ?? '';
-      markerImageInput.disabled = images.length === 0;
+    function refreshVertexMarkerImage() {
       document.querySelector('#vertex-marker-image-row').hidden = vertexMarkerStyle !== 'image';
-      document.querySelector('#vertex-marker-image-hint').hidden = images.length > 0;
       const preview = document.querySelector('#vertex-marker-image-preview');
-      preview.hidden = !nextData;
-      if (nextData) preview.src = nextData;
+      preview.hidden = !vertexMarkerImageData;
+      if (vertexMarkerImageData) preview.src = vertexMarkerImageData;
       else preview.removeAttribute('src');
-      if (force || (changed && vertexMarkerStyle === 'image')) {
-        for (const { vertices } of partNodes.values()) {
-          for (const dot of vertices.children) {
-            buildVertexMarker(dot);
-            resizeVertexMarker(vertices, dot);
-          }
+      for (const { vertices } of partNodes.values()) {
+        for (const dot of vertices.children) {
+          buildVertexMarker(dot);
+          resizeVertexMarker(vertices, dot);
         }
       }
     }
@@ -6965,17 +7442,26 @@
     });
     markerInput.addEventListener('change', () => {
       vertexMarkerStyle = vertexStyles.has(markerInput.value) ? markerInput.value : 'circle';
-      refreshVertexMarkerImages(true);
+      refreshVertexMarkerImage();
       savePreferences();
     });
-    markerImageInput.addEventListener('change', () => {
-      vertexMarkerImageId = markerImageInput.value;
-      refreshVertexMarkerImages();
-      savePreferences();
+    markerImageInput.addEventListener('change', async () => {
+      const file = markerImageInput.files[0];
+      markerImageInput.value = '';
+      if (!file) return;
+      const hint = document.querySelector('#vertex-marker-image-hint');
+      hint.hidden = true;
+      try {
+        vertexMarkerImageData = (await decodeImageFile(file, 96)).data;
+        refreshVertexMarkerImage();
+        savePreferences();
+      } catch {
+        hint.textContent = 'この画像を読み込めませんでした。';
+        hint.hidden = false;
+      }
     });
     for (const id of ['open-settings', 'open-editor-settings']) {
       document.getElementById(id).addEventListener('click', () => {
-        refreshVertexMarkerImages();
         updateBgmControls();
         settings.showModal();
       });
@@ -7160,7 +7646,7 @@
           liminalEffect: liminalEffect.checked,
           customThemeColors: Object.fromEntries(customThemeInputs.map(input => [input.id, input.value])),
           vertexMarkerStyle,
-          vertexMarkerImageId,
+          vertexMarkerImageData,
           editorGizmosVisible: !editorScreen.hasAttribute('data-hide-gizmos'),
           editorWorldGizmos: editorScreen.hasAttribute('data-world-gizmos'),
           imageExport: Object.fromEntries(Object.entries(exportInputs).map(([key, input]) => [key, input.value])),
@@ -7183,11 +7669,13 @@
     applyCustomTheme();
     liminalEffect.checked = preferences.liminalEffect !== false;
     applyLiminalEffect();
-    applyTheme(preferences.theme);
+    applyTheme(themes.has(preferences.editorSkin) ? preferences.editorSkin : preferences.theme);
     vertexMarkerStyle = vertexStyles.has(preferences.vertexMarkerStyle) ? preferences.vertexMarkerStyle : 'circle';
-    vertexMarkerImageId = typeof preferences.vertexMarkerImageId === 'string' ? preferences.vertexMarkerImageId : '';
+    vertexMarkerImageData = /^data:image\/(png|webp);base64,/.test(preferences.vertexMarkerImageData)
+      ? preferences.vertexMarkerImageData
+      : readPlaneImages().find(image => image.id === preferences.vertexMarkerImageId)?.data ?? '';
     markerInput.value = vertexMarkerStyle;
-    refreshVertexMarkerImages();
+    refreshVertexMarkerImage();
     for (const [key, input] of Object.entries(exportInputs)) {
       const value = preferences.imageExport?.[key];
       if (typeof value !== 'string') continue;
