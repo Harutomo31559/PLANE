@@ -849,6 +849,7 @@
       padding: 0.7rem 1rem; border-bottom: 1px solid var(--line);
     }
     .guide-header h2 { margin: 0; }
+    html[lang="en"] [data-guide-content]:not([lang="en"]), html[lang="ja"] [data-guide-content][lang="en"] { display: none; }
     .guide-pages { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
     .guide-pages [aria-pressed="true"] { color: var(--active); border-color: var(--active-border); }
     .guide-body { overflow: auto; overscroll-behavior: contain; padding: 0.8rem 1rem 1rem; }
@@ -1295,7 +1296,13 @@
             </div>
             <dl id="editor-properties" class="editor-properties" hidden>
               <div><dt><label for="model-name">名前</label></dt><dd class="model-property-fields"><input id="model-name" type="text" maxlength="60"></dd></div>
+              <div data-text-property hidden><dt><label for="part-text">文字</label></dt><dd><textarea id="part-text" maxlength="200" rows="3" style="width:100%"></textarea></dd></div>
+              <div data-text-property hidden><dt><label for="part-font">フォント</label></dt><dd><select id="part-font" style="max-width:100%"></select></dd></div>
               <div><dt><label for="model-parent">親</label></dt><dd class="model-property-fields"><select id="model-parent"></select></dd></div>
+              <div data-text-property hidden><dt>文字揃え</dt><dd><select id="text-align" aria-label="文字揃え"><option value="left">左</option><option value="center">中央</option><option value="right">右</option></select></dd></div>
+              <div data-text-property hidden><dt>方向</dt><dd><select id="text-flow" aria-label="方向"><option value="horizontal">横書き</option><option value="vertical">縦書き</option></select></dd></div>
+              <div data-text-property hidden><dt>文字サイズ</dt><dd><input id="text-size" aria-label="文字サイズ" type="number" min="8" max="256" step="1"> px</dd></div>
+              <div data-text-property hidden><dt>書式</dt><dd><label><input id="text-bold" type="checkbox"> B</label> <label><input id="text-italic" type="checkbox"> I</label> <label><input id="text-underline" type="checkbox"> U</label></dd></div>
               <div data-object-transform><dt>位置</dt><dd class="model-property-fields">
                 <label>X <input id="model-x" type="number" step="any" aria-label="位置 X"></label>
                 <label>Y <input id="model-y" type="number" step="any" aria-label="位置 Y"></label>
@@ -1440,7 +1447,7 @@
           <button class="quiet" type="button" data-guide-page="tips" aria-pressed="false">応用（コツ）</button>
           <button class="quiet" type="button" data-guide-page="objects" aria-pressed="false">オブジェクト</button>
         </nav>
-        <details data-guide-content="objects" hidden open>
+        <details data-guide-content="objects" lang="en" hidden open><summary>Object types</summary><ul><li><b>Folder</b> groups parts. Moving, rotating or scaling it transforms everything inside.</li><li><b>Outline</b> surrounds its parent and descendants. Nest outlines to create additional borders.</li><li><b>Mirror</b> reflects a part or folder. Adjust the center, angle and number of axes, then use Convert copies to parts to make the results editable.</li><li><b>Line</b> has no fill. Add vertices in Edit Shape mode and adjust the stroke and caps under Appearance.</li><li><b>Text</b> supports fonts, alignment, horizontal or vertical layout, size, bold, italic, underline and color. Cutting text converts it into an editable shape.</li><li><b>Unified Copy</b> combines its parent and descendants into a separate editable part.</li></ul></details><details data-guide-content="objects" hidden open>
           <summary>オブジェクトの種類</summary>
           <p>「ホーム → オブジェクトを追加」で種類を選び、「挿入」を押します。</p>
           <ul>
@@ -1448,10 +1455,11 @@
             <li><strong>枠線</strong>　親と子孫をまとめて囲みます。枠線の子にもう1つ枠線を追加すると、その外側に重ねられます。</li>
             <li><strong>ミラー</strong>　親と子孫を線対称に表示します。位置・角度・対称軸の本数（1〜18本）を調節できます。「複製をモデル化」で対称表示を編集できるモデルに変えられます。</li>
             <li><strong>直線</strong>　面を持たない線です。変形モードで頂点を追加すると折れ線を作れます。「外観」で線の太さ、端の形、棘の長さを調整できます。</li>
+            <li><strong>文字</strong>　プロパティでフォント、文字揃え、横書き・縦書き、サイズ、太字・斜体・下線、外観の色を調整できます。切り取りパーツで文字を切り取ると、頂点を編集できる図形に変わります。</li>
             <li><strong>一体複製</strong>　まとめたいパーツやフォルダーを選んでから挿入します。エクスプローラーで一体複製を選び、プロパティの「一体複製」を押すと、親と子孫を合体させた編集可能なパーツが元と同じ位置に1個できます。</li>
           </ul>
         </details>
-        <details data-guide-content="basic" open>
+        <details data-guide-content="basic" lang="en" open><summary>Editing and saving</summary><ul><li>Drag empty space to pan. Use the wheel, zoom slider or two fingers to zoom. Right-drag to select an area, or right-click to open the action menu.</li><li>Add shapes from Model or objects from Home. Select a part in the viewport or Explorer to edit its transform and appearance. Drag items in Explorer to reorder or reparent them.</li><li>Enable Edit Shape mode to move, add, split or smooth vertices. Add a cutter under a part and select Cut Parts to subtract it.</li><li>Use File to import images and models, save projects to the library, or export PNG or JPEG. Select Export Frame and open Size Settings to set a preset or custom aspect ratio.</li></ul></details><details data-guide-content="basic" open>
           <summary>ビューと選択</summary>
           <ul>
             <li><strong>ビューを移動</strong>　何もない場所をドラッグします。</li>
@@ -1491,7 +1499,7 @@
             <li><strong>枠線の発光</strong>　枠線の透明度・明るさ・発光の範囲を調整できます。複数選択時は、使える項目をまとめて変更できます。</li>
           </ul>
         </details>
-        <details data-guide-content="tips" hidden open>
+        <details data-guide-content="tips" lang="en" hidden open><summary>Editing tips</summary><ul><li>Keep a reference image visible while you work and enable Hide from Preview to exclude it from exported images.</li><li>Use Smooth to preview and adjust vertex count and smoothing. At 100, an open segment straightens between its endpoints.</li><li>Hold Shift while moving multiple parts to spread them out. Hold Shift+Alt to bring them closer together.</li></ul></details><details data-guide-content="tips" hidden open>
           <summary>頂点の編集・分割・切り取り</summary>
           <ul>
             <li><strong>変形モード</strong>　「ホーム」または「モデル」の「変形モード」をオンにし、エクスプローラーで対象を選びます。「変形」タブからもオフにできます。複数パーツを選ぶと、すべての頂点が見えます。<kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋クリックや、「選択」ツールでの右ドラッグで頂点を複数選択できます。</li>
@@ -1516,7 +1524,7 @@
             <li><strong>タイトルに戻る</strong>　「タイトルに戻る」を押します。未保存のときは確認が開き、その場で保存方法を選べます。</li>
           </ul>
         </details>
-        <details data-guide-content="shortcuts" hidden open>
+        <details data-guide-content="shortcuts" lang="en" hidden open><summary>Keyboard shortcuts</summary><ul><li>Ctrl+Q/W/E/R switches between Select, Move, Rotate and Scale. Ctrl+T toggles Edit Shape mode.</li><li>Ctrl+Z undoes an edit. Ctrl+Shift+Z redoes it. Ctrl+C/V/D copies, pastes or duplicates. Delete or Backspace removes selected parts or vertices.</li><li>Ctrl+click toggles individual selections. Shift+click selects a range in Explorer or adds the shortest vertex path in Edit Shape mode.</li><li>Customize these keys under Settings → Key Bindings. On touch devices, use the floating modifier keys and Actions menu.</li></ul></details><details data-guide-content="shortcuts" hidden open>
           <summary>キーボード操作</summary>
           <ul>
             <li><kbd>Ctrl</kbd>＋<kbd>Q</kbd> / <kbd>W</kbd> / <kbd>E</kbd> / <kbd>R</kbd> で順に選択・移動・回転・拡大縮小。<kbd>Ctrl</kbd>＋<kbd>T</kbd> で変形モードを切り替え、<kbd>R</kbd> 単独ですべての選択を解除します。</li>
@@ -1584,6 +1592,7 @@
         <button class="quiet" type="button" data-part-kind="mirror" aria-pressed="false" hidden>ミラー</button>
         <button class="quiet" type="button" data-part-kind="unified-copy" aria-pressed="false" hidden>一体複製</button>
         <button class="quiet" type="button" data-part-kind="line" aria-pressed="false" hidden>直線</button>
+        <button class="quiet" type="button" data-part-kind="text" aria-pressed="false" hidden>文字</button>
       </div>
     </div>
   </dialog>
@@ -1784,7 +1793,7 @@
       </fieldset>
     </section>
     <section class="settings-section" id="other-settings" aria-label="その他" hidden>
-      <div class="appearance-settings">
+      <div class="appearance-settings"><label class="volume-row">言語 <select id="ui-language"><option value="ja" lang="ja">日本語</option><option value="en" lang="en">English</option></select></label>
         <label class="volume-row">テーマ
           <select id="site-theme">
             <option value="normal">通常</option><option value="normal-blue">通常２</option>
@@ -1948,6 +1957,33 @@
     let vertexMarkerImageData = '';
     const editorMarquee = document.querySelector('#editor-marquee');
     const modelName = document.querySelector('#model-name');
+    const partText = document.querySelector('#part-text');
+    const partFont = document.querySelector('#part-font');
+    const textFonts = {
+      'Arial': 'Arial, sans-serif', '丸ゴシック・太字': '"Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", "Arial Black", sans-serif', 'Verdana': 'Verdana, sans-serif',
+      'Georgia': 'Georgia, serif', 'Times New Roman': '"Times New Roman", serif',
+      'Courier New': '"Courier New", monospace',
+      'メイリオ': 'Meiryo, "Hiragino Sans", sans-serif',
+      '游ゴシック': '"Yu Gothic", "Hiragino Sans", sans-serif',
+      'MS ゴシック': '"MS Gothic", "Noto Sans Mono CJK JP", monospace',
+      '游明朝': '"Yu Mincho", "Hiragino Mincho ProN", serif',
+      'MS 明朝': '"MS Mincho", "Noto Serif CJK JP", serif'
+    };
+    for (const [label, names] of [['英語', Object.keys(textFonts).slice(0, 6)], ['日本語', Object.keys(textFonts).slice(6)]]) {
+      const group = document.createElement('optgroup');
+      group.label = label;
+      for (const name of names) {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        group.append(option);
+      }
+      partFont.append(group);
+    }
+    const textDefaults = { align: 'center', flow: 'horizontal', size: 64, bold: false, italic: false, underline: false };
+    const textStyleInputs = Object.entries(textDefaults).map(([key, fallback]) =>
+      [document.querySelector('#text-' + key), key, fallback]);
+    const textFamily = part => textFonts[part.font] ?? textFonts.Arial;
     const modelParent = document.querySelector('#model-parent');
     const lineCapRow = document.querySelector('#line-cap-row');
     const lineCapInput = document.querySelector('#line-cap');
@@ -1990,7 +2026,7 @@
     const initialPartRadius = 120;
     const defaultModel = { x: 0, y: 0, angle: 0, sx: 1, sy: 1, px: 0, py: 0 };
     let frameBounds = { ...defaultFrame, parentBasis: 512 };
-    const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー', line: '直線', 'unified-copy': '一体複製' };
+    const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー', line: '直線', text: '文字', 'unified-copy': '一体複製' };
     const partNames = { square: '正方形', circle: '円', polygon: '多角形', image: '画像', ...objectNames };
     const partOutlineWidth = 2;
     const defaultPartAppearance = {
@@ -2713,11 +2749,96 @@
 
     function makePart(kind, sides, parent = 'scene', name = partNames[kind]) {
       const part = { id: allocatePartId(), parent, kind, geometry: makeGeometry(kind, sides), name, transform: { ...defaultModel } };
+      if (kind === 'text') {
+        part.text = '文字';
+        part.font = 'メイリオ';
+        part.appearance = { outlineEnabled: false };
+        updateTextBounds(part);
+      }
       if (kind === 'mirror') {
         part.lines = 2;
         part.followParent = false;
       }
       return part;
+    }
+
+    function textLayout(part, context = document.createElement('canvas').getContext('2d')) {
+      const style = { ...textDefaults, ...part };
+      const { size, align, flow } = style;
+      const bold = style.bold || part.font === '丸ゴシック・太字';
+      const font = (style.italic ? 'italic ' : '') + (bold ? '900 ' : '') + size + 'px ' + textFamily(part);
+      context.font = font;
+      const lines = part.text.split('\n');
+      const step = size * 1.2;
+      const vertical = flow === 'vertical';
+      const columns = vertical ? lines.map(line => Array.from(line)) : [];
+      const width = vertical ? columns.length * step : Math.max(1, ...lines.map(line => context.measureText(line).width));
+      const height = vertical ? Math.max(1, ...columns.map(column => column.length)) * step : lines.length * step;
+      const rows = vertical ? columns.flatMap((column, i) => column.map((text, j) => ({
+        text, x: width / 2 - (i + 0.5) * step,
+        y: (j + 0.5) * step - height / 2 + (height - column.length * step) * (align === 'left' ? 0 : align === 'right' ? 1 : 0.5),
+        width: context.measureText(text).width
+      }))) : lines.map((text, i) => {
+        const lineWidth = context.measureText(text).width;
+        const x = align === 'left' ? (lineWidth - width) / 2 : align === 'right' ? (width - lineWidth) / 2 : 0;
+        return { text, x, y: (i + 0.5) * step - height / 2, width: lineWidth };
+      });
+      return { ...style, bold, font, width, height, rows };
+    }
+
+    function updateTextBounds(part) {
+      const { width, height } = textLayout(part);
+      part.geometry = geometryFromRings([imageRectangle(width, height)]);
+    }
+
+    function paintText(context, layout, outline = false) {
+      context.font = layout.font;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      for (const { text, x, y, width } of layout.rows) {
+        if (outline) context.strokeText(text, x, y);
+        else {
+          context.fillText(text, x, y);
+          if (layout.underline) context.fillRect(x - width / 2, y + layout.size * 0.38, width, layout.size / 16);
+        }
+      }
+    }
+
+    function traceText(part) {
+      const layout = textLayout(part);
+      const padding = layout.size;
+      const left = -layout.width / 2 - padding, top = -layout.height / 2 - padding;
+      const scale = Math.min(2, 2048 / Math.max(layout.width + 2 * padding, layout.height + 2 * padding));
+      const canvas = document.createElement('canvas');
+      const width = canvas.width = Math.ceil((layout.width + 2 * padding) * scale);
+      const height = canvas.height = Math.ceil((layout.height + 2 * padding) * scale);
+      const context = canvas.getContext('2d');
+      context.setTransform(scale, 0, 0, scale, -left * scale, -top * scale);
+      paintText(context, layout);
+      const pixels = context.getImageData(0, 0, width, height).data;
+      const filled = (x, y) => x >= 0 && y >= 0 && x < width && y < height && pixels[(y * width + x) * 4 + 3] >= 128;
+      const points = [], boundary = [], indices = new Map();
+      const vertex = (x, y) => {
+        const key = y * (width + 1) + x;
+        if (!indices.has(key)) {
+          indices.set(key, points.length);
+          points.push([left + x / scale, top + y / scale]);
+        }
+        return indices.get(key);
+      };
+      for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+        if (!filled(x, y)) continue;
+        if (!filled(x, y - 1)) boundary.push([vertex(x, y), vertex(x + 1, y)]);
+        if (!filled(x + 1, y)) boundary.push([vertex(x + 1, y), vertex(x + 1, y + 1)]);
+        if (!filled(x, y + 1)) boundary.push([vertex(x + 1, y + 1), vertex(x, y + 1)]);
+        if (!filled(x - 1, y)) boundary.push([vertex(x, y + 1), vertex(x, y)]);
+      }
+      const geometry = stitchCutBoundary(boundary, points, 0);
+      return geometryFromRings(geometryRings(geometry).map(ring => ring.filter((index, i) => {
+        const a = geometry.vertices[ring[(i + ring.length - 1) % ring.length]];
+        const b = geometry.vertices[index], c = geometry.vertices[ring[(i + 1) % ring.length]];
+        return !(a[0] === b[0] && b[0] === c[0] || a[1] === b[1] && b[1] === c[1]);
+      }).map(index => geometry.vertices[index])));
     }
 
     function partAppearance(part) {
@@ -2768,6 +2889,17 @@
       }
       const appearance = partAppearance(part);
       const edgeColor = outlineColor(appearance);
+      if (part.kind === 'text') {
+        const { textNode } = partNodes.get(part.id);
+        textNode.setAttribute('fill', appearance.color);
+        textNode.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
+        textNode.setAttribute('stroke', appearance.outlineEnabled ? edgeColor : 'none');
+        textNode.setAttribute('stroke-width', appearance.outlineWidth);
+        textNode.setAttribute('stroke-opacity', transparencyToOpacity(appearance.outlineTransparency));
+        shape.setAttribute('fill', 'transparent');
+        shape.setAttribute('stroke', 'none');
+        return;
+      }
       shape.setAttribute('fill', part.kind === 'line' ? 'none' : appearance.color);
       shape.setAttribute('fill-opacity', transparencyToOpacity(appearance.faceTransparency));
       if (imageFill) {
@@ -3083,7 +3215,7 @@
           for (const part of scene) {
             if (part !== target && !subtree.has(part.parent)) continue;
             subtree.add(part.id);
-            if (part.cutter || part.kind === 'outline' || part.kind === 'line' || !part.geometry.edges.length || !isPartVisible(part, scene, preview)) continue;
+            if (part.cutter || ['outline', 'line', 'text'].includes(part.kind) || !part.geometry.edges.length || !isPartVisible(part, scene, preview)) continue;
             const style = partAppearance(part);
             const outlined = style.outlineEnabled && style.outlineTransparency < 100;
             if (!outlined && style.faceTransparency === 100) continue;
@@ -3307,7 +3439,7 @@
         if (part.kind === 'outline' || part.kind === 'unified-copy') visual.setAttribute('display', 'none');
         const visualId = 'part-visual-' + partNodes.size;
         visual.setAttribute('id', visualId);
-        let imageFill, imageDefs, lineTips;
+        let imageFill, imageDefs, lineTips, textNode;
         visual.append(glow);
         if (part.kind === 'image') {
           imageDefs = makeSvg('defs');
@@ -3318,6 +3450,28 @@
           visual.append(imageDefs, imageFill);
         }
         visual.append(shape);
+        if (part.kind === 'text') {
+          shape.classList.add('part-image-hit');
+          textNode = makeSvg('text');
+          const layout = textLayout(part);
+          textNode.setAttribute('font-family', textFamily(part));
+          textNode.setAttribute('font-size', layout.size);
+          textNode.setAttribute('font-weight', layout.bold ? '900' : '400');
+          textNode.setAttribute('font-style', layout.italic ? 'italic' : 'normal');
+          textNode.setAttribute('text-decoration', layout.underline ? 'underline' : 'none');
+          textNode.setAttribute('text-anchor', 'middle');
+          textNode.setAttribute('dominant-baseline', 'central');
+          textNode.setAttribute('pointer-events', 'none');
+          textNode.style.whiteSpace = 'pre';
+          for (const { text, x, y } of layout.rows) {
+            const row = makeSvg('tspan');
+            row.setAttribute('x', x);
+            row.setAttribute('y', y);
+            row.textContent = text;
+            textNode.append(row);
+          }
+          visual.append(textNode);
+        }
         if (part.kind === 'line') {
           shape.classList.add('part-line');
           lineTips = makeSvg('path');
@@ -3334,6 +3488,7 @@
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'quiet editor-root-button';
+        button.setAttribute('translate', 'no');
         button.toggleAttribute('data-cutter', Boolean(part.cutter));
         button.toggleAttribute('data-folder', part.kind === 'folder');
         button.textContent = part.name;
@@ -3360,7 +3515,7 @@
         childLists.get(part.parent).append(item);
         childLists.set(part.id, children);
         branchToggles.set(part.id, toggle);
-        partNodes.set(part.id, { group, shape, glow, vertices, button, visualId, outlineEffects, mirrorEffects, imageFill, imageDefs, lineTips });
+        partNodes.set(part.id, { group, shape, glow, vertices, button, visualId, outlineEffects, mirrorEffects, imageFill, imageDefs, lineTips, textNode });
         renderImageFill(part);
         renderPartAppearance(part);
       }
@@ -3865,7 +4020,7 @@
       const roots = new Set([target.id]);
       const members = parts.flatMap(part => {
         if ((!roots.has(part.id) && !hasSelectedAncestor(part, roots)) || part.cutter
-          || part.kind === 'outline' || !part.geometry.edges.length || !isPartVisible(part)) return [];
+          || part.kind === 'outline' || part.kind === 'text' || !part.geometry.edges.length || !isPartVisible(part)) return [];
         const matrix = partMatrix(part);
         const vertices = part.geometry.vertices.map(vertex => {
           const { x, y } = matrix.transformPoint(new DOMPoint(...vertex));
@@ -4067,13 +4222,14 @@
     function renderModelTransform() {
       for (const part of parts) {
         const matrix = partMatrix(part);
-        const { group, shape, glow, button, imageFill } = partNodes.get(part.id);
+        const { group, shape, glow, button, imageFill, textNode } = partNodes.get(part.id);
         group.toggleAttribute('data-zero-scale', !isPartVisible(part));
         group.toggleAttribute('data-unselectable', part.selectable === false);
         const transform = svgMatrix(matrix);
         shape.setAttribute('transform', transform);
         glow.setAttribute('transform', transform);
         if (imageFill) imageFill.setAttribute('transform', transform);
+        if (textNode) textNode.setAttribute('transform', transform);
         if (part.kind === 'line') renderLineTips(part);
         if (button.textContent !== part.name) button.textContent = part.name;
       }
@@ -4084,6 +4240,14 @@
       renderMirrorGuide();
       const selected = getPart(editorSelection);
       if (selected) {
+        if (selected.kind === 'text') {
+          partText.value = selected.text;
+          partFont.value = selected.font;
+          for (const [input, key, fallback] of textStyleInputs) {
+            if (typeof fallback === 'boolean') input.checked = selected[key] ?? fallback;
+            else input.value = selected[key] ?? fallback;
+          }
+        }
         renderGizmoAxes(selected);
         const selection = selectedParts();
         const selectedLines = selection.filter(part => part.kind === 'line');
@@ -4247,13 +4411,19 @@
           });
           return { vertices, edges: part.geometry.edges };
         });
-        const geometry = parent.kind === 'line' ? cutLineGeometry(parent.geometry, localCutters) : cutGeometry(parent.geometry, localCutters);
-        if (geometry === parent.geometry) {
+        const subject = parent.kind === 'text' ? traceText(parent) : parent.geometry;
+        if (!subject.edges.length) return;
+        const geometry = parent.kind === 'line' ? cutLineGeometry(subject, localCutters) : cutGeometry(subject, localCutters);
+        if (geometry === subject) {
           editorStatus.textContent = '切り取れる範囲がありません。';
           return;
         }
         const before = editorSnapshot();
         parent.geometry = geometry;
+        if (parent.kind === 'text') {
+          parent.kind = 'polygon';
+          for (const key of ['text', 'font', ...Object.keys(textDefaults)]) delete parent[key];
+        }
         selectVertex(null);
         groupTransform = makeGroupTransform();
         renderParts();
@@ -4805,7 +4975,7 @@
     function renderVertexSelection() {
       const part = deformMode ? activeVertexPart() : null;
       for (const [id, { vertices }] of partNodes) {
-        const target = deformMode && selectedPartIds.has(id);
+        const target = deformMode && selectedPartIds.has(id) && getPart(id)?.kind !== 'text';
         const indices = selectedVertexIndices(id);
         vertices.toggleAttribute('data-vertex-target', target);
         for (const point of vertices.children) {
@@ -5072,6 +5242,7 @@
       }
       const frameSelected = selection === 'frame';
       const selected = getPart(selection);
+      for (const row of editorProperties.querySelectorAll('[data-text-property]')) row.hidden = selected?.kind !== 'text';
       const modelSelected = Boolean(selected);
       const mirrorSelected = selected?.kind === 'mirror' && selectedPartIds.size === 1;
       const unifiedCopySelected = selected?.kind === 'unified-copy';
@@ -5189,6 +5360,19 @@
       });
     }
 
+    for (const [input, key, fallback] of [[partText, 'text', ''], [partFont, 'font', 'Arial'], ...textStyleInputs]) {
+      input.addEventListener('change', () => {
+        const part = getPart(editorSelection);
+        if (part?.kind !== 'text') return;
+        const before = editorSnapshot();
+        part[key] = typeof fallback === 'boolean' ? input.checked : typeof fallback === 'number'
+          ? Math.max(8, Math.min(256, Math.round(input.valueAsNumber || fallback))) : input.value;
+        updateTextBounds(part);
+        renderParts();
+        renderEditorSelection();
+        recordEditorEdit(before);
+      });
+    }
     modelName.addEventListener('change', () => {
       const part = getPart(editorSelection);
       if (!part) return;
@@ -5379,7 +5563,7 @@
       if (deformMode) {
         if (!extend) vertexSelections.clear();
         for (const part of selectedParts()) {
-          if (!isViewportSelectable(part)) continue;
+          if (part.kind === 'text' || !isViewportSelectable(part)) continue;
           const indices = selectedVertexIndices(part.id);
           for (const dot of partNodes.get(part.id).vertices.children) {
             const radius = vertexMarkerRadius(partNodes.get(part.id).vertices, dot) / viewZoom;
@@ -6198,6 +6382,22 @@
         const world = exportOffset.multiply(matrix ? matrix.multiply(pose) : pose);
         path.addPath(geometry, world);
         const appearance = partAppearance(part);
+        if (part.kind === 'text') {
+          context.save();
+          context.transform(world.a, world.b, world.c, world.d, world.e, world.f);
+          const layout = textLayout(part, context);
+          if (appearance.outlineEnabled) {
+            context.globalAlpha = transparencyToOpacity(appearance.outlineTransparency);
+            context.lineWidth = appearance.outlineWidth;
+            context.strokeStyle = outlineColor(appearance);
+            paintText(context, layout, true);
+          }
+          context.fillStyle = appearance.color;
+          context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
+          paintText(context, layout);
+          context.restore();
+          return;
+        }
         const line = part.kind === 'line';
         context.strokeStyle = outlineColor(appearance);
         context.lineCap = line ? 'round' : 'butt';
@@ -6427,6 +6627,13 @@
       for (const part of savedParts) {
         if (!part || typeof part.id !== 'string' || ids.has(part.id) || !ids.has(part.parent)
           || typeof part.name !== 'string' || !Object.hasOwn(partNames, part.kind)) return false;
+        if (part.kind === 'text' && (typeof part.text !== 'string' || part.text.length > 200 || !Object.hasOwn(textFonts, part.font))) return false;
+        if (part.kind === 'text' && (
+          part.align !== undefined && !['left', 'center', 'right'].includes(part.align)
+          || part.flow !== undefined && !['horizontal', 'vertical'].includes(part.flow)
+          || part.size !== undefined && (!Number.isInteger(part.size) || part.size < 8 || part.size > 256)
+          || ['bold', 'italic', 'underline'].some(key => part[key] !== undefined && typeof part[key] !== 'boolean')
+        )) return false;
         // Accept the former maximum so older projects can still be opened.
         if (part.kind === 'mirror' && part.lines !== undefined
           && (!Number.isInteger(part.lines) || part.lines < 1 || part.lines > 36)) return false;
@@ -6859,7 +7066,10 @@
         card.className = 'selection-card';
         button.type = 'button';
         button.setAttribute('aria-label', project.name + 'を' + action);
-        card.append(preview, project.name);
+        const name = document.createElement('span');
+        name.setAttribute('translate', 'no');
+        name.textContent = project.name;
+        card.append(preview, name);
         if (project.savedAt) {
           const time = document.createElement('time');
           time.dateTime = project.savedAt;
@@ -7642,6 +7852,7 @@
           rotationStep: rotationStep(),
           scaleStep: scaleStep(),
           shortcutBindings,
+          language: languageInput.value,
           theme: themeInput.value,
           liminalEffect: liminalEffect.checked,
           customThemeColors: Object.fromEntries(customThemeInputs.map(input => [input.id, input.value])),
@@ -7660,6 +7871,8 @@
     }
 
     const preferences = loadPreferences();
+    const languageInput = document.querySelector('#ui-language');
+    languageInput.value = preferences.language === 'en' ? 'en' : 'ja';
     shortcutBindings = loadShortcutBindings(preferences.shortcutBindings);
     renderShortcutSettings();
     for (const input of customThemeInputs) {
@@ -7888,6 +8101,383 @@
       } catch {
         updateBgmControls(true);
       }
+    }
+
+    const englishLabels = new Map(`言語|Language
+選択ツール|Select Tool
+移動ツール|Move Tool
+回転ツール|Rotate Tool
+拡大・縮小ツール|Scale Tool
+変形モードの切り替え|Toggle Edit Shape Mode
+すべての選択を解除|Deselect All
+削除（Backspace）|Delete (Backspace)
+削除（Delete）|Delete (Delete)
+削除（予備）|Delete (Alternate)
+設定を開く|Open Settings
+元に戻す|Undo
+やり直す|Redo
+コピー|Copy
+貼り付け|Paste
+複製|Duplicate
+頂点追加・囲み選択を中止|Cancel Vertex Insertion or Box Select
+ギズモを表示・非表示|Toggle Gizmos
+操作ガイドを開く|Open User Guide
+エクスプローラーを表示・非表示|Toggle Explorer
+プロパティを表示・非表示|Toggle Properties
+ツールバーを表示・非表示|Toggle Toolbar
+ズームイン|Zoom In
+ズームアウト|Zoom Out
+フォルダーを追加|Add Folder
+オブジェクトの名前を変更|Rename Object
+コントロール|Ctrl
+シフト|Shift
+コントロール＋シフト|Ctrl+Shift
+オルト|Alt
+タイトルのアニメーションをなくす|Disable Title Animation
+プレビューのアニメーション|Preview Animation
+頂点に使う画像のプレビュー|Vertex Marker Preview
+設定|Settings
+その他|Other
+編集|Editing
+音量|Audio
+キーバウンド|Key Bindings
+作成する|Create
+ライブラリー|Library
+タイトルに戻る|Return to Title
+作成メニュー|Create Menu
+土台|Base
+土台の選択|Choose a Base
+空白|Blank
+空白を読み込む|Load Blank
+四角形|Rectangle
+四角形を読み込む|Load Rectangle
+読み込む|Load
+テンプレート|Templates
+テンプレートの選択|Choose a Template
+読み込める作品はありません。|No saved projects.
+保存した作品|Saved Projects
+保存された作品|Saved Projects
+保存された作品はありません。|No saved projects.
+頂点・辺・面でつくる、2D図形。|Create 2D shapes with vertices, edges, and faces.
+PLANE — 2D図形作成|PLANE — 2D Shape Editor
+バージョン 0.2.1|Version 0.2.1
+2Dエディター|2D Editor
+2Dビュー · XY|2D View · XY
+2Dビュー|2D View
+配置したパーツ|Placed Parts
+モデル情報|Model Info
+メニューバー|Menu Bar
+ファイル|File
+画像を保存|Export Image
+画像を保存…|Export Image…
+現在のプレビューを表示|Show Current Preview
+現在のプレビュー|Current Preview
+画像を追加|Import Image
+モデルを追加|Import Model
+新規保存|Save New
+新規保存…|Save New…
+上書き保存|Overwrite
+上書き保存…|Overwrite…
+ツール|Tools
+ツールのメニューバー|Tool Menu
+ホームのツール|Home Tools
+モデルのツール|Model Tools
+モードのツール|Mode Tools
+変形のツール|Shape Editing Tools
+ホーム|Home
+モデル|Model
+モード|Mode
+変形|Edit Shape
+変形モード|Edit Shape Mode
+表示|View
+ツールバーを表示|Show Toolbar
+エクスプローラーの表示|Show Explorer
+プロパティの表示|Show Properties
+オブジェクトを追加|Add Object
+パーツを追加|Add Part
+切り取りパーツを追加|Add Cutter
+パーツの切り取り|Cut Parts
+上下反転|Flip Vertically
+左右反転|Flip Horizontally
+操作軸を水平・垂直にする|Align Gizmos to World Axes
+中心を変更|Edit Pivot
+ギズモを表示|Show Gizmos
+選択|Select
+移動|Move
+回転|Rotate
+拡大・縮小|Scale
+頂点を追加|Add Vertex
+分割|Split
+なめらか|Smooth
+囲み|Box Select
+操作|Actions
+タッチ操作|Touch Controls
+タッチ操作パネルを移動|Move Touch Controls
+ショートカット操作|Shortcut Actions
+ズーム|Zoom
+モデルなし|No Parts
+エクスプローラー|Explorer
+プロパティ|Properties
+シーン|Scene
+書き出し枠|Export Frame
+名前|Name
+親|Parent
+位置|Position
+位置 X|Position X
+位置 Y|Position Y
+回転角度|Rotation Angle
+スケール|Scale
+スケール X|Scale X
+スケール Y|Scale Y
+頂点 / 辺 / 面|Vertices / Edges / Faces
+親に追従|Follow Parent
+モデル化|Convert to Parts
+モデル化済み|Converted
+複製をモデル化|Convert Copies to Parts
+一体複製|Unified Copy
+文字|Text
+フォント|Font
+文字揃え|Alignment
+方向|Direction
+横書き|Horizontal
+縦書き|Vertical
+左|Left
+中央|Center
+右|Right
+文字サイズ|Font Size
+書式|Style
+線の本数|Axis Count
+線の端|Line Cap
+棘|Spike
+棘の長さ|Spike Length
+固定|Fixed
+混在|Mixed
+外観|Appearance
+面と枠線|Fill and Outline
+面の透明度|Fill Transparency
+全体のカラー|Color
+枠線を表示|Show Outline
+枠線|Outline
+枠線の太さ|Outline Width
+個別の枠線色|Separate Outline Color
+枠線のカラー|Outline Color
+枠線の透明度|Outline Transparency
+枠線の発光|Outline Glow
+枠線の明るさ|Glow Brightness
+発光の範囲|Glow Radius
+プレビューに表示しない|Hide from Preview
+書き出し枠の位置|Export Frame Position
+書き出し枠のサイズ（px）|Export Frame Size (px)
+書き出し枠のサイズの設定|Export Frame Size Settings
+サイズの設定|Size Settings
+比率（X：Y）|Aspect Ratio (X:Y)
+比率 X|Ratio X
+比率 Y|Ratio Y
+幅|Width
+高さ|Height
+カスタム|Custom
+適用|Apply
+閉じる|Close
+キャンセル|Cancel
+プレビュー|Preview
+パーツのプレビュー|Part Preview
+モデルのプレビュー|Model Preview
+書き出す画像のプレビュー|Export Image Preview
+現在の書き出し範囲|Current Export Area
+選択した辺の変更プレビュー|Selected Edge Preview
+滑らかさ|Smoothness
+端から端までの頂点の数|Vertex Count from End to End
+破線は変更前、水色は変更後です。|Dashed lines show the original. Blue lines show the result.
+種類|Type
+変更不可のプロパティ|Fixed Properties
+挿入|Insert
+正方形|Square
+円|Circle
+多角形|Polygon
+フォルダー|Folder
+ミラー|Mirror
+ミラーの中心を移動|Move Mirror Center
+直線|Line
+頂点の数|Vertex Count
+挿入時に位置を親に合わせる|Match Parent Position on Insert
+挿入時に角度を親に合わせる|Match Parent Angle on Insert
+挿入時に図形の種類が確定します。|The shape type is set when inserted.
+挿入後に頂点の数が固定されます。|The initial vertex count is set when inserted.
+名前を変更|Rename
+モデルのデータ|Model Data
+モデルを消去|Delete Model
+消去する|Delete
+消去の警告|Delete Warning
+上書きの警告|Overwrite Warning
+上書き先に選ぶ|Select for Overwrite
+上書きする作品をライブラリーから選んでください。|Select a project in the library to overwrite.
+次へ|Next
+戻る|Back
+変更する|Change
+追加する|Add
+ファイル名|File Name
+ファイル形式|File Format
+形式|Format
+倍率|Scale
+背景|Background
+背景色|Background Color
+透過|Transparent
+単色|Solid
+JPEG画質|JPEG Quality
+高画質（自動・最大200%）|High Quality (Auto, up to 200%)
+100%（枠と同じ）|100% (Frame Size)
+保存|Save
+保存する|Save
+保存せずに戻る|Return Without Saving
+保存方法を選んでください。|Choose how to save.
+保存されていない内容があります。タイトルに戻る前に保存しますか？|You have unsaved changes. Save before returning to the title screen?
+操作ガイド|User Guide
+操作ガイドの本文|Guide Content
+操作ガイドのページ|Guide Pages
+基本|Basics
+ショートカット|Shortcuts
+応用（コツ）|Tips
+オブジェクト|Objects
+設定項目|Settings Sections
+頂点追加の吸着点の数|Snap Points per Edge
+選択中のモデルの辺の交点に吸着|Snap to Edge Intersections
+移動矢印の刻み幅|Arrow Key Step
+回転の刻み幅（度）|Rotation Step (Degrees)
+拡大・縮小の刻み幅（%）|Scale Step (%)
+ズームインの最大値（%）|Maximum Zoom (%)
+デフォルトに戻す|Reset Defaults
+解除|Clear
+未設定|Unassigned
+なし|None
+BGMを再生|Play Background Music
+BGM音量|Music Volume
+効果音|Sound Effects
+効果音を鳴らす|Play Sound Effects
+クリック音量|Click Volume
+クリック音の種類|Click Sound
+ソフト|Soft
+タップ|Tap
+カチッ|Snap
+メカニカル|Mechanical
+クリック|Click
+テーマ|Theme
+通常|Default
+通常２|Default 2
+ダーク|Dark
+アストラル|Astral
+リミナル|Liminal
+スカイ|Sky
+レインボー|Rainbow
+ブラッド|Blood
+リメンバランス|Remembrance
+ホワイト＆ブルー|White & Blue
+メタ|Meta
+リミナルのエフェクト|Liminal Effects
+全体の色|Base Color
+全体の枠線の色|Border Color
+選択中の色|Selection Color
+選択中の枠線の色|Selection Border Color
+頂点の形|Vertex Marker
+丸|Round
+四角|Square
+ダイヤ|Diamond
+画像を選択|Choose Image
+頂点に使う画像|Vertex Marker Image
+日本語向け|Japanese
+英語|English
+丸ゴシック・太字|Rounded Gothic Bold
+選択中のモデルはありません。|No part selected.
+モデルを読み込んでいます…|Loading model…
+画像を読み込み中…|Loading image…
+画像素材を読み込めませんでした。|Could not load image assets.
+この画像を読み込めませんでした。|Could not load this image.
+切り取れる範囲がありません。|The cutter does not overlap the part.
+切り取りを適用できませんでした。|Could not apply the cut.
+エクスプローラーでパーツを選択|Select a part in Explorer
+クリックで追加 · Shiftで吸着 · Escで中止|Click to add · Shift to snap · Esc to cancel
+X・Yがともに16〜4096 pxに収まる比率を入力してください。|Enter a ratio that keeps both dimensions between 16 and 4096 px.
+端のある区間は滑らかさ100で直線になります。閉じた輪郭全体は最低3頂点で丸めます。|At 100, open segments straighten. Closed paths are smoothed with at least three vertices.
+辺でつながった頂点を2つ以上選んでください。|Select at least two connected vertices.
+画像を書き出せませんでした。|Could not export the image.
+作品を保存できませんでした。|Could not save the project.
+ファイル名を入力してください。|Enter a file name.
+初期の割り当てに戻しました。|Default shortcuts restored.
+選んだ辺の内側に吸着点を等間隔に置きます。頂点の追加中に Shift を押すと、最も近い点に吸着します。|Snap points are evenly spaced along the selected edge. Hold Shift when adding a vertex to snap to the nearest point.
+拡大・縮小はドラッグ開始時のサイズに対する割合です。0%で連続的に変わります。|The scale step is a percentage of the starting size. Use 0% for continuous scaling.
+補助キーを選び、右の欄をクリックしてキーを押します。ブラウザが優先する組み合わせは、ここで別のキーに変更できます。|Choose modifiers, click the key field, and press a key. If the browser reserves a shortcut, assign a different key here.`.split('\n').map(line => line.split('|')));
+    const originalLabels = new WeakMap();
+    const localizedAttributes = ['aria-label', 'title', 'placeholder', 'alt', 'label'];
+    let localizationObserver;
+
+    function englishLabel(label) {
+      if (englishLabels.has(label)) return englishLabels.get(label);
+      const selected = /^(\d+)個選択$/.exec(label);
+      if (selected) return selected[1] + ' selected';
+      const vertices = /^(\d+)頂点を選択 · Ctrlで追加 · Shiftで最短経路を選択$/.exec(label);
+      if (vertices) return vertices[1] + ' vertices selected · Ctrl to add · Shift for shortest path';
+      return label;
+    }
+
+    function localizeValue(node, key, value, write) {
+      let entries = originalLabels.get(node);
+      const previous = entries?.[key];
+      const original = previous && previous.rendered === value ? previous.original : value;
+      const next = languageInput.value === 'en' ? original.replace(/^(\s*)(.*?)(\s*)$/s,
+        (_, before, label, after) => before + englishLabel(label) + after) : original;
+      if (next === original) {
+        if (entries) delete entries[key];
+      } else {
+        if (!entries) originalLabels.set(node, entries = {});
+        entries[key] = { original, rendered: next };
+      }
+      if (value !== next) write(next);
+    }
+
+    function localizeNode(node) {
+      const element = node.nodeType === 1 ? node : node.parentElement;
+      if (!element || element.closest('script, style, textarea, [translate="no"], #ui-language, svg text')) return;
+      if (node.nodeType === 3) {
+        localizeValue(node, 'text', node.data, value => { node.data = value; });
+      } else if (node.nodeType === 1) {
+        for (const key of localizedAttributes) {
+          if (node.hasAttribute(key)) localizeValue(node, key, node.getAttribute(key), value => node.setAttribute(key, value));
+        }
+        for (const child of node.childNodes) localizeNode(child);
+      }
+    }
+
+    function observeLanguage() {
+      localizationObserver.observe(document.body, {
+        subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: localizedAttributes
+      });
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = languageInput.value;
+      document.title = languageInput.value === 'en' ? 'PLANE — 2D Shape Editor' : 'PLANE — 2D図形作成';
+      localizationObserver.disconnect();
+      localizeNode(document.body);
+      if (languageInput.value === 'en') observeLanguage();
+    }
+
+    if (typeof MutationObserver === 'function') {
+      localizationObserver = new MutationObserver(records => {
+        localizationObserver.disconnect();
+        for (const record of records) {
+          if (record.type === 'childList') record.addedNodes.forEach(localizeNode);
+          else if (record.type === 'characterData') localizeNode(record.target);
+          else if (record.target.hasAttribute(record.attributeName)) {
+            const key = record.attributeName;
+            localizeValue(record.target, key, record.target.getAttribute(key), value => record.target.setAttribute(key, value));
+          }
+        }
+        observeLanguage();
+      });
+      languageInput.addEventListener('change', () => {
+        applyLanguage();
+        savePreferences();
+      });
+      applyLanguage();
     }
   </script>
 </body>
