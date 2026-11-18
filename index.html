@@ -2886,7 +2886,10 @@
     }
 
     const isGradient = part => part?.kind === 'gradient' || part?.kind === 'inner-gradient';
-    const gradientTextures = new WeakMap();
+    const gradientTextures = new Map();
+    const renderedGradients = new WeakMap();
+    let gradientTextureBytes = 0;
+    const maxGradientTextureBytes = 32 * 1024 * 1024;
 
     function partGradient(part, scene = parts) {
       return scene.find(item => item.parent === part.id && isGradient(item) && item.visible !== false);
@@ -2901,8 +2904,12 @@
       }
       const source = gradient.sourceGeometry;
       const key = JSON.stringify([source, part.geometry, gradient.stops, gradient.angle, gradient.kind]);
-      const cached = gradientTextures.get(part);
-      if (cached?.key === key) return cached;
+      const cached = gradientTextures.get(key);
+      if (cached) {
+        gradientTextures.delete(key);
+        gradientTextures.set(key, cached);
+        return cached;
+      }
       const xs = source.vertices.map(point => point[0]), ys = source.vertices.map(point => point[1]);
       const sourceX = Math.min(...xs), sourceY = Math.min(...ys);
       const sourceWidth = Math.max(0.001, Math.max(...xs) - sourceX);
@@ -2964,19 +2971,38 @@
         context.putImageData(pixels, 0, 0);
       }
       const result = { key, canvas, x, y, width, height, data: canvas.toDataURL() };
-      gradientTextures.set(part, result);
+      result.bytes = canvas.width * canvas.height * 4 + result.data.length * 2 + key.length * 2;
+      while (gradientTextures.size && gradientTextureBytes + result.bytes > maxGradientTextureBytes) {
+        const oldest = gradientTextures.keys().next().value;
+        gradientTextureBytes -= gradientTextures.get(oldest).bytes;
+        gradientTextures.delete(oldest);
+      }
+      if (result.bytes <= maxGradientTextureBytes) {
+        gradientTextures.set(key, result);
+        gradientTextureBytes += result.bytes;
+      }
       return result;
     }
 
     function renderPartGradient(part) {
       const { group, shape, textNode } = partNodes.get(part.id);
-      group.querySelector('[data-gradient-defs]')?.remove();
       const texture = gradientTexture(part);
-      if (!texture || part.cutter || part.kind === 'image') return;
+      if (!texture || part.cutter || part.kind === 'image') {
+        group.querySelector('[data-gradient-defs]')?.remove();
+        renderedGradients.delete(group);
+        return;
+      }
+      const id = 'gradient-paint-' + part.id;
+      const target = textNode ?? shape;
+      const attribute = part.kind === 'line' ? 'stroke' : 'fill';
+      if (renderedGradients.get(group) === texture.key) {
+        target.setAttribute(attribute, 'url(#' + id + ')');
+        return;
+      }
+      group.querySelector('[data-gradient-defs]')?.remove();
       const ns = 'http://www.w3.org/2000/svg';
       const defs = document.createElementNS(ns, 'defs'); defs.setAttribute('data-gradient-defs', '');
       const pattern = document.createElementNS(ns, 'pattern');
-      const id = 'gradient-paint-' + part.id;
       pattern.id = id;
       for (const key of ['width', 'height']) pattern.setAttribute(key, texture[key]);
       pattern.setAttribute('x', 0);
@@ -2991,7 +3017,8 @@
       image.setAttribute('href', texture.data);
       image.setAttribute('preserveAspectRatio', 'none');
       pattern.append(image); defs.append(pattern); group.prepend(defs);
-      (textNode ?? shape).setAttribute(part.kind === 'line' ? 'stroke' : 'fill', 'url(#' + id + ')');
+      target.setAttribute(attribute, 'url(#' + id + ')');
+      renderedGradients.set(group, texture.key);
     }
 
     function partAppearance(part) {
