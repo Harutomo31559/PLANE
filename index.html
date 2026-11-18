@@ -440,6 +440,35 @@
     .editor-tools:not([hidden]) { display: flex; flex-wrap: nowrap; gap: 0.35rem; }
     .editor-tools > *, .editor-subtab { flex: 0 0 auto; white-space: nowrap; }
     .editor-toolbar > .editor-tools { min-width: max-content; }
+    #gradient-dialog input[type="number"] {
+      width: 7rem; max-width: 50%; height: 2.5rem; min-height: 2.5rem;
+      padding: 0.35rem 0.5rem; font: inherit;
+      color: var(--text); background: var(--card); border: 1px solid var(--line);
+      border-radius: 4px; font-variant-numeric: tabular-nums;
+    }
+    .gradient-stop {
+      appearance: none; -webkit-tap-highlight-color: transparent;
+      position: absolute; bottom: -30px; translate: -50% 0;
+      width: 28px; height: 28px; padding: 0; border: 2px solid #999;
+      border-radius: 4px; background: #202020; color: #fff;
+      touch-action: none; outline: none; z-index: 1;
+    }
+    .gradient-stop::after {
+      content: ""; display: block; margin: auto; width: 0; height: 0;
+      border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-top: 11px solid var(--stop-color);
+      filter: drop-shadow(0 0 1px #fff) drop-shadow(0 1px 1px #000);
+    }
+    .gradient-stop[aria-pressed="true"] {
+      background: #fff; border: 3px solid #111;
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111; z-index: 2;
+    }
+    .gradient-stop[aria-pressed="true"]::before {
+      content: ""; position: absolute; bottom: 31px; left: 50%;
+      width: 2px; height: 74px; background: #fff;
+      box-shadow: 1px 0 0 #111, -1px 0 0 #111; pointer-events: none;
+    }
+    .gradient-stop:focus-visible { outline: 2px dashed #fff; outline-offset: 5px; }
     #smooth-dialog { width: min(48rem, calc(100% - 1rem)); }
     .smooth-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 0.75rem; }
     #smooth-preview { width: 100%; height: clamp(9rem, 35dvh, 20rem); border: 1px solid #363a40; background: #21242a; }
@@ -1030,7 +1059,7 @@
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4l.5 2.3 1.5.9 2.3-.7 2 3.5-1.7 1.6v1.8l1.7 1.6-2 3.5-2.3-.7-1.5.9L14 20h-4l-.5-2.3-1.5-.9-2.3.7-2-3.5 1.7-1.6v-1.8L3.7 9l2-3.5 2.3.7 1.5-.9L10 3Z"/><circle cx="12" cy="11.5" r="2.5"/></svg>
       設定
     </button>
-    <span class="label" aria-label="バージョン 0.2.1">v0.2.1</span>
+    <span class="label" aria-label="バージョン 0.2.2">v0.2.2</span>
   </footer>
   </div>
   <main id="create-screen" class="create-screen" aria-labelledby="create-heading" hidden>
@@ -1315,6 +1344,7 @@
                 <label>Y <input id="model-sy" type="number" min="-30" max="30" step="0.01" aria-label="スケール Y"></label>
               </dd></div>
               <div data-object-transform data-shape-transform><dt>頂点 / 辺 / 面</dt><dd id="model-geometry"></dd></div>
+              <div id="gradient-properties" hidden><dt>グラデーション</dt><dd><button id="open-gradient" class="quiet" type="button">グラデーションの設定</button><label id="gradient-angle-row">方向 <input id="gradient-angle" type="number" step="1">°</label></dd></div>
               <div id="mirror-properties" hidden><dt><label for="mirror-lines">線の本数</label></dt>
                 <dd class="model-property-fields"><input id="mirror-lines" type="number" min="1" max="18" step="1"></dd>
               </div>
@@ -1415,6 +1445,18 @@
       </div>
     </form>
   </dialog>
+  <dialog id="gradient-dialog" aria-labelledby="gradient-title">
+    <h2 id="gradient-title">グラデーションの設定</h2>
+    <p id="gradient-help">バーの下の目印をドラッグして位置を変更します。バーをクリックすると目印を追加できます。</p>
+    <div id="gradient-track" style="position:relative;height:72px;margin:1rem 12px 2rem;touch-action:none;border:1px solid var(--line)"></div>
+    <label class="volume-row">位置（%）<input id="gradient-position" type="number" min="0" max="100" step="0.1"></label>
+    <label class="volume-row">色<input id="gradient-color" type="color"></label>
+    <label class="volume-row">透明度（%）<input id="gradient-alpha" type="number" min="0" max="100" step="1"></label>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:1rem">
+      <button id="gradient-add" type="button" class="quiet">目印を追加</button><button id="gradient-remove" type="button" class="quiet">削除</button>
+      <button id="gradient-cancel" type="button" class="quiet">キャンセル</button><button id="gradient-apply" type="button" class="quiet">適用</button>
+    </div>
+  </dialog>
   <dialog id="smooth-dialog" aria-labelledby="smooth-title">
     <h2 id="smooth-title">なめらか</h2>
     <div class="smooth-layout">
@@ -1455,7 +1497,7 @@
             <li><strong>枠線</strong>　親と子孫をまとめて囲みます。枠線の子にもう1つ枠線を追加すると、その外側に重ねられます。</li>
             <li><strong>ミラー</strong>　親と子孫を線対称に表示します。位置・角度・対称軸の本数（1〜18本）を調節できます。「複製をモデル化」で対称表示を編集できるモデルに変えられます。</li>
             <li><strong>直線</strong>　面を持たない線です。変形モードで頂点を追加すると折れ線を作れます。「外観」で線の太さ、端の形、棘の長さを調整できます。</li>
-            <li><strong>文字</strong>　プロパティでフォント、文字揃え、横書き・縦書き、サイズ、太字・斜体・下線、外観の色を調整できます。切り取りパーツで文字を切り取ると、頂点を編集できる図形に変わります。</li>
+            <li><strong>グラデーション・内部グラデーション</strong>　色を付けるパーツを選んで挿入します。グラデーションを選び、プロパティの設定ボタンから目印を追加して色・透明度・位置を調整します。両端の位置は固定です。内部グラデーションは左端の色が輪郭、右端の色が内側になります。</li><li><strong>文字</strong>　プロパティでフォント、文字揃え、横書き・縦書き、サイズ、太字・斜体・下線、外観の色を調整できます。切り取りパーツで文字を切り取ると、頂点を編集できる図形に変わります。</li>
             <li><strong>一体複製</strong>　まとめたいパーツやフォルダーを選んでから挿入します。エクスプローラーで一体複製を選び、プロパティの「一体複製」を押すと、親と子孫を合体させた編集可能なパーツが元と同じ位置に1個できます。</li>
           </ul>
         </details>
@@ -1592,6 +1634,7 @@
         <button class="quiet" type="button" data-part-kind="mirror" aria-pressed="false" hidden>ミラー</button>
         <button class="quiet" type="button" data-part-kind="unified-copy" aria-pressed="false" hidden>一体複製</button>
         <button class="quiet" type="button" data-part-kind="line" aria-pressed="false" hidden>直線</button>
+        <button class="quiet" type="button" data-part-kind="gradient" aria-pressed="false" hidden>グラデーション</button><button class="quiet" type="button" data-part-kind="inner-gradient" aria-pressed="false" hidden>内部グラデーション</button>
         <button class="quiet" type="button" data-part-kind="text" aria-pressed="false" hidden>文字</button>
       </div>
     </div>
@@ -2026,7 +2069,7 @@
     const initialPartRadius = 120;
     const defaultModel = { x: 0, y: 0, angle: 0, sx: 1, sy: 1, px: 0, py: 0 };
     let frameBounds = { ...defaultFrame, parentBasis: 512 };
-    const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー', line: '直線', text: '文字', 'unified-copy': '一体複製' };
+    const objectNames = { folder: 'フォルダー', outline: '枠線', mirror: 'ミラー', line: '直線', gradient: 'グラデーション', 'inner-gradient': '内部グラデーション', text: '文字', 'unified-copy': '一体複製' };
     const partNames = { square: '正方形', circle: '円', polygon: '多角形', image: '画像', ...objectNames };
     const partOutlineWidth = 2;
     const defaultPartAppearance = {
@@ -2749,6 +2792,7 @@
 
     function makePart(kind, sides, parent = 'scene', name = partNames[kind]) {
       const part = { id: allocatePartId(), parent, kind, geometry: makeGeometry(kind, sides), name, transform: { ...defaultModel } };
+      if (isGradient(part)) { part.angle = 0; part.stops = [{ position: 0, color: '#ffffff', transparency: 0 }, { position: 1, color: '#000000', transparency: 0 }]; }
       if (kind === 'text') {
         part.text = '文字';
         part.font = 'メイリオ';
@@ -2841,6 +2885,115 @@
       }).map(index => geometry.vertices[index])));
     }
 
+    const isGradient = part => part?.kind === 'gradient' || part?.kind === 'inner-gradient';
+    const gradientTextures = new WeakMap();
+
+    function partGradient(part, scene = parts) {
+      return scene.find(item => item.parent === part.id && isGradient(item) && item.visible !== false);
+    }
+
+    function gradientTexture(part, scene = parts) {
+      const gradient = partGradient(part, scene);
+      if (!gradient || !part.geometry.vertices.length) return null;
+      if (!gradient.sourceGeometry || (!gradient.freezeAfterCut
+        && JSON.stringify(gradient.sourceGeometry) !== JSON.stringify(part.geometry))) {
+        gradient.sourceGeometry = structuredClone(part.geometry);
+      }
+      const source = gradient.sourceGeometry;
+      const key = JSON.stringify([source, part.geometry, gradient.stops, gradient.angle, gradient.kind]);
+      const cached = gradientTextures.get(part);
+      if (cached?.key === key) return cached;
+      const xs = source.vertices.map(point => point[0]), ys = source.vertices.map(point => point[1]);
+      const sourceX = Math.min(...xs), sourceY = Math.min(...ys);
+      const sourceWidth = Math.max(0.001, Math.max(...xs) - sourceX);
+      const sourceHeight = Math.max(0.001, Math.max(...ys) - sourceY);
+      const currentX = part.geometry.vertices.map(point => point[0]), currentY = part.geometry.vertices.map(point => point[1]);
+      const padding = Math.max(sourceWidth, sourceHeight) / 384;
+      const x = Math.min(sourceX, ...currentX) - padding, y = Math.min(sourceY, ...currentY) - padding;
+      const width = Math.max(sourceX + sourceWidth, ...currentX) - x + padding;
+      const height = Math.max(sourceY + sourceHeight, ...currentY) - y + padding;
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(2, 384 / Math.max(width, height));
+      canvas.width = Math.max(1, Math.ceil(width * scale));
+      canvas.height = Math.max(1, Math.ceil(height * scale));
+      const context = canvas.getContext('2d');
+      const stops = [...gradient.stops].sort((a, b) => a.position - b.position);
+      const color = stop => stop.color + Math.round((1 - stop.transparency / 100) * 255).toString(16).padStart(2, '0');
+      if (gradient.kind === 'gradient') {
+        const angle = (gradient.angle ?? 0) * Math.PI / 180;
+        const dx = Math.cos(angle), dy = Math.sin(angle);
+        const projections = source.vertices.map(([x, y]) => x * dx + y * dy);
+        const minimum = Math.min(...projections), maximum = Math.max(...projections);
+        const centerX = sourceX + sourceWidth / 2, centerY = sourceY + sourceHeight / 2;
+        const centerProjection = centerX * dx + centerY * dy;
+        const toPixel = (projection, axis) => ((axis === 0 ? centerX : centerY)
+          + (projection - centerProjection) * (axis === 0 ? dx : dy) - (axis === 0 ? x : y))
+          * (axis === 0 ? canvas.width / width : canvas.height / height);
+        const paint = context.createLinearGradient(toPixel(minimum, 0), toPixel(minimum, 1),
+          toPixel(maximum, 0), toPixel(maximum, 1));
+        for (const stop of stops) paint.addColorStop(stop.position, color(stop));
+        context.fillStyle = paint;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        const distances = new Float32Array(canvas.width * canvas.height);
+        let maximum = 0;
+        for (let py = 0; py < canvas.height; py++) for (let px = 0; px < canvas.width; px++) {
+          const vx = x + (px + 0.5) / canvas.width * width, vy = y + (py + 0.5) / canvas.height * height;
+          if (!geometryContains(source, vx, vy)) continue;
+          let distance = Infinity;
+          for (const [a, b] of source.edges) {
+            const start = source.vertices[a], end = source.vertices[b];
+            const dx = end[0] - start[0], dy = end[1] - start[1];
+            const t = Math.max(0, Math.min(1, ((vx - start[0]) * dx + (vy - start[1]) * dy) / (dx * dx + dy * dy || 1)));
+            distance = Math.min(distance, Math.hypot(vx - start[0] - dx * t, vy - start[1] - dy * t));
+          }
+          distances[py * canvas.width + px] = distance;
+          maximum = Math.max(maximum, distance);
+        }
+        const strip = document.createElement('canvas'); strip.width = 1024; strip.height = 1;
+        const stripContext = strip.getContext('2d');
+        const paint = stripContext.createLinearGradient(0, 0, 1023, 0);
+        for (const stop of stops) paint.addColorStop(stop.position, color(stop));
+        stripContext.fillStyle = paint; stripContext.fillRect(0, 0, 1024, 1);
+        const colors = stripContext.getImageData(0, 0, 1024, 1).data;
+        const pixels = context.createImageData(canvas.width, canvas.height);
+        distances.forEach((distance, index) => {
+          const offset = Math.round(distance / (maximum || 1) * 1023) * 4;
+          pixels.data.set(colors.subarray(offset, offset + 4), index * 4);
+        });
+        context.putImageData(pixels, 0, 0);
+      }
+      const result = { key, canvas, x, y, width, height, data: canvas.toDataURL() };
+      gradientTextures.set(part, result);
+      return result;
+    }
+
+    function renderPartGradient(part) {
+      const { group, shape, textNode } = partNodes.get(part.id);
+      group.querySelector('[data-gradient-defs]')?.remove();
+      const texture = gradientTexture(part);
+      if (!texture || part.cutter || part.kind === 'image') return;
+      const ns = 'http://www.w3.org/2000/svg';
+      const defs = document.createElementNS(ns, 'defs'); defs.setAttribute('data-gradient-defs', '');
+      const pattern = document.createElementNS(ns, 'pattern');
+      const id = 'gradient-paint-' + part.id;
+      pattern.id = id;
+      for (const key of ['width', 'height']) pattern.setAttribute(key, texture[key]);
+      pattern.setAttribute('x', 0);
+      pattern.setAttribute('y', 0);
+      pattern.setAttribute('patternTransform', 'translate(' + texture.x + ' ' + texture.y + ')');
+      pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+      pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
+      const image = document.createElementNS(ns, 'image');
+      image.setAttribute('x', 0);
+      image.setAttribute('y', 0);
+      for (const key of ['width', 'height']) image.setAttribute(key, texture[key]);
+      image.setAttribute('href', texture.data);
+      image.setAttribute('preserveAspectRatio', 'none');
+      pattern.append(image); defs.append(pattern); group.prepend(defs);
+      (textNode ?? shape).setAttribute(part.kind === 'line' ? 'stroke' : 'fill', 'url(#' + id + ')');
+    }
+
     function partAppearance(part) {
       const appearance = { ...defaultPartAppearance, ...part.appearance };
       appearance.outlineWidth = limitOutlineWidth(appearance.outlineWidth);
@@ -2853,7 +3006,7 @@
     }
 
     function hasPartAppearance(part) {
-      return !part.cutter && part.kind !== 'folder' && part.kind !== 'mirror' && part.kind !== 'unified-copy';
+      return !part.cutter && part.kind !== 'folder' && part.kind !== 'mirror' && part.kind !== 'unified-copy' && !isGradient(part);
     }
 
     function outlineColor(appearance) {
@@ -3436,7 +3589,7 @@
         }
         const visual = makeSvg('g');
         visual.classList.add('part-visual');
-        if (part.kind === 'outline' || part.kind === 'unified-copy') visual.setAttribute('display', 'none');
+        if (part.kind === 'outline' || part.kind === 'unified-copy' || isGradient(part)) visual.setAttribute('display', 'none');
         const visualId = 'part-visual-' + partNodes.size;
         visual.setAttribute('id', visualId);
         let imageFill, imageDefs, lineTips, textNode;
@@ -3621,6 +3774,7 @@
       const parentPart = getPart(editorSelection);
       const parent = parentPart ? parentPart.id : editorSelection === 'frame' ? 'frame' : 'scene';
       const part = makePart(kind, sides, parent);
+      if (isGradient(part) && parentPart?.geometry.edges.length) part.sourceGeometry = structuredClone(parentPart.geometry);
       if (part.kind === 'outline') part.appearance = { color: '#9bdcff' };
       if (mode === 'cutter') {
         part.cutter = true;
@@ -4233,6 +4387,7 @@
         if (part.kind === 'line') renderLineTips(part);
         if (button.textContent !== part.name) button.textContent = part.name;
       }
+      for (const part of parts) { renderPartAppearance(part); renderPartGradient(part); }
       renderVertexPositions();
       const mirrors = sceneMirrors(parts, frameBounds);
       renderMirrorCopies(mirrors);
@@ -4419,6 +4574,10 @@
           return;
         }
         const before = editorSnapshot();
+        for (const gradient of parts.filter(item => item.parent === parent.id && isGradient(item))) {
+          if (!gradient.sourceGeometry) gradient.sourceGeometry = structuredClone(parent.geometry);
+          gradient.freezeAfterCut = true;
+        }
         parent.geometry = geometry;
         if (parent.kind === 'text') {
           parent.kind = 'polygon';
@@ -4709,7 +4868,7 @@
 
     document.addEventListener('keydown', event => {
       if (editorScreen.hidden || !modelLoaded || partsDialog.open || exportDialog.open || insertLibraryDialog.open
-        || currentPreviewDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open || smoothDialog.open || frameSizeDialog.open
+        || currentPreviewDialog.open || projectDialog.open || leaveEditorDialog.open || settings.open || operationGuide.open || smoothDialog.open || frameSizeDialog.open || gradientDialog.open
         || panStart || event.isComposing) return;
       if (event.key === 'Escape' && !shortcutMenu.hidden) {
         closeShortcutMenu();
@@ -5243,10 +5402,14 @@
       const frameSelected = selection === 'frame';
       const selected = getPart(selection);
       for (const row of editorProperties.querySelectorAll('[data-text-property]')) row.hidden = selected?.kind !== 'text';
+      const gradientSelected = isGradient(selected);
+      document.querySelector('#gradient-properties').hidden = !gradientSelected;
+      document.querySelector('#gradient-angle-row').hidden = !gradientSelected || selected.kind === 'inner-gradient';
+      if (gradientSelected) document.querySelector('#gradient-angle').value = selected.angle ?? 0;
       const modelSelected = Boolean(selected);
       const mirrorSelected = selected?.kind === 'mirror' && selectedPartIds.size === 1;
       const unifiedCopySelected = selected?.kind === 'unified-copy';
-      const transformable = modelSelected && selectedParts().some(part => !['outline', 'mirror', 'unified-copy'].includes(part.kind));
+      const transformable = modelSelected && selectedParts().some(part => !['outline', 'mirror', 'unified-copy', 'gradient', 'inner-gradient'].includes(part.kind));
       for (const button of Object.values(flipPartButtons)) button.disabled = !transformable;
       for (const row of objectTransformRows) row.hidden = !transformable && !mirrorSelected;
       for (const row of shapeTransformRows) row.hidden = !transformable;
@@ -6382,6 +6545,12 @@
         const world = exportOffset.multiply(matrix ? matrix.multiply(pose) : pose);
         path.addPath(geometry, world);
         const appearance = partAppearance(part);
+        const texture = gradientTexture(part, scene);
+        let fill = appearance.color;
+        if (texture) {
+          fill = context.createPattern(texture.canvas, 'no-repeat');
+          fill.setTransform(world.multiply(new DOMMatrix().translate(texture.x, texture.y).scale(texture.width / texture.canvas.width, texture.height / texture.canvas.height)));
+        }
         if (part.kind === 'text') {
           context.save();
           context.transform(world.a, world.b, world.c, world.d, world.e, world.f);
@@ -6392,14 +6561,18 @@
             context.strokeStyle = outlineColor(appearance);
             paintText(context, layout, true);
           }
-          context.fillStyle = appearance.color;
+          if (texture) {
+            fill = context.createPattern(texture.canvas, 'no-repeat');
+            fill.setTransform(new DOMMatrix().translate(texture.x, texture.y).scale(texture.width / texture.canvas.width, texture.height / texture.canvas.height));
+          }
+          context.fillStyle = fill;
           context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
           paintText(context, layout);
           context.restore();
           return;
         }
         const line = part.kind === 'line';
-        context.strokeStyle = outlineColor(appearance);
+        context.strokeStyle = line && texture ? fill : outlineColor(appearance);
         context.lineCap = line ? 'round' : 'butt';
         context.lineJoin = line ? 'round' : 'miter';
         for (const layer of glowLayers(appearance)) {
@@ -6410,7 +6583,7 @@
         if (part.kind === 'image') {
           drawImagePart(context, part, world, appearance);
         } else if (!line) {
-          context.fillStyle = appearance.color;
+          context.fillStyle = fill;
           context.globalAlpha = transparencyToOpacity(appearance.faceTransparency);
           context.fill(path);
         }
@@ -6627,6 +6800,17 @@
       for (const part of savedParts) {
         if (!part || typeof part.id !== 'string' || ids.has(part.id) || !ids.has(part.parent)
           || typeof part.name !== 'string' || !Object.hasOwn(partNames, part.kind)) return false;
+        if (isGradient(part) && (!Number.isFinite(part.angle) || !Array.isArray(part.stops) || part.stops.length < 2
+          || part.stops[0].position !== 0 || part.stops[1].position !== 1
+          || !part.stops.every(stop => Number.isFinite(stop.position) && stop.position >= 0 && stop.position <= 1
+            && /^#[0-9a-f]{6}$/i.test(stop.color) && Number.isFinite(stop.transparency) && stop.transparency >= 0 && stop.transparency <= 100))) return false;
+        if (isGradient(part) && part.sourceGeometry !== undefined) {
+          const source = part.sourceGeometry;
+          if (!source || !Array.isArray(source.vertices) || !Array.isArray(source.edges)
+            || !source.vertices.every(point => Array.isArray(point) && point.length === 2 && point.every(Number.isFinite))
+            || !source.edges.every(edge => Array.isArray(edge) && edge.length === 2
+              && edge.every(index => Number.isInteger(index) && index >= 0 && index < source.vertices.length))) return false;
+        }
         if (part.kind === 'text' && (typeof part.text !== 'string' || part.text.length > 200 || !Object.hasOwn(textFonts, part.font))) return false;
         if (part.kind === 'text' && (
           part.align !== undefined && !['left', 'center', 'right'].includes(part.align)
@@ -7823,6 +8007,112 @@
       mechanical: { wave: 'square', from: 720, to: 380, length: 0.048, noise: 0.30, color: 2200 },
       click: { wave: 'triangle', from: 1680, to: 1150, length: 0.023, noise: 0.45, color: 3700 }
     };
+
+    const gradientDialog = document.querySelector('#gradient-dialog');
+    const gradientTrack = document.querySelector('#gradient-track');
+    const gradientPosition = document.querySelector('#gradient-position');
+    const gradientColor = document.querySelector('#gradient-color');
+    const gradientAlpha = document.querySelector('#gradient-alpha');
+    const gradientRemove = document.querySelector('#gradient-remove');
+    let gradientDraft = [];
+    let gradientSelectedStop = 0;
+    let gradientEditingId;
+
+    function refreshGradientEditor() {
+      const stop = gradientDraft[gradientSelectedStop];
+      gradientTrack.style.background = 'linear-gradient(to right, ' + [...gradientDraft].sort((a,b) => a.position-b.position)
+        .map(item => item.color + Math.round((1-item.transparency/100)*255).toString(16).padStart(2,'0') + ' ' + item.position*100 + '%').join(',') + ')';
+      gradientTrack.replaceChildren();
+      gradientDraft.forEach((item, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'gradient-stop';
+        button.setAttribute('aria-label', 'Color Stop ' + (index + 1));
+        button.setAttribute('aria-pressed', String(index === gradientSelectedStop));
+        button.style.left = item.position * 100 + '%';
+        button.style.setProperty('--stop-color', item.color);
+        button.addEventListener('click', event => { event.stopPropagation(); gradientSelectedStop=index; refreshGradientEditor(); });
+        button.addEventListener('pointerdown', event => {
+          event.stopPropagation();
+          gradientSelectedStop=index;
+          for (const [position, marker] of Array.from(gradientTrack.children).entries()) {
+            marker.setAttribute('aria-pressed', String(position === index));
+          }
+          gradientPosition.value = Number((item.position * 100).toFixed(1));
+          gradientPosition.disabled = index < 2;
+          gradientColor.value = item.color;
+          gradientAlpha.value = item.transparency;
+          gradientRemove.disabled = index < 2;
+          button.setPointerCapture(event.pointerId);
+        });
+        button.addEventListener('pointermove', event => {
+          if (!button.hasPointerCapture(event.pointerId) || index<2) return;
+          const rect=gradientTrack.getBoundingClientRect();
+          item.position=Math.max(0.001,Math.min(0.999,(event.clientX-rect.left)/rect.width));
+          button.style.left=item.position*100+'%';
+          gradientPosition.value=(item.position*100).toFixed(1);
+          gradientTrack.style.background='linear-gradient(to right, '+[...gradientDraft].sort((a,b)=>a.position-b.position)
+            .map(item=>item.color+Math.round((1-item.transparency/100)*255).toString(16).padStart(2,'0')+' '+item.position*100+'%').join(',')+')';
+        });
+        button.addEventListener('lostpointercapture', refreshGradientEditor);
+        gradientTrack.append(button);
+      });
+      gradientPosition.value=Number((stop.position*100).toFixed(1));
+      gradientPosition.disabled=gradientSelectedStop<2;
+      gradientColor.value=stop.color;
+      gradientAlpha.value=stop.transparency;
+      gradientRemove.disabled=gradientSelectedStop<2;
+    }
+    function addGradientStop(position=0.5) {
+      gradientDraft.push({position, color:'#ffffff',transparency:0});
+      gradientSelectedStop=gradientDraft.length-1;
+      refreshGradientEditor();
+    }
+    document.querySelector('#open-gradient').addEventListener('click',()=>{
+      const part=getPart(editorSelection);
+      if(!isGradient(part))return;
+      gradientEditingId=part.id;
+      gradientDraft=structuredClone(part.stops);
+      gradientSelectedStop=0;
+      gradientDialog.showModal(); refreshGradientEditor();
+    });
+    gradientTrack.addEventListener('click',event=>{
+      if(event.target!==gradientTrack)return;
+      const rect=gradientTrack.getBoundingClientRect();
+      addGradientStop(Math.max(0.001,Math.min(0.999,(event.clientX-rect.left)/rect.width)));
+    });
+    document.querySelector('#gradient-add').addEventListener('click',()=>addGradientStop());
+    gradientRemove.addEventListener('click',()=>{
+      if(gradientSelectedStop<2)return;
+      gradientDraft.splice(gradientSelectedStop,1);gradientSelectedStop=0;refreshGradientEditor();
+    });
+    for(const input of [gradientPosition,gradientColor,gradientAlpha])input.addEventListener('input',()=>{
+      const stop=gradientDraft[gradientSelectedStop];
+      if(input===gradientColor)stop.color=input.value;
+      if(input===gradientAlpha&&Number.isFinite(input.valueAsNumber))stop.transparency=Math.max(0,Math.min(100,input.valueAsNumber));
+      if(input===gradientPosition&&gradientSelectedStop>=2&&Number.isFinite(input.valueAsNumber))
+        stop.position=Math.max(0.001,Math.min(0.999,input.valueAsNumber/100));
+      refreshGradientEditor();
+    });
+    document.querySelector('#gradient-cancel').addEventListener('click',()=>gradientDialog.close());
+    document.querySelector('#gradient-apply').addEventListener('click',()=>{
+      const part=getPart(gradientEditingId); if(!isGradient(part))return;
+      const before=editorSnapshot();part.stops=structuredClone(gradientDraft);
+      part.freezeAfterCut=false;
+      const target=getPart(part.parent);
+      if(target?.geometry.edges.length)part.sourceGeometry=structuredClone(target.geometry);
+      renderModelTransform();recordEditorEdit(before);gradientDialog.close();
+    });
+    document.querySelector('#gradient-angle').addEventListener('change',event=>{
+      const part=getPart(editorSelection);const value=event.target.valueAsNumber;
+      if(!isGradient(part)||!Number.isFinite(value))return;
+      const before=editorSnapshot();part.angle=value%360;
+      part.freezeAfterCut=false;
+      const target=getPart(part.parent);
+      if(target?.geometry.edges.length)part.sourceGeometry=structuredClone(target.geometry);
+      renderModelTransform();recordEditorEdit(before);
+    });
+
     const preferencesKey = 'plane.preferences.v1';
 
     function loadPreferences() {
@@ -8103,7 +8393,16 @@
       }
     }
 
-    const englishLabels = new Map(`言語|Language
+    const englishLabels = new Map(`グラデーション|Gradient
+内部グラデーション|Inner Gradient
+グラデーションの設定|Gradient Settings
+方向|Direction
+位置（%）|Position (%)
+透明度（%）|Transparency (%)
+色|Color
+削除|Delete
+目印を追加|Add Color Stop
+言語|Language
 選択ツール|Select Tool
 移動ツール|Move Tool
 回転ツール|Rotate Tool
@@ -8160,7 +8459,7 @@
 保存された作品はありません。|No saved projects.
 頂点・辺・面でつくる、2D図形。|Create 2D shapes with vertices, edges, and faces.
 PLANE — 2D図形作成|PLANE — 2D Shape Editor
-バージョン 0.2.1|Version 0.2.1
+バージョン 0.2.2|Version 0.2.2
 2Dエディター|2D Editor
 2Dビュー · XY|2D View · XY
 2Dビュー|2D View
