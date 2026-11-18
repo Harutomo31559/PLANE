@@ -446,6 +446,25 @@
       color: var(--text); background: var(--card); border: 1px solid var(--line);
       border-radius: 4px; font-variant-numeric: tabular-nums;
     }
+    #loading-indicator {
+      position: fixed; right: max(1rem, env(safe-area-inset-right));
+      bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 20;
+      display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem;
+      background: var(--dialog); color: var(--text); border: 1px solid var(--line);
+      border-radius: 8px; box-shadow: 0 4px 18px #0005; pointer-events: none;
+    }
+    #loading-indicator[hidden] { display: none; }
+    .loading-square {
+      width: 22px; height: 22px; border: 2px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      animation: loading-square 1.5s ease-in-out infinite; will-change: transform, border-radius;
+    }
+    @keyframes loading-square {
+      0%, 100% { transform: rotate(0deg) scale(0.8, 0.8); border-radius: 2px; }
+      33% { transform: rotate(90deg) scale(1.1, 0.65); border-radius: 6px 2px; }
+      66% { transform: rotate(180deg) scale(0.65, 1.1); border-radius: 2px 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .loading-square { animation: none; } }
     .gradient-stop {
       appearance: none; -webkit-tap-highlight-color: transparent;
       position: absolute; bottom: -30px; translate: -50% 0;
@@ -1696,6 +1715,7 @@
     <p id="current-preview-status" role="status" hidden></p>
     <form method="dialog"><button class="quiet" autofocus>閉じる</button></form>
   </dialog>
+  <div id="loading-indicator" role="status" aria-live="polite" hidden><span class="loading-square" aria-hidden="true"></span><span>読み込み中…</span></div>
   <input id="import-image-file" type="file" accept="image/*" hidden>
   <dialog id="insert-library-dialog" aria-labelledby="insert-library-title">
     <h2 id="insert-library-title"></h2>
@@ -2116,6 +2136,8 @@
     const draftDateFormat = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'short', timeStyle: 'short' });
     let titleLauncher = openCreate;
     let editorLoadFrame;
+    const loadingIndicator = document.querySelector('#loading-indicator');
+    let modelLoadRevision = 0;
     let viewX = 0;
     let viewY = 0;
     let viewZoom = 1;
@@ -7049,6 +7071,10 @@
     }
 
     function loadFoundation(foundation, name = foundationNames[foundation], savedScene, projectId) {
+      cancelAnimationFrame(editorLoadFrame);
+      const revision = ++modelLoadRevision;
+      loadingIndicator.hidden = false;
+      editorScreen.setAttribute('aria-busy', 'true');
       selectFoundation(foundation);
       pauseBgmPlayback();
       setViewZoom(1);
@@ -7111,12 +7137,26 @@
           openObjectsButton.disabled = false;
           openCuttersButton.disabled = false;
           editorStatus.textContent = name;
+          const finish = () => {
+            if (revision !== modelLoadRevision) return;
+            loadingIndicator.hidden = true;
+            editorScreen.setAttribute('aria-busy', 'false');
+          };
+          const pending = pendingSceneImages(parts);
+          if (pending) pending.then(finish, () => {
+            if (revision === modelLoadRevision) editorStatus.textContent = '画像素材を読み込めませんでした。';
+            finish();
+          });
+          else finish();
         });
       });
     }
 
     function returnFromEditorToTitle() {
       cancelAnimationFrame(editorLoadFrame);
+      modelLoadRevision++;
+      loadingIndicator.hidden = true;
+      editorScreen.setAttribute('aria-busy', 'false');
       clearMarquee();
       editorScreen.hidden = true;
       closeShortcutMenu();
@@ -8420,7 +8460,8 @@
       }
     }
 
-    const englishLabels = new Map(`グラデーション|Gradient
+    const englishLabels = new Map(`読み込み中…|Loading…
+グラデーション|Gradient
 内部グラデーション|Inner Gradient
 グラデーションの設定|Gradient Settings
 方向|Direction
