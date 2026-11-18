@@ -6955,7 +6955,8 @@
       const draw = () => drawExport(canvas, Math.max(1, Math.round(frame.width * ratio)),
         Math.max(1, Math.round(frame.height * ratio)), null, frame, parts);
       draw();
-      pendingSceneImages(parts)?.then(draw).catch(() => {});
+      const pending = pendingSceneImages(parts);
+      return pending ? pending.then(draw).catch(() => {}) : Promise.resolve();
     }
 
     function templateScene(name) {
@@ -7300,9 +7301,12 @@
       }
     });
 
-    function renderProjectCards(list, projects, action, choose, selectCard = false) {
+    async function renderProjectCards(list, projects, action, choose, selectCard = false, prepare = false, cancelled = () => false) {
       list.replaceChildren();
       for (const project of projects) {
+        if (cancelled()) return;
+        if (prepare) await new Promise(resolve => setTimeout(resolve, 0));
+        if (cancelled()) return;
         const item = document.createElement('li');
         const button = document.createElement('button');
         const card = selectCard ? button : document.createElement('div');
@@ -7311,7 +7315,9 @@
         preview.setAttribute('aria-hidden', 'true');
         const thumbnail = document.createElement('canvas');
         thumbnail.className = 'project-thumbnail';
-        drawProjectPreview(thumbnail, project, 150, 90);
+        const ready = drawProjectPreview(thumbnail, project, 150, 90);
+        if (prepare) await ready;
+        if (cancelled()) return;
         preview.append(thumbnail);
         item.className = 'selection-item';
         card.className = 'selection-card';
@@ -7344,12 +7350,15 @@
       }
     }
 
-    function renderLibrary() {
+    async function renderLibrary(prepare = false, cancelled = () => false) {
       const projects = readProjects();
-      draftEmpty.hidden = projects.length > 0;
-      renderProjectCards(draftList, projects, '読み込む', project => {
+      const target = prepare ? document.createElement('ul') : draftList;
+      await renderProjectCards(target, projects, '読み込む', project => {
         loadFoundation(project.foundation, project.name, project.scene, project.id);
-      });
+      }, false, prepare, cancelled);
+      if (cancelled()) return;
+      if (prepare) draftList.replaceChildren(...target.children);
+      draftEmpty.hidden = projects.length > 0;
     }
 
     function currentInsertionParent() {
@@ -7714,14 +7723,28 @@
     });
     projectDialog.addEventListener('cancel', () => { returnAfterSave = false; });
 
-    function showCreateView(view) {
+    let creationViewRevision = 0;
+    async function showCreateView(view) {
+      const revision = ++creationViewRevision;
+      if (view === 'library') {
+        loadingIndicator.hidden = false;
+        try {
+          await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+          if (revision !== creationViewRevision) return;
+          await renderLibrary(true, () => revision !== creationViewRevision);
+          if (revision !== creationViewRevision) return;
+        } finally {
+          if (revision === creationViewRevision) loadingIndicator.hidden = true;
+        }
+      } else {
+        loadingIndicator.hidden = true;
+      }
       for (const button of viewButtons) {
         const active = button.dataset.createView === view;
         button.setAttribute('aria-pressed', String(active));
         document.getElementById(button.getAttribute('aria-controls')).hidden = !active;
         if (active) createHeading.textContent = button.textContent.trim();
       }
-      if (view === 'library') renderLibrary();
       if (view === 'templates') renderTemplates();
       titleScreen.hidden = true;
       createScreen.hidden = false;
@@ -7738,6 +7761,8 @@
       showCreateView('library');
     });
     document.querySelector('#return-title').addEventListener('click', () => {
+      creationViewRevision++;
+      loadingIndicator.hidden = true;
       createScreen.hidden = true;
       titleScreen.hidden = false;
       titleLauncher.focus();
